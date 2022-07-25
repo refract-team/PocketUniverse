@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Pocket Universe",
+  "description": "A transaction checker that helps you avoid crypto scams.",
+  "background": { "service_worker": "background.bundle.js" },
+  "action": {
+    "default_title": "Pocket Universe",
+    "default_popup": "popup.html",
+    "default_icon": "icon-32.png"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icon-128.png",
+        "icon-32.png",
+        "metamask/step1_image1.png",
+        "metamask/step1_image2.png",
+        "metamask/step2_image1.png",
+        "metamask/step2_image2.png",
+        "metamask/step3",
+        "waves_top.png",
+        "waves_bottom.png",
+        "waves.png"
+      ],
+      "matches": []
+    }
+  ],
+  "host_permissions": ["file://*/*", "http://*/*", "https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentScript.bundle.js"],
+      "all_frames": true,
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": ["storage", "scripting"]
+}
