@@ -5579,13 +5579,10 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-pocket-universe-js@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/pocket-universe-js/-/pocket-universe-js-0.0.1.tgz#0a7fed5d1a8c48c450815f3432e20384ed4b7430"
-  integrity sha512-8wc2wk4mPBYE3xfQST0n35hQrbB448TDR52m06O6w/vew7BexKuTvOZafeQG5WAHHCnxQs2vhUpuh5SPMazu1g==
-  dependencies:
-    "@types/node-fetch" "^2.6.2"
-    axios "^0.27.2"
+pocket-universe-js@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/pocket-universe-js/-/pocket-universe-js-0.0.3.tgz#1c104d62a650662ba6be9271328659fca847fba0"
+  integrity sha512-+0RiMGvyq3LDxqWyF+QYbonw/StgS6yCMaWsa18XfJik0qyBw8icLqQ7ANeBuctY2g5/Gah+AaBZMjRKaemEew==
 
 postcss-import@^14.1.0:
   version "14.1.0"
