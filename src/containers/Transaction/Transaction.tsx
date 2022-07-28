@@ -7,8 +7,8 @@ import { BeatLoader } from 'react-spinners';
 import { useChromeStorageSync } from 'use-chrome-storage';
 
 import logger from '../../lib/logger';
-import type { Event } from '../../lib/simulation';
-import { Simulation, EventType, TokenType } from '../../lib/simulation';
+import type { Event } from 'pocket-universe-js';
+import { Simulation, EventType, TokenType } from 'pocket-universe-js';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   STORAGE_KEY,
@@ -159,7 +159,7 @@ const EventComponent = ({ event }: { event: Event }) => {
   );
 };
 
-const TransferAllWarning = ({ events }: { events: Event[] }) => {
+const TransferAllWarning = ({ events }: { events: readonly Event[] }) => {
   const NoApprovalForAll = (
     <div className="text-base text-gray-400 pb-4">
       Changes being made in this transaction

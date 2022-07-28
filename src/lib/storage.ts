@@ -1,8 +1,9 @@
 /// Storage wrapper for updating the storage.
 import logger from './logger';
-import { fetchSimulate, ResponseType } from './server';
+import { fetchSimulate } from './server';
 import type { SimulateRequestArgs } from './simulate_request_reply';
-import type { Simulation } from './simulation';
+import type { Simulation } from 'pocket-universe-js';
+import { ResponseType } from 'pocket-universe-js';
 
 const log = logger.child({ component: 'Storage' });
 export enum StoredSimulationState {
