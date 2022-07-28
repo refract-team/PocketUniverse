@@ -34,5 +34,6 @@ state to be displayed.
 It will write to storage the action the user decides to take.
 
 ## Contact Us
-* [Twitter](https://twitter.com/PocketUniverseZ)
-* [Discord](https://discord.gg/UrgqjUQFH2)
+
+- [Twitter](https://twitter.com/PocketUniverseZ)
+- [Discord](https://discord.gg/UrgqjUQFH2)
