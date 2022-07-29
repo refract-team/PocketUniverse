@@ -185,6 +185,14 @@ export interface Settings {
   disable: boolean;
 }
 
+const updateIcon = (settings: Settings) => {
+  if (settings.disable) {
+    chrome.action.setIcon({ path: 'icon-32-gray.png' });
+  } else {
+    chrome.action.setIcon({ path: 'icon-32.png' });
+  }
+};
+
 /**
  * Set the settings to the given args.
  */
@@ -196,6 +204,8 @@ export const setSettings = async (args: Settings) => {
   log.info({ settings: settings, msg: 'Updating settings' });
 
   settings.disable = args.disable;
+
+  updateIcon(settings);
 
   return chrome.storage.sync.set({ settings });
 };
@@ -211,6 +221,11 @@ export const getSettings = async (): Promise<Settings> => {
 
   return settings as Settings;
 };
+
+/**
+ * Get the initial set of settings for the icon.
+ */
+getSettings().then(updateIcon);
 
 export const simulationNeedsAction = (
   state: StoredSimulationState
