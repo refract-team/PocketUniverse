@@ -176,6 +176,57 @@ export const clearOldSimulations = async () => {
   return chrome.storage.sync.set({ simulations });
 };
 
+export const SETTINGS_KEY = 'settings';
+
+export interface Settings {
+  /**
+   * Whether or not we should disable the extension.
+   */
+  disable: boolean;
+}
+
+const updateIcon = (settings: Settings) => {
+  if (settings.disable) {
+    chrome.action.setIcon({ path: 'icon-32-gray.png' });
+  } else {
+    chrome.action.setIcon({ path: 'icon-32.png' });
+  }
+};
+
+/**
+ * Set the settings to the given args.
+ */
+export const setSettings = async (args: Settings) => {
+  // Default is enabled.
+  let { settings = { disable: false } } = await chrome.storage.sync.get(
+    SETTINGS_KEY
+  );
+  log.info({ settings: settings, msg: 'Updating settings' });
+
+  settings.disable = args.disable;
+
+  updateIcon(settings);
+
+  return chrome.storage.sync.set({ settings });
+};
+
+/**
+ * Get the settings.
+ */
+export const getSettings = async (): Promise<Settings> => {
+  const { settings = { disable: false } } = await chrome.storage.sync.get(
+    SETTINGS_KEY
+  );
+  log.info({ settings: settings, msg: 'Getting settings.' });
+
+  return settings as Settings;
+};
+
+/**
+ * Get the initial set of settings for the icon.
+ */
+getSettings().then(updateIcon);
+
 export const simulationNeedsAction = (
   state: StoredSimulationState
 ): boolean => {

@@ -6,11 +6,13 @@ import {
   SIMULATE_REQUEST_COMMAND,
   SimulateResponse,
 } from '../../lib/simulate_request_reply';
+import { dispatchSettings } from '../../lib/settings';
 import type { StoredSimulation } from '../../lib/storage';
 import { removeSimulation, StoredSimulationState } from '../../lib/storage';
 
 const log = logger.child({ component: 'Content-Script' });
-console.log('Content Script Loaded');
+
+log.debug({ msg: 'Content Script Loaded' });
 
 // There is a bit of a memory leak here. If the user navigates away from this page before the request is sent in, the request will never be removed from storage.
 // There shouldn't be too many requests though so this is okay.
@@ -26,6 +28,12 @@ const maybeRemoveId = (id: string) => {
     removeSimulation(id);
   }
 };
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.settings?.newValue) {
+    dispatchSettings(changes.settings.newValue);
+  }
+});
 
 listenToSimulateRequest((simulateRequest: SimulateRequestArgs) => {
   log.info({ simulateRequest }, 'SimulateRequest');
