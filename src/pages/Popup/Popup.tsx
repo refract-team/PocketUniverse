@@ -1,11 +1,15 @@
 import mixpanel from 'mixpanel-browser';
-import React, { useEffect } from 'react';
+import { AiFillSetting } from 'react-icons/ai';
+import React, { useEffect, useState } from 'react';
 
 import Transaction from '../../containers/Transaction/Transaction';
+import Settings from '../../containers/Settings/Settings';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
 const Popup = () => {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   useEffect(() => {
     document.title = 'Pocket Universe';
     chrome.storage.sync.get('first_open', (result) => {
@@ -17,15 +21,28 @@ const Popup = () => {
   }, []);
 
   return (
-    <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[360px] min-h-screen items-center">
-      <div className="flex flex-row p-5 text-center">
-        <h3 className="flex flex-row gap-4 text-xl leading-6 font-medium text-purple-300">
+    <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[360px] min-h-screen items-center ">
+      <div className="flex flex-row p-4 text-center w-full">
+        <button
+          onClick={() => setSettingsOpen(false)}
+          className="flex flex-row gap-4 text-xl leading-6 font-medium text-purple-300 hover:bg-gray-600 rounded-lg"
+        >
           <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
           <div className="font-light text-xl my-auto">Pocket Universe</div>
-        </h3>
+        </button>
+        <button
+          className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-xl w-7 h-7 justify-center items-center"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <AiFillSetting />
+        </button>
       </div>
       <div className="flex grow">
-        <Transaction />
+        {settingsOpen ? (
+          <Settings closeSettings={() => setSettingsOpen(false)} />
+        ) : (
+          <Transaction />
+        )}
       </div>
     </div>
   );
