@@ -3,6 +3,7 @@ import {
   RequestManager,
   SimulateResponse,
 } from '../../lib/simulate_request_reply';
+import { settings, listenForSettingsUpdates } from '../../lib/settings';
 
 declare global {
   interface Window {
@@ -11,9 +12,11 @@ declare global {
 }
 
 const log = logger.child({ component: 'Injected' });
+log.debug({ msg: 'Injected script loaded.' });
 
 /// Handling all the request communication.
 const REQUEST_MANAGER = new RequestManager();
+listenForSettingsUpdates();
 
 let cachedProxy: any;
 
@@ -26,6 +29,12 @@ let providerChanged = true;
 const pocketUniverseProxyHandler = {
   get(target: any, prop: any, receiver: any) {
     log.debug({ prop, msg: 'Props' });
+    /*
+     * User has disabled PU, just reflect.
+     */
+    if (settings.disable) {
+      return Reflect.get(target, prop, receiver);
+    }
 
     if (prop === 'providers') {
       return null;
