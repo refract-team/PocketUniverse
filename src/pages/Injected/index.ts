@@ -112,5 +112,7 @@ Object.defineProperty(window, 'ethereum', {
     providerChanged = true;
     currentProvider = newProvider;
   },
-  configurable: false,
+  // This needs to be set to `true` as when it is `false` the variable `ethereum` is defined in the local scope. Thus, when doing something like `const ethereum = ...` results in `ethereum` has already been declared.
+  // If we're flipping this, make sure it works on nftydash
+  configurable: true,
 });
