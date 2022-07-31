@@ -105,9 +105,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          state,
-        }
+        ...x,
+        state,
+      }
       : x
   );
 
@@ -122,10 +122,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          error,
-          state: StoredSimulationState.Error,
-        }
+        ...x,
+        error,
+        state: StoredSimulationState.Error,
+      }
       : x
   );
 
@@ -224,8 +224,12 @@ export const getSettings = async (): Promise<Settings> => {
 
 /**
  * Get the initial set of settings for the icon.
+ *
+ * This should only run in settings and not in the content scripts as chrome.action is not available there.
  */
-getSettings().then(updateIcon);
+if (chrome.action) {
+  getSettings().then(updateIcon);
+}
 
 export const simulationNeedsAction = (
   state: StoredSimulationState
