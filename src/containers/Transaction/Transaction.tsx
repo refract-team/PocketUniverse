@@ -94,11 +94,10 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${
-            event.type === EventType.TransferIn
-              ? 'text-green-500'
-              : 'text-red-500'
-          } ml-auto my-auto text-lg`}
+          className={`${event.type === EventType.TransferIn
+            ? 'text-green-500'
+            : 'text-red-500'
+            } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -263,7 +262,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-          state === StoredSimulationState.Revert
+            state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -366,7 +365,7 @@ const TransactionComponent = () => {
       <div className="flex flex-col">
         <div>
           <img
-            className="w-screen border-t border-gray-600"
+            className="w-full border-t border-gray-600"
             src="waves_top.png "
             alt=""
           />
@@ -375,7 +374,7 @@ const TransactionComponent = () => {
           <NoTransactionComponent />
         </div>
         <div>
-          <img className="mt-auto w-screen" src="waves_bottom.png" alt="" />
+          <img className="mt-auto w-full" src="waves_bottom.png" alt="" />
         </div>
       </div>
     );
@@ -389,7 +388,7 @@ const TransactionComponent = () => {
         </div>
       )}
       <img
-        className="w-screen border-t border-gray-600"
+        className="w-full border-t border-gray-600"
         src="waves_top.png"
         alt=""
       />
@@ -398,7 +397,7 @@ const TransactionComponent = () => {
           key={filteredSimulations[0].id}
           storedSimulation={filteredSimulations[0]}
         />
-        <img className="mt-auto w-screen" src="waves_bottom.png" alt="" />
+        <img className="mt-auto w-full" src="waves_bottom.png" alt="" />
         <div className="mt-auto border-t border-gray-600 w-full">
           <ConfirmSimulationButton
             id={filteredSimulations[0].id}
