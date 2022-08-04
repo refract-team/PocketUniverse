@@ -158,16 +158,18 @@ const EventComponent = ({ event }: { event: Event }) => {
   );
 };
 
-const TransferAllWarning = ({ events }: { events: readonly Event[] }) => {
+const TransferAllWarning = ({ simulation }: { simulation: Simulation }) => {
+  const events = simulation.events;
+
   const NoApprovalForAll = (
     <div className="text-base text-gray-400 pb-4">
       Changes being made in this transaction
     </div>
   );
 
-  // ApprovalForAll only can have 1 event.
-  if (events.length !== 1) {
-    return NoApprovalForAll;
+  // Should be protected against this, no events should show no change in assets.
+  if (events.length === 0) {
+    return null;
   }
 
   const event = events[0];
@@ -203,6 +205,26 @@ const TransferAllWarning = ({ events }: { events: readonly Event[] }) => {
       </div>
     );
   }
+
+  if (simulation.verifiedAddressName) {
+    return (
+      <>
+        <div>
+          <div className="flex flex-col text-base text-gray-400 gap-4 justify-center items-center">
+            You are interacting with
+            <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
+              {simulation.verifiedAddressName}
+              <div className="my-auto pl-1 text-green-300">
+                <MdVerified />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+
   return NoApprovalForAll;
 };
 
@@ -337,7 +359,7 @@ const StoredSimulationComponent = ({
   if (storedSimulation.state === StoredSimulationState.Success) {
     return (
       <div className="flex flex-col grow items-center justify-center w-full">
-        <TransferAllWarning events={simulation.events} />
+        <TransferAllWarning simulation={simulation} />
 
         <div className="m-2 border-y border-gray-600 w-full w-11/12">
           <SimulationComponent simulation={simulation} />
