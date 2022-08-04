@@ -32,7 +32,7 @@ const Popup = () => {
         </button>
         <button
           className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-xl w-7 h-7 justify-center items-center"
-          onClick={() => setSettingsOpen(true)}
+          onClick={() => setSettingsOpen(!settingsOpen)}
         >
           <AiFillSetting />
         </button>
