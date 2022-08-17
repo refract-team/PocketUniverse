@@ -36,10 +36,6 @@ const pocketUniverseProxyHandler = {
       return Reflect.get(target, prop, receiver);
     }
 
-    if (prop === 'providers') {
-      return null;
-    }
-
     // sendAsync is a deprecated method. Support this in-case old mints use it.
     // For some reason... OpenSea uses this O_O
     if (prop !== 'request' && prop !== 'send' && prop !== 'sendAsync') {
