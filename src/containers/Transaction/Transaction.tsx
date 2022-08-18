@@ -7,8 +7,7 @@ import { BeatLoader } from 'react-spinners';
 import { useChromeStorageSync } from 'use-chrome-storage';
 
 import logger from '../../lib/logger';
-import type { Event } from 'pocket-universe-js';
-import { Simulation, EventType, TokenType } from 'pocket-universe-js';
+import { Simulation, Event, EventType, TokenType } from '../../lib/models';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   STORAGE_KEY,
