@@ -13,7 +13,7 @@
     "@hot-loader/react-dom": "^17.0.2",
     "@metamask/detect-provider": "1.2.0",
     "@reduxjs/toolkit": "^1.8.3",
-    "@sentry/browser": "^7.6.0",
+    "@sentry/browser": "^7.8.0",
     "@sentry/react": "^7.6.0",
     "ethers": "^5.6.9",
     "mixpanel-browser": "^2.45.0",
