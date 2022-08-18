@@ -391,7 +391,7 @@ const TransactionComponent = () => {
 
   if (!filteredSimulations || filteredSimulations.length === 0) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <div>
           <img
             className="w-full border-t border-gray-600"
@@ -399,7 +399,7 @@ const TransactionComponent = () => {
             alt=""
           />
         </div>
-        <div className="flex grow justify-center items-center">
+        <div className="flex grow justify-center items-center w-full">
           <NoTransactionComponent />
         </div>
         <div>
