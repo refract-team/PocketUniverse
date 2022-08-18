@@ -140,7 +140,7 @@ const EventComponent = ({ event }: { event: Event }) => {
 
   return (
     <div className="flex gap-x-2">
-      <div className="flex gap-x-2">
+      <a className={`flex gap-x-2 ${event.collection_url ? "hover:underline" : ""}`} href={event.collection_url} target="_blank">
         <img
           className="m-auto"
           src={event.image || 'unknown.png'}
@@ -151,9 +151,17 @@ const EventComponent = ({ event }: { event: Event }) => {
         <div className="text-base text-gray-100 m-auto">
           {event.name || 'Unknown Name'}
         </div>
-      </div>
+        <div className="m-auto">
+          {
+            event.verified &&
+            <div className="my-auto text-lg text-blue-300">
+              <MdVerified />
+            </div>
+          }
+        </div>
+      </a>
       {message()}
-    </div>
+    </div >
   );
 };
 
@@ -182,7 +190,7 @@ const TransferAllWarning = ({ simulation }: { simulation: Simulation }) => {
             <div>
               Giving approval to {VERIFIED_CONTRACTS.get(event.toAddress)}
             </div>
-            <div className="my-auto pl-1 text-green-300">
+            <div className="my-auto pl-1 text-lg text-blue-300">
               <MdVerified />
             </div>
           </div>

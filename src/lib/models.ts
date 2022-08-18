@@ -72,6 +72,16 @@ export class Event {
     // Only set for ApprovalForAll.
     // Must use checksum case.
     public toAddress?: string,
+
+    /**
+     * Whether this NFT is part of a verified collection.
+     */
+    public verified?: boolean,
+
+    /**
+     * The collection this NFT is from.
+     */
+    public collection_url?: string,
   ) { }
 
   public static eventForEth(type: EventType, value: string): Event {
@@ -86,7 +96,7 @@ export class Event {
   }
 
   public static fromJSON(obj: any): Event {
-    return new Event(obj.type, obj.tokenType, obj.name, obj.image, obj.amount, obj.decimals, obj.toAddress);
+    return new Event(obj.type, obj.tokenType, obj.name, obj.image, obj.amount, obj.decimals, obj.toAddress, obj.verified, obj.collection_url);
   }
 }
 

@@ -12,7 +12,7 @@ const dev = false;
 
 // Set of constants //
 
-const DEV_SERVER = 'http://localhost:4000/v1';
+const DEV_SERVER = 'http://localhost:3000/v1';
 const PROD_SERVER = 'https://api.pocketuniverse.app/v1';
 
 config.dev = dev;
