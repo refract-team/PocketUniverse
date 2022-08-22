@@ -118,6 +118,7 @@ export class Simulation {
     return new Simulation(
       obj.date,
       obj.events.flatMap((event: any) => Event.fromJSON(event)),
+      obj.verifiedAddressName,
     );
   }
 }
