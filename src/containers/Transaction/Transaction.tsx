@@ -217,11 +217,11 @@ const TransferAllWarning = ({ simulation }: { simulation: Simulation }) => {
     return (
       <>
         <div>
-          <div className="flex flex-col text-base text-gray-400 gap-4 justify-center items-center">
+          <div className="flex flex-col text-base text-gray-400 gap-2 justify-center items-center">
             You are interacting with
             <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
               {simulation.verifiedAddressName}
-              <div className="my-auto pl-1 text-green-300">
+              <div className="my-auto pl-1 text-blue-300">
                 <MdVerified />
               </div>
             </div>
