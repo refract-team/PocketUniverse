@@ -82,7 +82,7 @@ export class Event {
      * The collection this NFT is from.
      */
     public collection_url?: string
-  ) {}
+  ) { }
 
   public static eventForEth(type: EventType, value: string): Event {
     return new Event(
@@ -119,19 +119,21 @@ export class Simulation {
     public events: Event[],
 
     // Name of the address if it has been verified.
-    //
-    // This will only be used for Non-ApprovalForAll requests.
     public verifiedAddressName?: string,
+
+    // To address to be displayed
+    public toAddress?: string,
 
     // Whether we should warn for an offer.
     public shouldWarn?: boolean
-  ) {}
+  ) { }
 
   public static fromJSON(obj: any): Simulation {
     return new Simulation(
       obj.date,
       obj.events.flatMap((event: any) => Event.fromJSON(event)),
       obj.verifiedAddressName,
+      obj.toAddress,
       obj.shouldWarn
     );
   }
