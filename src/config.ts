@@ -8,7 +8,7 @@ const config: Config = { dev: false, server: '', logLevel: 'debug' };
 
 // Changable Configurations //
 
-const dev = false;
+const dev = true;
 
 // Set of constants //
 

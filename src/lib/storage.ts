@@ -1,15 +1,15 @@
 /// Storage wrapper for updating the storage.
 import logger from './logger';
-import { fetchSimulate } from './server';
-import type { SimulateRequestArgs } from './simulate_request_reply';
-import { Simulation, ResponseType } from '../lib/models';
+import { fetchSimulate, fetchSignature } from './server';
+import type { RequestArgs } from './request';
+import { Simulation, Response, ResponseType } from '../lib/models';
 
 const log = logger.child({ component: 'Storage' });
 export enum StoredSimulationState {
   // Currently in the process of simulating.
   Simulating = 'Simulating',
 
-  // Reverted
+  // Reverted or invalid signature processing.
   Revert = 'Revert',
 
   // Error
@@ -25,8 +25,16 @@ export enum StoredSimulationState {
   Confirmed = 'Confirm',
 }
 
+export enum StoredType {
+  Simulation,
+  Signature,
+}
+
 export interface StoredSimulation {
   id: string;
+
+  /// Type of request.
+  type: StoredType;
 
   /// The state this simulation is in.
   state: StoredSimulationState;
@@ -131,33 +139,49 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   return chrome.storage.sync.set({ simulations });
 };
 
-export const fetchSimulationAndUpdate = async (
-  simulateArgs: SimulateRequestArgs
-) => {
-  log.info(simulateArgs, 'Fetch simulation and update');
-  // Add a pending simulation, and shoot of a request at the same time.
-  const [, response] = await Promise.all([
-    addSimulation({
-      id: simulateArgs.id,
-      state: StoredSimulationState.Simulating,
-    }),
-    fetchSimulate(simulateArgs),
-  ]);
+export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
+  log.info(args, 'Fetch simulation and update');
+  let response: Response;
+
+  if ('transaction' in args) {
+    const result = await Promise.all([
+      addSimulation({
+        id: args.id,
+        type: StoredType.Simulation,
+        state: StoredSimulationState.Simulating,
+      }),
+      fetchSimulate(args),
+    ]);
+
+    response = result[1];
+  } else {
+    const result = await Promise.all([
+      addSimulation({
+        id: args.id,
+        type: StoredType.Signature,
+        state: StoredSimulationState.Simulating,
+      }),
+      fetchSignature(args),
+    ]);
+
+    response = result[1];
+  }
 
   if (response.type === ResponseType.Error) {
     log.info(response, 'Response error');
-    return updateSimulatioWithErrorMsg(simulateArgs.id, response.error);
+    return updateSimulatioWithErrorMsg(args.id, response.error);
   }
   if (response.type === ResponseType.Revert) {
     log.info(response, 'Reverted simulation');
-    return revertSimulation(simulateArgs.id, response.error);
+    return revertSimulation(args.id, response.error);
   }
   if (response.type === ResponseType.Success) {
     log.info(response, 'Response success');
     if (!response.simulation) {
       throw new Error('Invalid state');
     }
-    return completeSimulation(simulateArgs.id, response.simulation);
+
+    return completeSimulation(args.id, response.simulation);
   }
 };
 

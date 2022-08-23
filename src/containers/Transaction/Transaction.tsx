@@ -9,6 +9,7 @@ import { useChromeStorageSync } from 'use-chrome-storage';
 import logger from '../../lib/logger';
 import { Simulation, Event, EventType, TokenType } from '../../lib/models';
 import type { StoredSimulation } from '../../lib/storage';
+import { StoredType } from '../../lib/storage';
 import {
   STORAGE_KEY,
   simulationNeedsAction,
@@ -93,11 +94,10 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${
-            event.type === EventType.TransferIn
+          className={`${event.type === EventType.TransferIn
               ? 'text-green-500'
               : 'text-red-500'
-          } ml-auto my-auto text-lg`}
+            } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -142,9 +142,8 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${
-          event.collection_url ? 'hover:underline' : ''
-        }`}
+        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
+          }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -172,73 +171,106 @@ const EventComponent = ({ event }: { event: Event }) => {
   );
 };
 
-const TransferAllWarning = ({ simulation }: { simulation: Simulation }) => {
+const PotentialWarnings = ({
+  simulation,
+  type,
+}: {
+  simulation: Simulation;
+  type: StoredType;
+}) => {
   const events = simulation.events;
 
-  const NoApprovalForAll = (
-    <div className="text-base text-gray-400 pb-4">
-      Changes being made in this transaction
-    </div>
-  );
+  if (type === StoredType.Simulation) {
+    const NoApprovalForAll = (
+      <div className="text-base text-gray-400 pb-4">
+        Changes being made in this transaction
+      </div>
+    );
 
-  // Should be protected against this, no events should show no change in assets.
-  if (events.length === 0) {
-    return null;
-  }
+    // Should be protected against this, no events should show no change in assets.
+    if (events.length === 0) {
+      return null;
+    }
 
-  const event = events[0];
+    const event = events[0];
 
-  if (event.type === EventType.ApprovalForAll) {
-    if (event.toAddress && VERIFIED_CONTRACTS.has(event.toAddress)) {
-      // Set ApprovalForAll but keep going.
-      return (
-        <div>
-          <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
-            <div>
-              Giving approval to {VERIFIED_CONTRACTS.get(event.toAddress)}
+    if (event.type === EventType.ApprovalForAll) {
+      if (event.toAddress && VERIFIED_CONTRACTS.has(event.toAddress)) {
+        // Set ApprovalForAll but keep going.
+        return (
+          <div>
+            <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
+              <div>
+                Giving approval to {VERIFIED_CONTRACTS.get(event.toAddress)}
+              </div>
+              <div className="my-auto pl-1 text-lg text-blue-300">
+                <MdVerified />
+              </div>
             </div>
-            <div className="my-auto pl-1 text-lg text-blue-300">
-              <MdVerified />
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col justify-center">
+          <div className="text-center text-lg font-bold text-red-500">
+            🚨 WARNING 🚨
+          </div>
+          <div className="text-sm px-4 py-2 text-red-500 text-center">
+            You are giving approval to withdraw all.
+            <div className="font-bold">
+              Please make sure it is not a wallet drainer.
             </div>
           </div>
         </div>
       );
     }
 
-    return (
-      <div className="flex flex-col justify-center">
-        <div className="text-center text-lg font-bold text-red-500">
-          🚨 WARNING 🚨
-        </div>
-        <div className="text-sm px-4 py-2 text-red-500 text-center">
-          You are giving approval to withdraw all.
-          <div className="font-bold">
-            Please make sure it is not a wallet drainer.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (simulation.verifiedAddressName) {
-    return (
-      <>
-        <div>
-          <div className="flex flex-col text-base text-gray-400 gap-2 justify-center items-center">
-            You are interacting with
-            <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
-              {simulation.verifiedAddressName}
-              <div className="my-auto pl-1 text-blue-300">
-                <MdVerified />
+    if (simulation.verifiedAddressName) {
+      return (
+        <>
+          <div>
+            <div className="flex flex-col text-base text-gray-400 gap-2 justify-center items-center">
+              You are interacting with
+              <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
+                {simulation.verifiedAddressName}
+                <div className="my-auto pl-1 text-blue-300">
+                  <MdVerified />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </>
+        </>
+      );
+    }
+
+    return NoApprovalForAll;
+  } else {
+    const PotentialChangesMessage = (
+      <div className="text-base text-gray-400 pb-4">
+        Changes that can be made by signing this message
+      </div>
+    );
+
+    return (
+      <div>
+        {simulation.shouldWarn && (
+          <div className="flex flex-col justify-center">
+            <div className="text-center text-lg font-bold text-red-500">
+              🚨 WARNING 🚨
+            </div>
+            <div className="text-sm px-4 py-2 text-red-500 text-center">
+              <div className="font-bold">
+                Please make sure this is not a scam!
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div>{PotentialChangesMessage}</div>
+      </div>
     );
   }
-
-  return NoApprovalForAll;
 };
 
 const SimulationComponent = ({ simulation }: { simulation: Simulation }) => {
@@ -297,7 +329,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-          state === StoredSimulationState.Revert
+            state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -319,6 +351,24 @@ const StoredSimulationComponent = ({
         <div className="flex flex-col justify-center items-center">
           <BeatLoader className="m-auto" color="purple" />
           <div className="text-white text-lg pt-2">Simulating</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    storedSimulation.state === StoredSimulationState.Revert &&
+    storedSimulation?.type === StoredType.Signature
+  ) {
+    return (
+      <div className="flex flex-col grow justify-center items-center w-11/12">
+        <img className="w-48" src="failed.png" alt="failed" />
+        <div className="text-gray-300 text-center text-base p-2">
+          <div>
+            We could not process this message
+            {storedSimulation.error &&
+              ` with error ${JSON.stringify(storedSimulation.error, null, 2)}.`}
+          </div>
         </div>
       </div>
     );
@@ -372,7 +422,10 @@ const StoredSimulationComponent = ({
   if (storedSimulation.state === StoredSimulationState.Success) {
     return (
       <div className="flex flex-col grow items-center justify-center w-full">
-        <TransferAllWarning simulation={simulation} />
+        <PotentialWarnings
+          simulation={simulation}
+          type={storedSimulation.type}
+        />
 
         <div className="m-2 border-y border-gray-600 w-full w-11/12">
           <SimulationComponent simulation={simulation} />
@@ -419,7 +472,7 @@ const TransactionComponent = () => {
     <div className="flex flex-col items-center justify-between w-full">
       {filteredSimulations.length !== 1 && (
         <div className="p-2 text-base flex items-center justify-center text-gray-400 border-t border-gray-600 w-full">
-          {filteredSimulations.length} transactions queued
+          {filteredSimulations.length} queued
         </div>
       )}
       <img

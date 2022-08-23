@@ -1,8 +1,5 @@
 import logger from '../../lib/logger';
-import {
-  RequestManager,
-  SimulateResponse,
-} from '../../lib/simulate_request_reply';
+import { RequestManager, Response } from '../../lib/request';
 import { settings, listenForSettingsUpdates } from '../../lib/settings';
 
 declare global {
@@ -51,33 +48,61 @@ const pocketUniverseProxyHandler = {
       const requestArg = args[0];
       log.debug({ args, target, originalCall, msg: 'Args' });
 
-      if (requestArg.method !== 'eth_sendTransaction') {
+      if (
+        requestArg.method !== 'eth_signTypedData_v3' &&
+        requestArg.method !== 'eth_signTypedData_v4' &&
+        requestArg.method !== 'eth_sendTransaction'
+      ) {
         return originalCall(...args);
       }
 
-      if (requestArg.params.length !== 1) {
-        // Forward the request anyway.
-        log.warn('Unexpected argument length.');
-        return originalCall(...args);
+      log.info({ args }, 'Request type');
+      let response;
+      if (requestArg.method === 'eth_sendTransaction') {
+        log.info('Transaction Request');
+        if (requestArg.params.length !== 1) {
+          // Forward the request anyway.
+          log.warn('Unexpected argument length.');
+          return originalCall(...args);
+        }
+
+        log.info(requestArg, 'Request being sent');
+
+        // Sending response.
+        response = await REQUEST_MANAGER.request({
+          chainId: await target.request({ method: 'eth_chainId' }),
+          transaction: requestArg.params[0],
+        });
+      } else if (
+        requestArg.method === 'eth_signTypedData_v3' ||
+        requestArg.method === 'eth_signTypedData_v4'
+      ) {
+        log.info('Signature Request');
+        if (requestArg.params.length !== 2) {
+          // Forward the request anyway.
+          log.warn('Unexpected argument length.');
+          return originalCall(...args);
+        }
+
+        const params = JSON.parse(requestArg.params[1]);
+        log.info({ params }, 'Request being sent');
+
+        // Sending response.
+        response = await REQUEST_MANAGER.request({
+          chainId: await target.request({ method: 'eth_chainId' }),
+          domain: params['domain'],
+          message: params['message'],
+        });
+      } else {
+        throw new Error('Show never reach here');
       }
-
-      log.info(requestArg, 'Request being sent');
-
-      // Sending response.
-      const response = await REQUEST_MANAGER.request({
-        chainId: await target.request({ method: 'eth_chainId' }),
-        transaction: requestArg.params[0],
-      });
 
       // For error, we just continue, to make sure we don't block the user!
-      if (
-        response === SimulateResponse.Continue ||
-        response === SimulateResponse.Error
-      ) {
+      if (response === Response.Continue || response === Response.Error) {
         log.info(response, 'Continue | Error');
         return originalCall(...args);
       }
-      if (response === SimulateResponse.Reject) {
+      if (response === Response.Reject) {
         log.info('Reject');
         // Based on EIP-1103
         // eslint-disable-next-line no-throw-literal
