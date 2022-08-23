@@ -93,10 +93,11 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${event.type === EventType.TransferIn
-            ? 'text-green-500'
-            : 'text-red-500'
-            } ml-auto my-auto text-lg`}
+          className={`${
+            event.type === EventType.TransferIn
+              ? 'text-green-500'
+              : 'text-red-500'
+          } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -140,7 +141,14 @@ const EventComponent = ({ event }: { event: Event }) => {
 
   return (
     <div className="flex gap-x-2">
-      <a className={`flex gap-x-2 ${event.collection_url ? "hover:underline" : ""}`} href={event.collection_url} target="_blank">
+      <a
+        className={`flex gap-x-2 ${
+          event.collection_url ? 'hover:underline' : ''
+        }`}
+        href={event.collection_url}
+        target="_blank"
+        rel="noreferrer"
+      >
         <img
           className="m-auto"
           src={event.image || 'unknown.png'}
@@ -152,16 +160,15 @@ const EventComponent = ({ event }: { event: Event }) => {
           {event.name || 'Unknown Name'}
         </div>
         <div className="m-auto">
-          {
-            event.verified &&
+          {event.verified && (
             <div className="my-auto text-lg text-blue-300">
               <MdVerified />
             </div>
-          }
+          )}
         </div>
       </a>
       {message()}
-    </div >
+    </div>
   );
 };
 
@@ -228,9 +235,8 @@ const TransferAllWarning = ({ simulation }: { simulation: Simulation }) => {
           </div>
         </div>
       </>
-    )
+    );
   }
-
 
   return NoApprovalForAll;
 };
@@ -291,7 +297,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-            state === StoredSimulationState.Revert
+          state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>

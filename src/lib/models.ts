@@ -81,8 +81,8 @@ export class Event {
     /**
      * The collection this NFT is from.
      */
-    public collection_url?: string,
-  ) { }
+    public collection_url?: string
+  ) {}
 
   public static eventForEth(type: EventType, value: string): Event {
     return new Event(
@@ -91,12 +91,22 @@ export class Event {
       'ETH',
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
       value,
-      18,
+      18
     );
   }
 
   public static fromJSON(obj: any): Event {
-    return new Event(obj.type, obj.tokenType, obj.name, obj.image, obj.amount, obj.decimals, obj.toAddress, obj.verified, obj.collection_url);
+    return new Event(
+      obj.type,
+      obj.tokenType,
+      obj.name,
+      obj.image,
+      obj.amount,
+      obj.decimals,
+      obj.toAddress,
+      obj.verified,
+      obj.collection_url
+    );
   }
 }
 
@@ -111,14 +121,14 @@ export class Simulation {
     // Name of the address if it has been verified.
     //
     // This will only be used for Non-ApprovalForAll requests.
-    public verifiedAddressName?: string,
-  ) { }
+    public verifiedAddressName?: string
+  ) {}
 
   public static fromJSON(obj: any): Simulation {
     return new Simulation(
       obj.date,
       obj.events.flatMap((event: any) => Event.fromJSON(event)),
-      obj.verifiedAddressName,
+      obj.verifiedAddressName
     );
   }
 }
