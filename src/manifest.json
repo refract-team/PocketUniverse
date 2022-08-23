@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Pocket Universe BETA",
+  "name": "Pocket Universe",
   "description": "A transaction checker that helps you avoid crypto scams.",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
