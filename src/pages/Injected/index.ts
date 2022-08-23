@@ -92,6 +92,7 @@ const pocketUniverseProxyHandler = {
           chainId: await target.request({ method: 'eth_chainId' }),
           domain: params['domain'],
           message: params['message'],
+          primaryType: params['primaryType'],
         });
       } else {
         throw new Error('Show never reach here');

@@ -82,7 +82,7 @@ export class Event {
      * The collection this NFT is from.
      */
     public collection_url?: string
-  ) { }
+  ) {}
 
   public static eventForEth(type: EventType, value: string): Event {
     return new Event(
@@ -125,7 +125,7 @@ export class Simulation {
 
     // Whether we should warn for an offer.
     public shouldWarn?: boolean
-  ) { }
+  ) {}
 
   public static fromJSON(obj: any): Simulation {
     return new Simulation(
