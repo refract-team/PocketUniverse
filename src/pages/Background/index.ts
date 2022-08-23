@@ -101,7 +101,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
           {
             url: 'popup.html',
             type: 'popup',
-            width: 360,
+            width: 420,
             height: 620,
           },
           (createdWindow) => {
