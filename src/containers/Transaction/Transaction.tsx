@@ -95,8 +95,8 @@ const EventComponent = ({ event }: { event: Event }) => {
       return (
         <div
           className={`${event.type === EventType.TransferIn
-              ? 'text-green-500'
-              : 'text-red-500'
+            ? 'text-green-500'
+            : 'text-red-500'
             } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
@@ -364,10 +364,13 @@ const StoredSimulationComponent = ({
       <div className="flex flex-col grow justify-center items-center w-11/12">
         <img className="w-48" src="failed.png" alt="failed" />
         <div className="text-gray-300 text-center text-base p-2">
+
+          <div className="text-lg text-orange-400 p-4">
+            Please make sure you trust this website before continuing.
+          </div>
           <div>
-            We could not process this message
-            {storedSimulation.error &&
-              ` with error ${JSON.stringify(storedSimulation.error, null, 2)}.`}
+            We could not decode the message.
+            Let us know in Discord if you would like us to support this website/protocol.
           </div>
         </div>
       </div>
