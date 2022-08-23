@@ -104,9 +104,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        state,
-      }
+          ...x,
+          state,
+        }
       : x
   );
 
@@ -121,10 +121,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        error,
-        state: StoredSimulationState.Error,
-      }
+          ...x,
+          error,
+          state: StoredSimulationState.Error,
+        }
       : x
   );
 
