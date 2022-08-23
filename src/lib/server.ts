@@ -85,8 +85,12 @@ export const fetchSignature = async (args: {
       };
     }
 
-    const { error } = await result.json();
-    return { type: ResponseType.Error, error };
+    try {
+      let { error } = await result.json();
+      return { type: ResponseType.Error, error };
+    } catch (e) {
+      return { type: ResponseType.Error };
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log('ERROR: ', e);
