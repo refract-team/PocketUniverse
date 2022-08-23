@@ -23,6 +23,7 @@
     "react-hot-loader": "^4.13.0",
     "react-icons": "^4.4.0",
     "react-spinners": "^0.13.3",
+    "react-tooltip": "^4.2.21",
     "use-chrome-storage": "^1.0.8",
     "uuid": "^8.3.2"
   },

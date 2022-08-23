@@ -3,8 +3,11 @@ import { utils, BigNumber } from 'ethers';
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { MdVerified } from 'react-icons/md';
+import { AiFillCopy } from 'react-icons/ai'
 import { BeatLoader } from 'react-spinners';
+import { useState } from 'react';
 import { useChromeStorageSync } from 'use-chrome-storage';
+import ReactTooltip from 'react-tooltip';
 
 import logger from '../../lib/logger';
 import { Simulation, Event, EventType, TokenType } from '../../lib/models';
@@ -226,24 +229,6 @@ const PotentialWarnings = ({
       );
     }
 
-    if (simulation.verifiedAddressName) {
-      return (
-        <>
-          <div>
-            <div className="flex flex-col text-base text-gray-400 gap-2 justify-center items-center">
-              You are interacting with
-              <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
-                {simulation.verifiedAddressName}
-                <div className="my-auto pl-1 text-blue-300">
-                  <MdVerified />
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      );
-    }
-
     return NoApprovalForAll;
   } else {
     const PotentialChangesMessage = (
@@ -348,6 +333,9 @@ const StoredSimulationComponent = ({
 }: {
   storedSimulation: StoredSimulation;
 }) => {
+  const COPY_TEXT = "Copy to clipboard";
+  const COPIED_TEXT = "Copied!";
+  const [copyText, setCopyText] = useState(COPY_TEXT);
   if (storedSimulation.state === StoredSimulationState.Simulating) {
     return (
       <div className="flex flex-col grow justify-center items-center w-full">
@@ -427,16 +415,54 @@ const StoredSimulationComponent = ({
 
   if (storedSimulation.state === StoredSimulationState.Success) {
     return (
-      <div className="flex flex-col grow items-center justify-center w-full">
-        <PotentialWarnings
-          simulation={simulation}
-          type={storedSimulation.type}
-        />
+      <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+        <div className="flex flex-col items-center justify-center w-full text-base text-gray-400 pb-4">
+          {
+            simulation.verifiedAddressName ? (
+              <div className="flex flex-row text-lg justify-center text-gray-100 text-center my-auto p-1">
+                {simulation.verifiedAddressName}
+                <div className="my-auto pl-1 text-blue-300">
+                  <MdVerified />
+                </div>
+              </div>
+            ) : (
+              <div className="my-auto text-gray-400 p-1">
+                Interacting with
+              </div>
+            )
+          }
+          <button data-tip='' data-for='clipboard' className="text-sm flex flex-row border border-gray-600 rounded-lg text-gray-100 p-1 hover:bg-gray-700" onClick={
+            () => {
+              navigator.clipboard.writeText(simulation.toAddress || "");
+              setCopyText(COPIED_TEXT);
 
-        <div className="m-2 border-y border-gray-600 w-full w-11/12">
-          <SimulationComponent simulation={simulation} />
+              // Revert after 2 second.
+              setTimeout(() => {
+                setCopyText(COPY_TEXT);
+              }, 2000);
+            }
+          }>
+            <ReactTooltip id='clipboard' effect="solid" place="bottom" getContent={() => copyText} />
+            <div className="truncate w-24">
+              {simulation.toAddress}
+            </div>
+            <div className="my-auto pl-0.5">
+              <AiFillCopy />
+            </div>
+          </button>
         </div>
-      </div>
+
+        <div className="flex flex-col grow items-center justify-center w-full">
+          <PotentialWarnings
+            simulation={simulation}
+            type={storedSimulation.type}
+          />
+
+          <div className="m-2 border-y border-gray-600 w-full w-11/12">
+            <SimulationComponent simulation={simulation} />
+          </div>
+        </div>
+      </div >
     );
   }
 
