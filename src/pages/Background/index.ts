@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/browser';
 
 import logger from '../../lib/logger';
-import type { SimulateRequestArgs } from '../../lib/simulate_request_reply';
-import { SIMULATE_REQUEST_COMMAND } from '../../lib/simulate_request_reply';
+import type { RequestArgs } from '../../lib/request';
+import { REQUEST_COMMAND } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   fetchSimulationAndUpdate,
@@ -140,10 +140,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 chrome.runtime.onMessage.addListener((request) => {
   Sentry.wrap(() => {
-    if (request.command === SIMULATE_REQUEST_COMMAND) {
-      log.info(request, 'Simulate request command');
+    if (request.command === REQUEST_COMMAND) {
+      log.info(request, 'Request command');
 
-      const args: SimulateRequestArgs = request.data;
+      const args: RequestArgs = request.data;
       clearOldSimulations().then(() => fetchSimulationAndUpdate(args));
     } else {
       log.warn('Unknown command', request);

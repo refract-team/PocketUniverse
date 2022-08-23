@@ -1,11 +1,11 @@
 import logger from '../../lib/logger';
-import type { SimulateRequestArgs } from '../../lib/simulate_request_reply';
+import type { RequestArgs } from '../../lib/request';
 import {
-  listenToSimulateRequest,
-  dispatchSimulateResponse,
-  SIMULATE_REQUEST_COMMAND,
-  SimulateResponse,
-} from '../../lib/simulate_request_reply';
+  listenToRequest,
+  dispatchResponse,
+  REQUEST_COMMAND,
+  Response,
+} from '../../lib/request';
 import { dispatchSettings } from '../../lib/settings';
 import type { StoredSimulation } from '../../lib/storage';
 import { removeSimulation, StoredSimulationState } from '../../lib/storage';
@@ -35,9 +35,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
-listenToSimulateRequest((simulateRequest: SimulateRequestArgs) => {
-  log.info({ simulateRequest }, 'SimulateRequest');
-  ids.push(simulateRequest.id);
+listenToRequest((request: RequestArgs) => {
+  log.info({ request }, 'Request');
+  ids.push(request.id);
 
   // Page has sent an event, start listening to storage changes.
   // This ensures we don't listen to storage changes on every singel webpage.
@@ -54,16 +54,16 @@ listenToSimulateRequest((simulateRequest: SimulateRequestArgs) => {
         // Either dispatch the corresponding event, or push the item to new simulations.
         if (simulation.state === StoredSimulationState.Confirmed) {
           log.debug('Dispatch confirmed', simulation.id);
-          dispatchSimulateResponse({
+          dispatchResponse({
             id: simulation.id,
-            type: SimulateResponse.Continue,
+            type: Response.Continue,
           });
           maybeRemoveId(simulation.id);
         } else if (simulation.state === StoredSimulationState.Rejected) {
           log.debug('Dispatch rejected', simulation.id);
-          dispatchSimulateResponse({
+          dispatchResponse({
             id: simulation.id,
-            type: SimulateResponse.Reject,
+            type: Response.Reject,
           });
           maybeRemoveId(simulation.id);
         }
@@ -72,7 +72,7 @@ listenToSimulateRequest((simulateRequest: SimulateRequestArgs) => {
   });
 
   chrome.runtime.sendMessage({
-    command: SIMULATE_REQUEST_COMMAND,
-    data: simulateRequest,
+    command: REQUEST_COMMAND,
+    data: request,
   });
 });
