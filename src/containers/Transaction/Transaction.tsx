@@ -94,10 +94,11 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${event.type === EventType.TransferIn
-            ? 'text-green-500'
-            : 'text-red-500'
-            } ml-auto my-auto text-lg`}
+          className={`${
+            event.type === EventType.TransferIn
+              ? 'text-green-500'
+              : 'text-red-500'
+          } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -142,8 +143,9 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
-          }`}
+        className={`flex gap-x-2 ${
+          event.collection_url ? 'hover:underline' : ''
+        }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -252,6 +254,10 @@ const PotentialWarnings = ({
       </div>
     );
 
+    if (events.length === 0) {
+      return PotentialChangesMessage;
+    }
+
     return (
       <div>
         {simulation.shouldWarn && (
@@ -329,7 +335,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-            state === StoredSimulationState.Revert
+          state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -364,13 +370,12 @@ const StoredSimulationComponent = ({
       <div className="flex flex-col grow justify-center items-center w-11/12">
         <img className="w-48" src="failed.png" alt="failed" />
         <div className="text-gray-300 text-center text-base p-2">
-
           <div className="text-lg text-orange-400 p-4">
             Please make sure you trust this website before continuing.
           </div>
           <div>
-            We could not decode the message.
-            Let us know in Discord if you would like us to support this website/protocol.
+            We could not decode the message. Let us know in Discord if you would
+            like us to support this website/protocol.
           </div>
         </div>
       </div>

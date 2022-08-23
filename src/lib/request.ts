@@ -60,6 +60,11 @@ export type SignatureRequestArgs = {
    * Message to be signed for this signature request.
    */
   message: any;
+
+  /**
+   * Primary type for this message.
+   */
+  primaryType: string;
 };
 
 export type RequestArgs = SimulateRequestArgs | SignatureRequestArgs;
@@ -101,6 +106,7 @@ export class RequestManager {
           chainId: string;
           domain: any;
           message: any;
+          primaryType: string;
         }
   ): Promise<Response> {
     return new Promise((resolve) => {
@@ -120,6 +126,7 @@ export class RequestManager {
           chainId,
           domain: args.domain,
           message: args.message,
+          primaryType: args.primaryType,
         };
       }
       this.mappings.set(id, resolve);
