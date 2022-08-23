@@ -21,7 +21,7 @@ const Popup = () => {
   }, []);
 
   return (
-    <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[300px] min-h-screen items-center">
+    <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[400px] min-h-screen items-center">
       <div className="flex flex-row p-4 text-center w-full">
         <button
           onClick={() => setSettingsOpen(false)}

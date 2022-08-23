@@ -94,11 +94,10 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${
-            event.type === EventType.TransferIn
-              ? 'text-green-500'
-              : 'text-red-500'
-          } ml-auto my-auto text-lg`}
+          className={`${event.type === EventType.TransferIn
+            ? 'text-green-500'
+            : 'text-red-500'
+            } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -143,9 +142,8 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${
-          event.collection_url ? 'hover:underline' : ''
-        }`}
+        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
+          }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -184,7 +182,7 @@ const PotentialWarnings = ({
 
   if (type === StoredType.Simulation) {
     const NoApprovalForAll = (
-      <div className="text-base text-gray-400 pb-4">
+      <div className="text-base text-gray-400 pb-4 px-2">
         Changes being made in this transaction
       </div>
     );
@@ -249,7 +247,7 @@ const PotentialWarnings = ({
     return NoApprovalForAll;
   } else {
     const PotentialChangesMessage = (
-      <div className="text-base text-gray-400 pb-4">
+      <div className="text-base text-gray-400 pb-4 px-2">
         Changes that can be made by signing this message
       </div>
     );
@@ -335,7 +333,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-          state === StoredSimulationState.Revert
+            state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
