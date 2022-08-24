@@ -19,30 +19,33 @@ Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
 
-/// Inject the PocketUniverse script.
-/// We need to do it this way so it can load synchronously. This is a workaround for manifestv3.
-/// https://bugs.chromium.org/p/chromium/issues/detail?id=1207006
-(browser.scripting as any)
-  .unregisterContentScripts()
-  .then(() => {
-    const scripts = [
-      {
-        id: 'PocketUniverse Script',
-        matches: ['file://*/*', 'http://*/*', 'https://*/*'],
-        js: ['injectedScript.bundle.js'],
-        allFrames: true,
-        runAt: 'document_start',
-        world: 'MAIN',
-      },
-    ];
-    // TODO(jqphu): the typing for browser hasn't been updated.
-    (browser.scripting as any).registerContentScripts(scripts, () => {
-      log.debug({ msg: 'Registered content script' });
+// Firefox we use manifest v2 where scripting won't be defined
+if (browser.scripting) {
+  /// Inject the PocketUniverse script.
+  /// We need to do it this way so it can load synchronously. This is a workaround for manifestv3.
+  /// https://bugs.chromium.org/p/chromium/issues/detail?id=1207006
+  (browser.scripting as any)
+    .unregisterContentScripts()
+    .then(() => {
+      const scripts = [
+        {
+          id: 'PocketUniverse Script',
+          matches: ['file://*/*', 'http://*/*', 'https://*/*'],
+          js: ['injectedScript.bundle.js'],
+          allFrames: true,
+          runAt: 'document_start',
+          world: 'MAIN',
+        },
+      ];
+      // TODO(jqphu): the typing for browser hasn't been updated.
+      (browser.scripting as any).registerContentScripts(scripts, () => {
+        log.debug({ msg: 'Registered content script' });
+      });
+    })
+    .catch((err: any) => {
+      log.warn({ msg: 'Error', error: err });
     });
-  })
-  .catch((err: any) => {
-    log.warn({ msg: 'Error', error: err });
-  });
+}
 
 let currentPopup: undefined | number;
 
@@ -52,9 +55,6 @@ browser.windows.onRemoved.addListener(
     if (currentPopup && currentPopup === windowId) {
       currentPopup = undefined;
     }
-  },
-  {
-    windowTypes: ['popup'],
   }
 );
 
