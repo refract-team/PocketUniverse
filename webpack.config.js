@@ -6,7 +6,7 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const WextManifestWebpackPlugin = require("wext-manifest-webpack-plugin");
+const WextManifestWebpackPlugin = require('wext-manifest-webpack-plugin');
 
 const targetBrowser = process.env.TARGET_BROWSER;
 const destPath = path.join(__dirname, 'build');
@@ -51,7 +51,7 @@ var options = {
       'pages',
       'Injected',
       'index.ts'
-    )
+    ),
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background', 'contentScript'],

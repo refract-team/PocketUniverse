@@ -51,47 +51,31 @@
   ],
 
   "__firefox__web_accessible_resources": [
-        "icon-128.png",
-        "icon-32.png",
-        "metamask/step1_image1.png",
-        "metamask/step1_image2.png",
-        "metamask/step2_image1.png",
-        "metamask/step2_image2.png",
-        "metamask/step3",
-        "waves_top.png",
-        "waves_bottom.png",
-        "waves.png",
-        "injectedScript.bundle.js"
+    "icon-128.png",
+    "icon-32.png",
+    "metamask/step1_image1.png",
+    "metamask/step1_image2.png",
+    "metamask/step2_image1.png",
+    "metamask/step2_image2.png",
+    "metamask/step3",
+    "waves_top.png",
+    "waves_bottom.png",
+    "waves.png",
+    "injectedScript.bundle.js"
   ],
 
-  "__chrome__host_permissions": [
-    "file://*/*",
-    "http://*/*",
-    "https://*/*"
-  ],
+  "__chrome__host_permissions": ["file://*/*", "http://*/*", "https://*/*"],
 
   "content_scripts": [
     {
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "contentScript.bundle.js"
-      ],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentScript.bundle.js"],
       "all_frames": true,
       "run_at": "document_start"
     }
   ],
 
-  "permissions": [
-    "storage",
-    "scripting"
-  ],
+  "permissions": ["storage", "scripting"],
 
-  "__firefox__permissions": [
-    "<all_urls>",
-    "storage"
-  ]
+  "__firefox__permissions": ["<all_urls>", "storage"]
 }
