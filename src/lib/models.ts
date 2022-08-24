@@ -73,6 +73,9 @@ export class Event {
     // Must use checksum case.
     public toAddress?: string,
 
+    // verified address name.
+    public verifiedAddressName?: string,
+
     /**
      * Whether this NFT is part of a verified collection.
      */
@@ -82,7 +85,7 @@ export class Event {
      * The collection this NFT is from.
      */
     public collection_url?: string
-  ) { }
+  ) {}
 
   public static eventForEth(type: EventType, value: string): Event {
     return new Event(
@@ -91,7 +94,11 @@ export class Event {
       'ETH',
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
       value,
-      18
+      18,
+      undefined,
+      undefined,
+      true,
+      'https://coinmarketcap.com/currencies/ethereum/'
     );
   }
 
@@ -104,6 +111,7 @@ export class Event {
       obj.amount,
       obj.decimals,
       obj.toAddress,
+      obj.verifiedAddressName,
       obj.verified,
       obj.collection_url
     );
@@ -126,7 +134,7 @@ export class Simulation {
 
     // Whether we should warn for an offer.
     public shouldWarn?: boolean
-  ) { }
+  ) {}
 
   public static fromJSON(obj: any): Simulation {
     return new Simulation(
