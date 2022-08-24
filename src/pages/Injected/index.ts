@@ -1,6 +1,7 @@
 import logger from '../../lib/logger';
 import { RequestManager, Response } from '../../lib/request';
 import { settings, listenForSettingsUpdates } from '../../lib/settings';
+import { ethErrors } from 'eth-rpc-errors';
 
 declare global {
   interface Window {
@@ -73,6 +74,15 @@ const pocketUniverseProxyHandler = {
           chainId: await target.request({ method: 'eth_chainId' }),
           transaction: requestArg.params[0],
         });
+
+        if (response === Response.Reject) {
+          log.info('Reject');
+          // Based on EIP-1103
+          // eslint-disable-next-line no-throw-literal
+          throw ethErrors.provider.userRejectedRequest(
+            'PocketUniverse Tx Signature: User denied transaction signature.'
+          );
+        }
       } else if (
         requestArg.method === 'eth_signTypedData_v3' ||
         requestArg.method === 'eth_signTypedData_v4'
@@ -94,6 +104,14 @@ const pocketUniverseProxyHandler = {
           message: params['message'],
           primaryType: params['primaryType'],
         });
+
+        if (response === Response.Reject) {
+          log.info('Reject');
+          // NOTE: Be cautious when changing this name. 1inch behaves strangely when the error message diverges.
+          throw ethErrors.provider.userRejectedRequest(
+            'PocketUniverse Message Signature: User denied message signature.'
+          );
+        }
       } else {
         throw new Error('Show never reach here');
       }
@@ -102,15 +120,6 @@ const pocketUniverseProxyHandler = {
       if (response === Response.Continue || response === Response.Error) {
         log.info(response, 'Continue | Error');
         return originalCall(...args);
-      }
-      if (response === Response.Reject) {
-        log.info('Reject');
-        // Based on EIP-1103
-        // eslint-disable-next-line no-throw-literal
-        throw {
-          code: 4001,
-          message: 'User rejected transaction in PocketUniverse.',
-        };
       }
     };
   },
