@@ -9,6 +9,7 @@ import {
   clearOldSimulations,
   simulationNeedsAction,
 } from '../../lib/storage';
+import browser from 'webextension-polyfill';
 
 const log = logger.child({ component: 'Background' });
 
@@ -21,7 +22,7 @@ Sentry.init({
 /// Inject the PocketUniverse script.
 /// We need to do it this way so it can load synchronously. This is a workaround for manifestv3.
 /// https://bugs.chromium.org/p/chromium/issues/detail?id=1207006
-(chrome.scripting as any)
+(browser.scripting as any)
   .unregisterContentScripts()
   .then(() => {
     const scripts = [
@@ -34,8 +35,8 @@ Sentry.init({
         world: 'MAIN',
       },
     ];
-    // TODO(jqphu): the typing for chrome hasn't been updated.
-    (chrome.scripting as any).registerContentScripts(scripts, () => {
+    // TODO(jqphu): the typing for browser hasn't been updated.
+    (browser.scripting as any).registerContentScripts(scripts, () => {
       log.debug({ msg: 'Registered content script' });
     });
   })
@@ -45,7 +46,7 @@ Sentry.init({
 
 let currentPopup: undefined | number;
 
-chrome.windows.onRemoved.addListener(
+browser.windows.onRemoved.addListener(
   (windowId: number) => {
     log.info(windowId, 'Removing popup');
     if (currentPopup && currentPopup === windowId) {
@@ -57,7 +58,7 @@ chrome.windows.onRemoved.addListener(
   }
 );
 
-chrome.storage.onChanged.addListener((changes, area) => {
+browser.storage.onChanged.addListener((changes, area) => {
   Sentry.wrap(() => {
     if (area === 'sync' && changes.simulations?.newValue) {
       const oldSimulations = changes.simulations.oldValue;
@@ -97,18 +98,17 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
         log.info('Creating popup.');
 
-        chrome.windows.create(
-          {
+        browser.windows
+          .create({
             url: 'popup.html',
             type: 'popup',
             width: 420,
             height: 620,
-          },
-          (createdWindow) => {
+          })
+          .then((createdWindow) => {
             log.info(createdWindow?.id, 'Assigning popup to id');
             currentPopup = createdWindow?.id;
-          }
-        );
+          });
 
         return;
       }
@@ -122,7 +122,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
         const closeId = currentPopup;
         log.info(closeId, 'Trying to remove popup');
         currentPopup = undefined;
-        chrome.windows.remove(closeId);
+        browser.windows.remove(closeId);
 
         return;
       }
@@ -130,7 +130,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
       // Let's send it to the front if it already exists
       if (currentPopup && currentPopup !== -1) {
         log.info('Focusing popup.');
-        chrome.windows.update(currentPopup, {
+        browser.windows.update(currentPopup, {
           focused: true,
         });
       }
@@ -138,7 +138,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   });
 });
 
-chrome.runtime.onMessage.addListener((request) => {
+browser.runtime.onMessage.addListener((request) => {
   Sentry.wrap(() => {
     if (request.command === REQUEST_COMMAND) {
       log.info(request, 'Request command');

@@ -3,6 +3,7 @@ import logger from './logger';
 import { fetchSimulate, fetchSignature } from './server';
 import type { RequestArgs } from './request';
 import { Simulation, Response, ResponseType } from '../lib/models';
+import browser from 'webextension-polyfill';
 
 const log = logger.child({ component: 'Storage' });
 export enum StoredSimulationState {
@@ -52,17 +53,17 @@ export interface StoredSimulation {
 export const STORAGE_KEY = 'simulations';
 
 export const addSimulation = async (simulation: StoredSimulation) => {
-  const { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ old: simulations, new: simulation }, 'Adding simulation');
 
   // Add new simulation to the front.
   simulations.push({ ...simulation });
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 const completeSimulation = async (id: string, simulation: Simulation) => {
-  const { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ old: simulations, new: simulation }, 'Completing simulation');
 
   simulations.forEach((storedSimulation: StoredSimulation) => {
@@ -73,11 +74,11 @@ const completeSimulation = async (id: string, simulation: Simulation) => {
     }
   });
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 const revertSimulation = async (id: string, error?: string) => {
-  const { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ old: simulations, error }, 'Simulation reverted');
 
   simulations.forEach((storedSimulation: StoredSimulation) => {
@@ -88,25 +89,25 @@ const revertSimulation = async (id: string, error?: string) => {
     }
   });
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 export const removeSimulation = async (id: string) => {
-  let { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ old: simulations, id }, 'Removing simulation');
 
   simulations = simulations.filter((storedSimulation: StoredSimulation) => {
     return storedSimulation.id !== id;
   });
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 export const updateSimulationState = async (
   id: string,
   state: StoredSimulationState
 ) => {
-  let { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ id, state }, 'Update simulation');
 
   simulations = simulations.map((x: StoredSimulation) =>
@@ -118,12 +119,12 @@ export const updateSimulationState = async (
       : x
   );
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 // TODO(jqphu): dedup with above...
 const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
-  let { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info({ id, error }, 'Update simulation with error msg');
 
   simulations = simulations.map((x: StoredSimulation) =>
@@ -136,7 +137,7 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
       : x
   );
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
@@ -186,7 +187,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
 };
 
 export const clearOldSimulations = async () => {
-  let { simulations = [] } = await chrome.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
   log.info(simulations, 'Clear old simulations');
 
   // Remove confirmed/rejected simulations.
@@ -196,7 +197,7 @@ export const clearOldSimulations = async () => {
       x.state !== StoredSimulationState.Confirmed
   );
 
-  return chrome.storage.sync.set({ simulations });
+  return browser.storage.sync.set({ simulations });
 };
 
 export const SETTINGS_KEY = 'settings';
@@ -210,9 +211,9 @@ export interface Settings {
 
 const updateIcon = (settings: Settings) => {
   if (settings.disable) {
-    chrome.action.setIcon({ path: 'icon-32-gray.png' });
+    browser.action.setIcon({ path: 'icon-32-gray.png' });
   } else {
-    chrome.action.setIcon({ path: 'icon-32.png' });
+    browser.action.setIcon({ path: 'icon-32.png' });
   }
 };
 
@@ -221,7 +222,7 @@ const updateIcon = (settings: Settings) => {
  */
 export const setSettings = async (args: Settings) => {
   // Default is enabled.
-  let { settings = { disable: false } } = await chrome.storage.sync.get(
+  let { settings = { disable: false } } = await browser.storage.sync.get(
     SETTINGS_KEY
   );
   log.info({ settings: settings, msg: 'Updating settings' });
@@ -230,14 +231,14 @@ export const setSettings = async (args: Settings) => {
 
   updateIcon(settings);
 
-  return chrome.storage.sync.set({ settings });
+  return browser.storage.sync.set({ settings });
 };
 
 /**
  * Get the settings.
  */
 export const getSettings = async (): Promise<Settings> => {
-  const { settings = { disable: false } } = await chrome.storage.sync.get(
+  const { settings = { disable: false } } = await browser.storage.sync.get(
     SETTINGS_KEY
   );
   log.info({ settings: settings, msg: 'Getting settings.' });
@@ -248,9 +249,9 @@ export const getSettings = async (): Promise<Settings> => {
 /**
  * Get the initial set of settings for the icon.
  *
- * This should only run in settings and not in the content scripts as chrome.action is not available there.
+ * This should only run in settings and not in the content scripts as browser.action is not available there.
  */
-if (chrome.action) {
+if (browser.action) {
   getSettings().then(updateIcon);
 }
 

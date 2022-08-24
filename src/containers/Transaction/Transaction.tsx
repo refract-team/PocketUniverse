@@ -3,11 +3,11 @@ import { utils, BigNumber } from 'ethers';
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { MdVerified } from 'react-icons/md';
-import { AiFillCopy } from 'react-icons/ai'
+import { AiFillCopy } from 'react-icons/ai';
 import { BeatLoader } from 'react-spinners';
-import { useState } from 'react';
-import { useChromeStorageSync } from 'use-chrome-storage';
+import { useState, useEffect } from 'react';
 import ReactTooltip from 'react-tooltip';
+import browser from 'webextension-polyfill';
 
 import logger from '../../lib/logger';
 import { Simulation, Event, EventType, TokenType } from '../../lib/models';
@@ -19,11 +19,6 @@ import {
   StoredSimulationState,
   updateSimulationState,
 } from '../../lib/storage';
-import verifiedContracts from '../../lib/verified_contracts.json';
-
-// List of verified contracts.
-// Map from contract to name.
-const VERIFIED_CONTRACTS = new Map(Object.entries(verifiedContracts));
 
 const log = logger.child({ component: 'Popup' });
 
@@ -97,10 +92,11 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${event.type === EventType.TransferIn
-            ? 'text-green-500'
-            : 'text-red-500'
-            } ml-auto my-auto text-lg`}
+          className={`${
+            event.type === EventType.TransferIn
+              ? 'text-green-500'
+              : 'text-red-500'
+          } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -109,8 +105,11 @@ const EventComponent = ({ event }: { event: Event }) => {
       );
     }
     if (event.type === EventType.Approval) {
+      const color = event.verifiedAddressName
+        ? 'text-gray-100'
+        : 'text-red-500';
       return (
-        <div className="text-red-500 text-base text-right ml-auto my-auto">
+        <div className={`${color} text-base text-right ml-auto my-auto`}>
           Permission to withdraw{' '}
           {event.tokenType !== TokenType.ERC721 &&
             `${formattedAmount} ${event.name}`}
@@ -118,9 +117,9 @@ const EventComponent = ({ event }: { event: Event }) => {
       );
     }
     if (event.type === EventType.ApprovalForAll) {
-      const isWhitelisted =
-        event.toAddress && VERIFIED_CONTRACTS.has(event.toAddress);
-      const color = isWhitelisted ? 'text-orange-400' : 'text-red-500';
+      const color = event.verifiedAddressName
+        ? 'text-gray-100'
+        : 'text-red-500';
 
       return (
         <div className={`${color} ml-auto my-auto text-base text-right`}>
@@ -145,8 +144,9 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
-          }`}
+        className={`flex gap-x-2 ${
+          event.collection_url ? 'hover:underline' : ''
+        }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -158,10 +158,10 @@ const EventComponent = ({ event }: { event: Event }) => {
           width="48"
           height="48"
         />
-        <div className="text-base text-gray-100 m-auto">
+        <div className="text-base text-gray-100 my-auto">
           {event.name || 'Unknown Name'}
         </div>
-        <div className="m-auto">
+        <div className="my-auto">
           {event.verified && (
             <div className="my-auto text-lg text-blue-300">
               <MdVerified />
@@ -177,11 +177,20 @@ const EventComponent = ({ event }: { event: Event }) => {
 const PotentialWarnings = ({
   simulation,
   type,
+  verified,
 }: {
   simulation: Simulation;
   type: StoredType;
+  verified: boolean;
 }) => {
   const events = simulation.events;
+
+  // Should be protected against this, no events should show no change in assets.
+  if (events.length === 0) {
+    return null;
+  }
+
+  const event = events[0];
 
   if (type === StoredType.Simulation) {
     const NoApprovalForAll = (
@@ -190,30 +199,8 @@ const PotentialWarnings = ({
       </div>
     );
 
-    // Should be protected against this, no events should show no change in assets.
-    if (events.length === 0) {
-      return null;
-    }
-
-    const event = events[0];
-
-    if (event.type === EventType.ApprovalForAll) {
-      if (event.toAddress && VERIFIED_CONTRACTS.has(event.toAddress)) {
-        // Set ApprovalForAll but keep going.
-        return (
-          <div>
-            <div className="flex flex-row text-base justify-center text-gray-100 text-center pb-2">
-              <div>
-                Giving approval to {VERIFIED_CONTRACTS.get(event.toAddress)}
-              </div>
-              <div className="my-auto pl-1 text-lg text-blue-300">
-                <MdVerified />
-              </div>
-            </div>
-          </div>
-        );
-      }
-
+    // Show the warning for non-verified addresses.
+    if (event.type === EventType.ApprovalForAll && !verified) {
       return (
         <div className="flex flex-col justify-center">
           <div className="text-center text-lg font-bold text-red-500">
@@ -237,10 +224,6 @@ const PotentialWarnings = ({
       </div>
     );
 
-    if (events.length === 0) {
-      return PotentialChangesMessage;
-    }
-
     return (
       <div>
         {simulation.shouldWarn && (
@@ -255,7 +238,6 @@ const PotentialWarnings = ({
             </div>
           </div>
         )}
-
         <div>{PotentialChangesMessage}</div>
       </div>
     );
@@ -318,7 +300,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-            state === StoredSimulationState.Revert
+          state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -333,8 +315,8 @@ const StoredSimulationComponent = ({
 }: {
   storedSimulation: StoredSimulation;
 }) => {
-  const COPY_TEXT = "Copy to clipboard";
-  const COPIED_TEXT = "Copied!";
+  const COPY_TEXT = 'Copy to clipboard';
+  const COPIED_TEXT = 'Copied!';
   const [copyText, setCopyText] = useState(COPY_TEXT);
   if (storedSimulation.state === StoredSimulationState.Simulating) {
     return (
@@ -413,56 +395,88 @@ const StoredSimulationComponent = ({
   // Re-hydrate the functions.
   const simulation = Simulation.fromJSON(storedSimulation.simulation);
 
+  let toAddress = simulation.toAddress;
+  let verifiedAddressName = simulation.verifiedAddressName;
+  let interactionText = 'Interacting with';
+
+  for (const event of simulation.events) {
+    // Approval + ApprovalForAll we don't care about the interacting contract, rather we only care about the toAddress.
+    //
+    // There should only be 1 of these events.
+    if (
+      event.type === EventType.Approval ||
+      event.type === EventType.ApprovalForAll
+    ) {
+      interactionText = 'Giving approval to';
+      toAddress = event.toAddress;
+      verifiedAddressName = event.verifiedAddressName;
+    }
+  }
+
+  // toAddress must always be set for non signature simulations.
+  const interactingAddress = () => {
+    // Don't show anything for signatures for now.
+    if (storedSimulation.type === StoredType.Signature) {
+      return null;
+    }
+
+    return (
+      <div className="flex flex-col items-center justify-center w-full text-base text-gray-400 pb-4">
+        <div className="my-auto text-gray-400">{interactionText}</div>
+        {verifiedAddressName && (
+          <div className="flex flex-row text-lg justify-center text-gray-100 text-center my-auto">
+            <div className="p-1">{verifiedAddressName}</div>
+            <div className="my-auto text-blue-300">
+              <MdVerified />
+            </div>
+          </div>
+        )}
+        <button
+          data-tip=""
+          data-for="clipboard"
+          className="text-sm flex flex-row border border-gray-600 rounded-lg text-gray-100 p-0.5 px-1 hover:bg-gray-700"
+          onClick={() => {
+            navigator.clipboard.writeText(toAddress || '');
+            setCopyText(COPIED_TEXT);
+
+            // Revert after 2 second.
+            setTimeout(() => {
+              setCopyText(COPY_TEXT);
+            }, 2000);
+          }}
+        >
+          <ReactTooltip
+            id="clipboard"
+            effect="solid"
+            place="bottom"
+            getContent={() => copyText}
+          />
+          <div className="truncate w-24">{toAddress}</div>
+          <div className="my-auto pl-0.5">
+            <AiFillCopy />
+          </div>
+        </button>
+      </div>
+    );
+  };
+
+  // TODO: handle the TO address separately.
   if (storedSimulation.state === StoredSimulationState.Success) {
     return (
       <div className="flex flex-col grow items-center justify-center pt-4 w-full">
-        <div className="flex flex-col items-center justify-center w-full text-base text-gray-400 pb-4">
-          {
-            simulation.verifiedAddressName ? (
-              <div className="flex flex-row text-lg justify-center text-gray-100 text-center my-auto p-1">
-                {simulation.verifiedAddressName}
-                <div className="my-auto pl-1 text-blue-300">
-                  <MdVerified />
-                </div>
-              </div>
-            ) : (
-              <div className="my-auto text-gray-400 p-1">
-                Interacting with
-              </div>
-            )
-          }
-          <button data-tip='' data-for='clipboard' className="text-sm flex flex-row border border-gray-600 rounded-lg text-gray-100 p-1 hover:bg-gray-700" onClick={
-            () => {
-              navigator.clipboard.writeText(simulation.toAddress || "");
-              setCopyText(COPIED_TEXT);
-
-              // Revert after 2 second.
-              setTimeout(() => {
-                setCopyText(COPY_TEXT);
-              }, 2000);
-            }
-          }>
-            <ReactTooltip id='clipboard' effect="solid" place="bottom" getContent={() => copyText} />
-            <div className="truncate w-24">
-              {simulation.toAddress}
-            </div>
-            <div className="my-auto pl-0.5">
-              <AiFillCopy />
-            </div>
-          </button>
-        </div>
-
+        {interactingAddress()}
         <div className="flex flex-col grow items-center justify-center w-full">
           <PotentialWarnings
             simulation={simulation}
             type={storedSimulation.type}
+            verified={verifiedAddressName !== undefined}
           />
 
           <div className="m-2 border-y border-gray-600 w-full w-11/12">
             <SimulationComponent simulation={simulation} />
           </div>
         </div>
-      </div >
+      </div>
     );
   }
 
@@ -472,7 +486,24 @@ const StoredSimulationComponent = ({
 const TransactionComponent = () => {
   // TODO(jqphu): handle errors?
   // Storage mapping to StoredSimulation[]
-  const [storedSimulations] = useChromeStorageSync(STORAGE_KEY, []);
+  const [storedSimulations, setStoredSimulations] = useState<
+    StoredSimulation[]
+  >([]);
+
+  console.log('STORED SIMS', storedSimulations);
+
+  useEffect(() => {
+    browser.storage.sync.get(STORAGE_KEY).then(({ simulations }) => {
+      setStoredSimulations(simulations);
+    });
+
+    browser.storage.onChanged.addListener((changes, area) => {
+      if (area === 'sync' && changes[STORAGE_KEY]?.newValue) {
+        const newSimulations = changes[STORAGE_KEY]?.newValue;
+        setStoredSimulations(newSimulations);
+      }
+    });
+  }, []);
 
   const filteredSimulations = storedSimulations?.filter(
     (simulation: StoredSimulation) =>
@@ -504,7 +535,7 @@ const TransactionComponent = () => {
     <div className="flex flex-col items-center justify-between w-full">
       {filteredSimulations.length !== 1 && (
         <div className="p-2 text-base flex items-center justify-center text-gray-400 border-t border-gray-600 w-full">
-          {filteredSimulations.length} queued
+          {filteredSimulations.length - 1} queued
         </div>
       )}
       <img

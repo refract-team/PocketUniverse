@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import Transaction from '../../containers/Transaction/Transaction';
 import Settings from '../../containers/Settings/Settings';
+import browser from 'webextension-polyfill';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
@@ -12,10 +13,10 @@ const Popup = () => {
 
   useEffect(() => {
     document.title = 'Pocket Universe';
-    chrome.storage.sync.get('first_open', (result) => {
+    browser.storage.sync.get('first_open').then((result) => {
       if (Object.keys(result).length === 0) {
         mixpanel.track('First Open');
-        chrome.storage.sync.set({ first_open: true });
+        browser.storage.sync.set({ first_open: true });
       }
     });
   }, []);
