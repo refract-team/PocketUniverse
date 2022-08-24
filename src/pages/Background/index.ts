@@ -49,14 +49,12 @@ if (browser.scripting) {
 
 let currentPopup: undefined | number;
 
-browser.windows.onRemoved.addListener(
-  (windowId: number) => {
-    log.info(windowId, 'Removing popup');
-    if (currentPopup && currentPopup === windowId) {
-      currentPopup = undefined;
-    }
+browser.windows.onRemoved.addListener((windowId: number) => {
+  log.info(windowId, 'Removing popup');
+  if (currentPopup && currentPopup === windowId) {
+    currentPopup = undefined;
   }
-);
+});
 
 browser.storage.onChanged.addListener((changes, area) => {
   Sentry.wrap(() => {
