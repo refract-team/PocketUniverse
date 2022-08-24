@@ -6,6 +6,11 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const WextManifestWebpackPlugin = require("wext-manifest-webpack-plugin");
+
+const targetBrowser = process.env.TARGET_BROWSER;
+const destPath = path.join(__dirname, 'build');
+const buildPath = path.join(destPath, targetBrowser);
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -36,6 +41,7 @@ if (fileSystem.existsSync(secretsPath)) {
 var options = {
   mode: process.env.NODE_ENV || 'development',
   entry: {
+    manifest: './src/manifest.json',
     popup: path.join(__dirname, 'src', 'pages', 'Popup', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.ts'),
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
@@ -45,14 +51,14 @@ var options = {
       'pages',
       'Injected',
       'index.ts'
-    ),
+    )
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background', 'contentScript'],
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'build'),
+    path: buildPath,
     clean: true,
     publicPath: ASSET_PATH,
   },
@@ -101,6 +107,12 @@ var options = {
         ],
         exclude: /node_modules/,
       },
+      {
+        type: 'javascript/auto', // prevent webpack handling json with its own loaders,
+        test: /manifest\.json$/,
+        use: 'wext-manifest-loader',
+        exclude: /node_modules/,
+      },
     ],
   },
   resolve: {
@@ -110,6 +122,7 @@ var options = {
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
   },
   plugins: [
+    new WextManifestWebpackPlugin(),
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
     // expose and write the allowed env vars on the compiled bundle
@@ -117,27 +130,8 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/manifest.json',
-          to: path.join(__dirname, 'build'),
-          force: true,
-          transform: function (content, path) {
-            // generates the manifest file using the package.json informations
-            return Buffer.from(
-              JSON.stringify({
-                description: process.env.npm_package_description,
-                version: process.env.npm_package_version,
-                ...JSON.parse(content.toString()),
-              })
-            );
-          },
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
           from: 'src/assets/img/waves.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -146,7 +140,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/robot.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -155,7 +149,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/rocket.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -164,7 +158,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/glass.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -173,7 +167,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/failed.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -182,7 +176,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/waves_bottom.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -191,7 +185,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/waves_top.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -200,7 +194,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/unknown.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -209,7 +203,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/icon-128.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -218,7 +212,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/icon-32.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],
@@ -227,7 +221,7 @@ var options = {
       patterns: [
         {
           from: 'src/assets/img/icon-32-gray.png',
-          to: path.join(__dirname, 'build'),
+          to: buildPath,
           force: true,
         },
       ],

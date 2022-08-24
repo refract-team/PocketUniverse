@@ -3,8 +3,10 @@
   "version": "0.0.13",
   "description": "A transaction checker that helps you avoid crypto scams.",
   "scripts": {
-    "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
+    "build:chrome": "TARGET_BROWSER=chrome node utils/build.js ",
+    "build:firefox": "TARGET_BROWSER=firefox node utils/build.js",
+    "start:firefox": "TARGET_BROWSER=firefox node utils/webserver.js",
+    "start:chrome": "TARGET_BROWSER=chrome node utils/webserver.js",
     "lint": "eslint src --fix && yarn format",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
@@ -36,7 +38,7 @@
     "@types/chrome": "^0.0.193",
     "@types/mixpanel-browser": "^2.38.0",
     "@types/pino": "^7.0.5",
-    "@types/react": "^17.0.39",
+    "@types/react": "~17.0.47",
     "@types/react-dom": "^17.0.11",
     "@types/uuid": "^8.3.4",
     "autoprefixer": "^10.4.7",
@@ -70,7 +72,9 @@
     "typescript": "^4.5.5",
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.7.4"
+    "webpack-dev-server": "^4.7.4",
+    "wext-manifest-loader": "^2.4.1",
+    "wext-manifest-webpack-plugin": "^1.2.1"
   },
   "resolutions": {
     "@types/react": "~17.0.47"

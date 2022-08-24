@@ -9,6 +9,10 @@ var WebpackDevServer = require('webpack-dev-server'),
   env = require('./env'),
   path = require('path');
 
+const targetBrowser = process.env.TARGET_BROWSER;
+const destPath = path.join(__dirname, 'build');
+const buildPath = path.join(destPath, targetBrowser);
+
 var options = config.chromeExtensionBoilerplate || {};
 var excludeEntriesToHotReload = options.notHotReload || [];
 
@@ -37,7 +41,7 @@ var server = new WebpackDevServer(
     host: 'localhost',
     port: env.PORT,
     static: {
-      directory: path.join(__dirname, '../build'),
+      directory: buildPath,
     },
     devMiddleware: {
       publicPath: `http://localhost:${env.PORT}/`,

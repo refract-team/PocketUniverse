@@ -1,16 +1,37 @@
 {
   "manifest_version": 3,
+  "__firefox__manifest_version": 2,
+
   "name": "Pocket Universe",
+  "version": "0.0.13",
   "description": "A transaction checker that helps you avoid crypto scams.",
-  "background": { "service_worker": "background.bundle.js" },
-  "action": {
+  "background": {
+    "__chrome__service_worker": "background.bundle.js",
+    "__firefox__scripts": ["background.bundle.js"]
+  },
+
+  "__firefox__browser_specific_settings": {
+    "gecko": {
+      "id": "pocketuniverse@refractlabs.io"
+    }
+  },
+
+  "__chrome__action": {
     "default_title": "Pocket Universe",
     "default_popup": "popup.html",
     "default_icon": "icon-32.png"
   },
+
+  "__firefox__browser_action": {
+    "default_title": "Pocket Universe",
+    "default_popup": "popup.html",
+    "default_icon": "icon-32.png"
+  },
+
   "icons": {
     "128": "icon-128.png"
   },
+
   "web_accessible_resources": [
     {
       "resources": [
@@ -28,14 +49,49 @@
       "matches": []
     }
   ],
-  "host_permissions": ["file://*/*", "http://*/*", "https://*/*"],
+
+  "__firefox__web_accessible_resources": [
+        "icon-128.png",
+        "icon-32.png",
+        "metamask/step1_image1.png",
+        "metamask/step1_image2.png",
+        "metamask/step2_image1.png",
+        "metamask/step2_image2.png",
+        "metamask/step3",
+        "waves_top.png",
+        "waves_bottom.png",
+        "waves.png",
+        "injectedScript.bundle.js"
+  ],
+
+  "__chrome__host_permissions": [
+    "file://*/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentScript.bundle.js"],
+      "matches": [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "contentScript.bundle.js"
+      ],
       "all_frames": true,
       "run_at": "document_start"
     }
   ],
-  "permissions": ["storage", "scripting"]
+
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+
+  "__firefox__permissions": [
+    "<all_urls>",
+    "storage"
+  ]
 }
