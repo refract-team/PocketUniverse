@@ -399,6 +399,8 @@ const StoredSimulationComponent = ({
   let verifiedAddressName = simulation.verifiedAddressName;
   let interactionText = 'Interacting with';
 
+  let approval = false;
+
   for (const event of simulation.events) {
     // Approval + ApprovalForAll we don't care about the interacting contract, rather we only care about the toAddress.
     //
@@ -407,6 +409,7 @@ const StoredSimulationComponent = ({
       event.type === EventType.Approval ||
       event.type === EventType.ApprovalForAll
     ) {
+      approval = true;
       interactionText = 'Giving approval to';
       toAddress = event.toAddress;
       verifiedAddressName = event.verifiedAddressName;
@@ -415,8 +418,9 @@ const StoredSimulationComponent = ({
 
   // toAddress must always be set for non signature simulations.
   const interactingAddress = () => {
-    // Don't show anything for signatures for now.
-    if (storedSimulation.type === StoredType.Signature) {
+    // Don't show anything for non-approval signatures.
+    // That is we still show permits and who it is to.
+    if (!approval && storedSimulation.type === StoredType.Signature) {
       return null;
     }
 
