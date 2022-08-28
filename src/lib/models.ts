@@ -133,7 +133,12 @@ export class Simulation {
     public toAddress?: string,
 
     // Whether we should warn for an offer.
-    public shouldWarn?: boolean
+    public shouldWarn?: boolean,
+
+    public mustWarn?: boolean,
+
+    // Optional message to display when we warn people.
+    public mustWarnMessage?: string
   ) {}
 
   public static fromJSON(obj: any): Simulation {
@@ -142,7 +147,9 @@ export class Simulation {
       obj.events.flatMap((event: any) => Event.fromJSON(event)),
       obj.verifiedAddressName,
       obj.toAddress,
-      obj.shouldWarn
+      obj.shouldWarn,
+      obj.mustWarn,
+      obj.mustWarnMessage
     );
   }
 }

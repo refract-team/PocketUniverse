@@ -194,7 +194,7 @@ const PotentialWarnings = ({
 
   if (type === StoredType.Simulation) {
     const NoApprovalForAll = (
-      <div className="text-base text-gray-400 pb-4 px-2">
+      <div className="text-base text-center text-gray-400 pb-4 px-2">
         Changes being made in this transaction
       </div>
     );
@@ -216,10 +216,24 @@ const PotentialWarnings = ({
       );
     }
 
-    return NoApprovalForAll;
+    return (
+      <div>
+        {simulation.mustWarn && (
+          <div className="flex flex-col justify-center">
+            <div className="text-center text-lg font-bold text-red-500">
+              🚨 WARNING 🚨
+            </div>
+            <div className="text-sm px-4 py-2 text-red-500 text-center">
+              <div className="font-bold">{simulation.mustWarnMessage}</div>
+            </div>
+          </div>
+        )}
+        <div>{NoApprovalForAll}</div>
+      </div>
+    );
   } else {
     const PotentialChangesMessage = (
-      <div className="text-base text-gray-400 pb-4 px-2">
+      <div className="text-base text-center text-gray-400 pb-4 px-2">
         Changes that can be made by signing this message
       </div>
     );
@@ -233,7 +247,8 @@ const PotentialWarnings = ({
             </div>
             <div className="text-sm px-4 py-2 text-red-500 text-center">
               <div className="font-bold">
-                Please make sure this is not a scam!
+                {simulation.mustWarnMessage ||
+                  'Please make sure this is not a scam!'}
               </div>
             </div>
           </div>
