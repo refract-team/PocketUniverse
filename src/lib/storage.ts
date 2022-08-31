@@ -53,17 +53,17 @@ export interface StoredSimulation {
 export const STORAGE_KEY = 'simulations';
 
 export const addSimulation = async (simulation: StoredSimulation) => {
-  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ old: simulations, new: simulation }, 'Adding simulation');
 
   // Add new simulation to the front.
   simulations.push({ ...simulation });
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 const completeSimulation = async (id: string, simulation: Simulation) => {
-  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ old: simulations, new: simulation }, 'Completing simulation');
 
   simulations.forEach((storedSimulation: StoredSimulation) => {
@@ -74,11 +74,11 @@ const completeSimulation = async (id: string, simulation: Simulation) => {
     }
   });
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 const revertSimulation = async (id: string, error?: string) => {
-  const { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ old: simulations, error }, 'Simulation reverted');
 
   simulations.forEach((storedSimulation: StoredSimulation) => {
@@ -89,25 +89,25 @@ const revertSimulation = async (id: string, error?: string) => {
     }
   });
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 export const removeSimulation = async (id: string) => {
-  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ old: simulations, id }, 'Removing simulation');
 
   simulations = simulations.filter((storedSimulation: StoredSimulation) => {
     return storedSimulation.id !== id;
   });
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 export const updateSimulationState = async (
   id: string,
   state: StoredSimulationState
 ) => {
-  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ id, state }, 'Update simulation');
 
   simulations = simulations.map((x: StoredSimulation) =>
@@ -119,12 +119,12 @@ export const updateSimulationState = async (
       : x
   );
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 // TODO(jqphu): dedup with above...
 const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
-  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ id, error }, 'Update simulation with error msg');
 
   simulations = simulations.map((x: StoredSimulation) =>
@@ -137,7 +137,7 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
       : x
   );
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
@@ -187,7 +187,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
 };
 
 export const clearOldSimulations = async () => {
-  let { simulations = [] } = await browser.storage.sync.get(STORAGE_KEY);
+  let { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info(simulations, 'Clear old simulations');
 
   // Remove confirmed/rejected simulations.
@@ -197,7 +197,7 @@ export const clearOldSimulations = async () => {
       x.state !== StoredSimulationState.Confirmed
   );
 
-  return browser.storage.sync.set({ simulations });
+  return browser.storage.local.set({ simulations });
 };
 
 export const SETTINGS_KEY = 'settings';
