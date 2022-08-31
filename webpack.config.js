@@ -6,7 +6,70 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const WextManifestWebpackPlugin = require('wext-manifest-webpack-plugin');
+
+/**
+ * Taken from https://github.com/abhijithvijayan/wext-manifest-webpack-plugin
+ * updated to hackily use webpack 5.
+ *
+ * TODO(jqphu): make a pull request to merge this back in.
+ */
+const PLUGIN_NAME = 'wext-manifest-webpack-plugin';
+
+function getEntryResource(module) {
+  const resource = null;
+
+  if (module && typeof module.resource === 'string') {
+    return module.resource;
+  }
+
+  return resource;
+}
+
+class WextManifestWebpackPlugin {
+  // Define `apply` as its prototype method which is supplied with compiler as its argument
+  apply(compiler) {
+    /**
+     *  webpack 4+ comes with a new plugin system.
+     *
+     *  (// ToDo: support old plugin system //)
+     */
+    const { hooks } = compiler;
+
+    // Check for hooks for 4+
+    if (hooks) {
+      // Runs plugin after a compilation has been created.
+      hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+        // Triggered when an asset from a chunk was added to the compilation.
+        compilation.hooks.chunkAsset.tap(PLUGIN_NAME, (chunk, file) => {
+          // Only handle js files with entry modules
+          if (!file.endsWith('.js')) {
+            return;
+          }
+
+          for (const entryModule of compilation.chunkGraph.getChunkEntryModulesIterable(
+            chunk
+          )) {
+            // Returns path containing name of asset
+            const resource = getEntryResource(entryModule);
+            const isManifest =
+              (resource && /manifest\.json$/.test(resource)) || false;
+
+            if (isManifest) {
+              chunk.files = [...chunk.files].filter((f) => {
+                return f !== file;
+              });
+
+              delete compilation.assets[file];
+              // https://github.com/abhijithvijayan/wext-manifest-webpack-plugin/issues/1
+              // console.emoji('🦄', `${PLUGIN_NAME}: removed ${file}`, 29);
+              console.log(`${PLUGIN_NAME}: removed ${file}`);
+            }
+          }
+        });
+      });
+    }
+  }
+}
 
 const targetBrowser = process.env.TARGET_BROWSER;
 const destPath = path.join(__dirname, 'build');
