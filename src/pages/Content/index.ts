@@ -40,7 +40,7 @@ const maybeRemoveId = (id: string) => {
 };
 
 browser.storage.onChanged.addListener((changes, area) => {
-  if (area === 'sync' && changes.settings?.newValue) {
+  if (area === 'local' && changes.settings?.newValue) {
     dispatchSettings(changes.settings.newValue);
   }
 });
@@ -52,7 +52,7 @@ listenToRequest((request: RequestArgs) => {
   // Page has sent an event, start listening to storage changes.
   // This ensures we don't listen to storage changes on every singel webpage.
   browser.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && changes.simulations?.newValue) {
+    if (area === 'local' && changes.simulations?.newValue) {
       const newSimulations = changes.simulations.newValue;
       log.info(newSimulations, 'Dispatching new values for simulation');
 

@@ -58,7 +58,7 @@ browser.windows.onRemoved.addListener((windowId: number) => {
 
 browser.storage.onChanged.addListener((changes, area) => {
   Sentry.wrap(() => {
-    if (area === 'sync' && changes.simulations?.newValue) {
+    if (area === 'local' && changes.simulations?.newValue) {
       const oldSimulations = changes.simulations.oldValue;
       const newSimulations = changes.simulations.newValue;
 

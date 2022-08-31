@@ -512,12 +512,12 @@ const TransactionComponent = () => {
   console.log('STORED SIMS', storedSimulations);
 
   useEffect(() => {
-    browser.storage.sync.get(STORAGE_KEY).then(({ simulations }) => {
+    browser.storage.local.get(STORAGE_KEY).then(({ simulations }) => {
       setStoredSimulations(simulations);
     });
 
     browser.storage.onChanged.addListener((changes, area) => {
-      if (area === 'sync' && changes[STORAGE_KEY]?.newValue) {
+      if (area === 'local' && changes[STORAGE_KEY]?.newValue) {
         const newSimulations = changes[STORAGE_KEY]?.newValue;
         setStoredSimulations(newSimulations);
       }
