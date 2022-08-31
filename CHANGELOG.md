@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.0.16] - 2022-08-31
+- Use local storage
 - Fix double popup of extension
 
 ## [0.0.15] - 2022-08-25
@@ -43,7 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the ability to disable PocketUniverse simulations
 - Use the pocket-universe SDK instead of manually copying the models
 
-[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.15...HEAD
+[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.16...HEAD
+[0.0.16]: https://github.com/jqphu/pocketuniverse/compare/v0.0.15...v0.0.16
 [0.0.15]: https://github.com/jqphu/pocketuniverse/compare/v0.0.14...v0.0.15
 [0.0.14]: https://github.com/jqphu/pocketuniverse/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/jqphu/pocketuniverse/compare/v0.0.11...v0.0.13
