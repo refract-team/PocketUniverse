@@ -40,7 +40,7 @@ const maybeRemoveId = (id: string) => {
 };
 
 browser.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.settings?.newValue) {
+  if (area === 'sync' && changes.settings?.newValue) {
     dispatchSettings(changes.settings.newValue);
   }
 });
