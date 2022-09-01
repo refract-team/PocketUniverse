@@ -9,6 +9,13 @@ import {
   clearOldSimulations,
   simulationNeedsAction,
 } from '../../lib/storage';
+import { fetchUpdate } from '../../lib/server';
+
+import {
+  UPDATE_KEY,
+  UPDATE_MESSAGE_KEY,
+  UPDATE_LINK_KEY,
+} from '../../lib/storage';
 import browser from 'webextension-polyfill';
 
 const log = logger.child({ component: 'Background' });
@@ -46,6 +53,26 @@ if (browser.scripting) {
       log.warn({ msg: 'Error', error: err });
     });
 }
+
+const manifestData = chrome.runtime.getManifest();
+browser.storage.local.get(UPDATE_KEY).then(async ({ updates }) => {
+  // Either we've updated the version, or they haven't dismissed this message.
+  //
+  // Let's retrieve the message.
+  //
+  // This is a pretty cheap request so we're okay doing this.
+  if (updates !== manifestData.version) {
+    const { message, link } = await fetchUpdate({
+      manifestVersion: manifestData.version,
+    });
+    browser.storage.local.set({
+      [UPDATE_MESSAGE_KEY]: message,
+      [UPDATE_LINK_KEY]: link,
+    });
+  }
+}).catch((e) => {
+  log.info('Could not fetch update message.', e);
+});
 
 let currentPopup: undefined | number;
 
@@ -101,7 +128,7 @@ browser.storage.onChanged.addListener((changes, area) => {
             url: 'popup.html',
             type: 'popup',
             width: 420,
-            height: 620,
+            height: 760,
           })
           .then((createdWindow) => {
             log.info(createdWindow?.id, 'Assigning popup to id');

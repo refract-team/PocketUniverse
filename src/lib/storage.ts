@@ -267,3 +267,8 @@ export const simulationNeedsAction = (
     state === StoredSimulationState.Revert
   );
 };
+
+// TODO(jqphu): make this into an object
+export const UPDATE_KEY = 'updates';
+export const UPDATE_MESSAGE_KEY = 'updates_message';
+export const UPDATE_LINK_KEY = 'updates_link';
