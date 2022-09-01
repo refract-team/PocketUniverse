@@ -89,7 +89,7 @@ export class RequestManager {
     this.mappings = new Map();
 
     document.addEventListener(DISPATCH_RESPONSE, (event: any) => {
-      this._handleResponse(event.detail);
+      this._handleResponse(JSON.parse(event.detail));
     });
   }
 
@@ -200,7 +200,7 @@ const DISPATCH_RESPONSE = 'POCKET_UNIVERSE_DISPATCH_RESPONSE';
 export const dispatchResponse = (response: ResponseWrapped) => {
   document.dispatchEvent(
     new CustomEvent(DISPATCH_RESPONSE, {
-      detail: response,
+      detail: JSON.stringify(response),
     })
   );
 };
