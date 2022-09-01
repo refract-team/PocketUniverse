@@ -10,7 +10,7 @@ const DISPATCH_SETTINGS = 'POCKET_UNIVERSE_DISPATCH_SETTINGS';
 export const dispatchSettings = (settings: any) => {
   document.dispatchEvent(
     new CustomEvent(DISPATCH_SETTINGS, {
-      detail: settings,
+      detail: JSON.stringify(settings),
     })
   );
 };
@@ -20,6 +20,6 @@ export const dispatchSettings = (settings: any) => {
  */
 export const listenForSettingsUpdates = () => {
   document.addEventListener(DISPATCH_SETTINGS, (event: any) => {
-    settings = event.detail;
+    settings = JSON.parse(event.detail);
   });
 };
