@@ -11,6 +11,30 @@ const SERVER_URL = config.server;
 
 log.info(SERVER_URL, 'SERVER_URL');
 
+export const fetchUpdate = async (args: {
+  manifestVersion: string;
+}): Promise<{
+  message: string;
+  link: string;
+}> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = await fetch(`${SERVER_URL}/updates`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  });
+
+  if (result.status === 200) {
+    const data = await result.json();
+    return data;
+  } else {
+    throw new Error(`Error fetching update message: ${result.status}`);
+  }
+};
+
 export const fetchSimulate = async (args: {
   chainId: string;
   transaction: Transaction;
