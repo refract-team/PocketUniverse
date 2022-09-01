@@ -210,10 +210,12 @@ export interface Settings {
 }
 
 const updateIcon = (settings: Settings) => {
+  // Depending if we are on MV3 or MV2.
+  const action = browser.action || browser.browserAction;
   if (settings.disable) {
-    browser.action.setIcon({ path: 'icon-32-gray.png' });
+    action.setIcon({ path: 'icon-32-gray.png' });
   } else {
-    browser.action.setIcon({ path: 'icon-32.png' });
+    action.setIcon({ path: 'icon-32.png' });
   }
 };
 
@@ -251,7 +253,7 @@ export const getSettings = async (): Promise<Settings> => {
  *
  * This should only run in settings and not in the content scripts as browser.action is not available there.
  */
-if (browser.action) {
+if (browser.action || browser.browserAction) {
   getSettings().then(updateIcon);
 }
 

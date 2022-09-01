@@ -509,8 +509,6 @@ const TransactionComponent = () => {
     StoredSimulation[]
   >([]);
 
-  console.log('STORED SIMS', storedSimulations);
-
   useEffect(() => {
     browser.storage.local.get(STORAGE_KEY).then(({ simulations }) => {
       setStoredSimulations(simulations);
