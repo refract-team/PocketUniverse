@@ -5,8 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.19] - 2022-09-02
+
+- Revert back to older version of injection.
+
 ## [0.0.18] - 2022-09-02
-* Fix adding back functionality for send/sendAsync
+
+- Fix adding back functionality for send/sendAsync
 
 ## [0.0.17] - 2022-09-01
 
@@ -52,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the ability to disable PocketUniverse simulations
 - Use the pocket-universe SDK instead of manually copying the models
 
-[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.18...HEAD
+[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.19...HEAD
+[0.0.19]: https://github.com/jqphu/pocketuniverse/compare/v0.0.18...v0.0.19
 [0.0.18]: https://github.com/jqphu/pocketuniverse/compare/v0.0.17...v0.0.18
 [0.0.17]: https://github.com/jqphu/pocketuniverse/compare/v0.0.16...v0.0.17
 [0.0.16]: https://github.com/jqphu/pocketuniverse/compare/v0.0.15...v0.0.16
