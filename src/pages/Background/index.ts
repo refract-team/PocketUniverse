@@ -55,24 +55,27 @@ if (browser.scripting) {
 }
 
 const manifestData = chrome.runtime.getManifest();
-browser.storage.local.get(UPDATE_KEY).then(async ({ updates }) => {
-  // Either we've updated the version, or they haven't dismissed this message.
-  //
-  // Let's retrieve the message.
-  //
-  // This is a pretty cheap request so we're okay doing this.
-  if (updates !== manifestData.version) {
-    const { message, link } = await fetchUpdate({
-      manifestVersion: manifestData.version,
-    });
-    browser.storage.local.set({
-      [UPDATE_MESSAGE_KEY]: message,
-      [UPDATE_LINK_KEY]: link,
-    });
-  }
-}).catch((e) => {
-  log.info('Could not fetch update message.', e);
-});
+browser.storage.local
+  .get(UPDATE_KEY)
+  .then(async ({ updates }) => {
+    // Either we've updated the version, or they haven't dismissed this message.
+    //
+    // Let's retrieve the message.
+    //
+    // This is a pretty cheap request so we're okay doing this.
+    if (updates !== manifestData.version) {
+      const { message, link } = await fetchUpdate({
+        manifestVersion: manifestData.version,
+      });
+      browser.storage.local.set({
+        [UPDATE_MESSAGE_KEY]: message,
+        [UPDATE_LINK_KEY]: link,
+      });
+    }
+  })
+  .catch((e) => {
+    log.info('Could not fetch update message.', e);
+  });
 
 let currentPopup: undefined | number;
 
