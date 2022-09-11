@@ -479,24 +479,41 @@ const StoredSimulationComponent = ({
     );
   };
 
-  // TODO: handle the TO address separately.
   if (storedSimulation.state === StoredSimulationState.Success) {
-    return (
-      <div className="flex flex-col grow items-center justify-center pt-4 w-full">
-        {interactingAddress()}
-        <div className="flex flex-col grow items-center justify-center w-full">
-          <PotentialWarnings
-            simulation={simulation}
-            type={storedSimulation.type}
-            verified={verifiedAddressName !== undefined}
-          />
-
-          <div className="m-2 border-y border-gray-600 w-full w-11/12">
-            <SimulationComponent simulation={simulation} />
+    if (storedSimulation.type === StoredType.SignatureHash) {
+      return (
+        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+          <div className="text-center text-lg font-bold text-red-500">
+            🚨 WARNING 🚨
+          </div>
+          <div className="text-base px-6 py-2 text-red-500 text-center">
+            Confirming this signature can transfer all your NFTs or Tokens!
+            <div className="text-sm px-6 py-2 text-gray-400 text-center">
+              This is very dangerous and is likely a scam. Please triple check
+              to ensure you trust this website.
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      // TODO: handle the TO address separately.
+      return (
+        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+          {interactingAddress()}
+          <div className="flex flex-col grow items-center justify-center w-full">
+            <PotentialWarnings
+              simulation={simulation}
+              type={storedSimulation.type}
+              verified={verifiedAddressName !== undefined}
+            />
+
+            <div className="m-2 border-y border-gray-600 w-full w-11/12">
+              <SimulationComponent simulation={simulation} />
+            </div>
+          </div>
+        </div>
+      );
+    }
   }
 
   return null;

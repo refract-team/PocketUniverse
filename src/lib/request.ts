@@ -67,7 +67,27 @@ export type SignatureRequestArgs = {
   primaryType: string;
 };
 
-export type RequestArgs = SimulateRequestArgs | SignatureRequestArgs;
+export type SignatureHashSignArgs = {
+  /**
+   * UUID for this request.
+   */
+  id: string;
+
+  /**
+   * Chain ID for this request in hex.
+   */
+  chainId: string;
+
+  /**
+   * Hash being signed.
+   */
+  hash: string;
+};
+
+export type RequestArgs =
+  | SimulateRequestArgs
+  | SignatureRequestArgs
+  | SignatureHashSignArgs;
 
 /**
  * Command to simulate request between content script and service worker.
@@ -108,6 +128,10 @@ export class RequestManager {
           message: any;
           primaryType: string;
         }
+      | {
+          chainId: string;
+          hash: string;
+        }
   ): Promise<Response> {
     return new Promise((resolve) => {
       let request: RequestArgs;
@@ -119,6 +143,12 @@ export class RequestManager {
           id,
           chainId,
           transaction: args.transaction,
+        };
+      } else if ('hash' in args) {
+        request = {
+          id,
+          chainId,
+          hash: args.hash,
         };
       } else {
         request = {

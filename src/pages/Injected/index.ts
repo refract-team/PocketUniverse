@@ -52,7 +52,8 @@ const pocketUniverseProxyHandler = {
       if (
         requestArg.method !== 'eth_signTypedData_v3' &&
         requestArg.method !== 'eth_signTypedData_v4' &&
-        requestArg.method !== 'eth_sendTransaction'
+        requestArg.method !== 'eth_sendTransaction' &&
+        requestArg.method !== 'eth_sign'
       ) {
         return originalCall(...args);
       }
@@ -103,6 +104,27 @@ const pocketUniverseProxyHandler = {
           domain: params['domain'],
           message: params['message'],
           primaryType: params['primaryType'],
+        });
+
+        if (response === Response.Reject) {
+          log.info('Reject');
+          // NOTE: Be cautious when changing this name. 1inch behaves strangely when the error message diverges.
+          throw ethErrors.provider.userRejectedRequest(
+            'PocketUniverse Message Signature: User denied message signature.'
+          );
+        }
+      } else if (requestArg.method === 'eth_sign') {
+        log.info('Signature Request');
+        if (requestArg.params.length !== 2) {
+          // Forward the request anyway.
+          log.warn('Unexpected argument length.');
+          return originalCall(...args);
+        }
+
+        // Sending response.
+        response = await REQUEST_MANAGER.request({
+          chainId: await target.request({ method: 'eth_chainId' }),
+          hash: requestArg.params[1],
         });
 
         if (response === Response.Reject) {

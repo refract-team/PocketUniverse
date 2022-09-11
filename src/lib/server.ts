@@ -76,10 +76,16 @@ export const fetchSimulate = async (args: {
   }
 };
 
-export const fetchSignature = async (args: {
-  domain: any;
-  message: any;
-}): Promise<Response> => {
+export const fetchSignature = async (
+  args:
+    | {
+        domain: any;
+        message: any;
+      }
+    | {
+        hash: any;
+      }
+): Promise<Response> => {
   log.info(args, 'Fetch signature');
 
   try {

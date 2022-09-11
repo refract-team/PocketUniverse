@@ -29,6 +29,7 @@ export enum StoredSimulationState {
 export enum StoredType {
   Simulation,
   Signature,
+  SignatureHash,
 }
 
 export interface StoredSimulation {
@@ -152,6 +153,17 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         state: StoredSimulationState.Simulating,
       }),
       fetchSimulate(args),
+    ]);
+
+    response = result[1];
+  } else if ('hash' in args) {
+    const result = await Promise.all([
+      addSimulation({
+        id: args.id,
+        type: StoredType.SignatureHash,
+        state: StoredSimulationState.Simulating,
+      }),
+      fetchSignature(args),
     ]);
 
     response = result[1];
