@@ -1,8 +1,11 @@
+import mixpanel from 'mixpanel-browser';
 import { MdClose } from 'react-icons/md';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { setSettings, getSettings } from '../../lib/storage';
 import React from 'react';
+
+mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
 const Settings = ({ closeSettings }: { closeSettings: () => void }) => {
   const [enabled, setEnabled] = useState<boolean>(true);
@@ -12,6 +15,12 @@ const Settings = ({ closeSettings }: { closeSettings: () => void }) => {
   }, []);
 
   const switchedCallback = async (enabled: boolean) => {
+    if (enabled) {
+      mixpanel.track('Enable Simulations');
+    } else {
+      mixpanel.track('Disable Simulations');
+    }
+
     await setSettings({ disable: !enabled });
     setEnabled(enabled);
   };

@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.20] - 2022-09-11
+## [0.0.22] - 2022-09-11
+
+- Pass through the id to help debug errors
+- See if the simulation is being used.
+
+## [0.0.21] - 2022-09-11
+
 - Add signature hash scams
 
 ## [0.0.20] - 2022-09-02
@@ -64,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the ability to disable PocketUniverse simulations
 - Use the pocket-universe SDK instead of manually copying the models
 
-[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.20...HEAD
+[unreleased]: https://github.com/jqphu/pocketuniverse/compare/v0.0.21...HEAD
+[0.0.21]: https://github.com/jqphu/pocketuniverse/compare/v0.0.20...v0.0.21
 [0.0.20]: https://github.com/jqphu/pocketuniverse/compare/v0.0.19...v0.0.20
 [0.0.19]: https://github.com/jqphu/pocketuniverse/compare/v0.0.18...v0.0.19
 [0.0.18]: https://github.com/jqphu/pocketuniverse/compare/v0.0.17...v0.0.18
