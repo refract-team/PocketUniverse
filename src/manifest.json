@@ -3,7 +3,7 @@
   "__firefox__manifest_version": 2,
 
   "name": "Pocket Universe",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "A transaction checker that helps you avoid crypto scams.",
   "background": {
     "__chrome__service_worker": "background.bundle.js",
