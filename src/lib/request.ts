@@ -119,19 +119,19 @@ export class RequestManager {
   public request(
     args:
       | {
-          chainId: string;
-          transaction: Transaction;
-        }
+        chainId: string;
+        transaction: Transaction;
+      }
       | {
-          chainId: string;
-          domain: any;
-          message: any;
-          primaryType: string;
-        }
+        chainId: string;
+        domain: any;
+        message: any;
+        primaryType: string;
+      }
       | {
-          chainId: string;
-          hash: string;
-        }
+        chainId: string;
+        hash: string;
+      }
   ): Promise<Response> {
     return new Promise((resolve) => {
       let request: RequestArgs;
@@ -200,7 +200,7 @@ const DISPATCH_REQUEST = 'POCKET_UNIVERSE_DISPATCH_REQUEST';
  * Listen to request
  */
 export const listenToRequest = (callback: (request: RequestArgs) => void) => {
-  document.addEventListener(DISPATCH_REQUEST, (event: any) => {
+  document.addEventListener(DISPATCH_REQUEST, async (event: any) => {
     callback(event.detail);
   });
 };

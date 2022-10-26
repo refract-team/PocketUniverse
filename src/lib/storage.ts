@@ -114,9 +114,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          state,
-        }
+        ...x,
+        state,
+      }
       : x
   );
 
@@ -131,10 +131,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          error,
-          state: StoredSimulationState.Error,
-        }
+        ...x,
+        error,
+        state: StoredSimulationState.Error,
+      }
       : x
   );
 
@@ -212,7 +212,9 @@ export const clearOldSimulations = async () => {
   return browser.storage.local.set({ simulations });
 };
 
-export const SETTINGS_KEY = 'settings';
+// NOTE: be cautious changing this variable. We need to update the variables in setSettings and getSettings if we do.
+// TODO(jqphu): fix this.
+export const SETTINGS_KEY = 'pocket_universe_settings';
 
 export interface Settings {
   /**
@@ -236,28 +238,28 @@ const updateIcon = (settings: Settings) => {
  */
 export const setSettings = async (args: Settings) => {
   // Default is enabled.
-  let { settings = { disable: false } } = await browser.storage.sync.get(
+  let { pocket_universe_settings = { disable: false } } = await browser.storage.local.get(
     SETTINGS_KEY
   );
-  log.info({ settings: settings, msg: 'Updating settings' });
+  log.info({ settings: pocket_universe_settings, msg: 'Updating settings' });
 
-  settings.disable = args.disable;
+  pocket_universe_settings.disable = args.disable;
 
-  updateIcon(settings);
+  updateIcon(pocket_universe_settings);
 
-  return browser.storage.sync.set({ settings });
+  return browser.storage.local.set({ [SETTINGS_KEY]: pocket_universe_settings });
 };
 
 /**
  * Get the settings.
  */
 export const getSettings = async (): Promise<Settings> => {
-  const { settings = { disable: false } } = await browser.storage.sync.get(
+  const { pocket_universe_settings = { disable: false } } = await browser.storage.local.get(
     SETTINGS_KEY
   );
-  log.info({ settings: settings, msg: 'Getting settings.' });
+  log.info({ settings: pocket_universe_settings, msg: 'Getting settings.' });
 
-  return settings as Settings;
+  return pocket_universe_settings as Settings;
 };
 
 /**
