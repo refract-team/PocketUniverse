@@ -6,9 +6,8 @@ import {
   REQUEST_COMMAND,
   Response,
 } from '../../lib/request';
-import { dispatchSettings } from '../../lib/settings';
 import type { StoredSimulation } from '../../lib/storage';
-import { removeSimulation, StoredSimulationState } from '../../lib/storage';
+import { Settings, getSettings, removeSimulation, StoredSimulationState } from '../../lib/storage';
 
 import browser from 'webextension-polyfill';
 
@@ -39,50 +38,58 @@ const maybeRemoveId = (id: string) => {
   }
 };
 
-browser.storage.onChanged.addListener((changes, area) => {
-  if (area === 'sync' && changes.settings?.newValue) {
-    dispatchSettings(changes.settings.newValue);
-  }
-});
-
-listenToRequest((request: RequestArgs) => {
+listenToRequest(async (request: RequestArgs) => {
   log.info({ request }, 'Request');
   ids.push(request.id);
 
-  // Page has sent an event, start listening to storage changes.
-  // This ensures we don't listen to storage changes on every singel webpage.
-  browser.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.simulations?.newValue) {
-      const newSimulations = changes.simulations.newValue;
-      log.info(newSimulations, 'Dispatching new values for simulation');
+  getSettings().then((args: Settings) => {
+    if (args.disable) {
 
-      // Note: this will dispatch to **all** content pages.
-      // To address this later we can generate a random id for each page. Append it to the request.
-      // Either way, this should be pretty cheap. It's just DOM communication.
-      // TODO(jqphu): measure & generate random id's so we don't dispatch so many events.
-      newSimulations.forEach((simulation: StoredSimulation) => {
-        // Either dispatch the corresponding event, or push the item to new simulations.
-        if (simulation.state === StoredSimulationState.Confirmed) {
-          log.debug('Dispatch confirmed', simulation.id);
-          dispatchResponse({
-            id: simulation.id,
-            type: Response.Continue,
-          });
-          maybeRemoveId(simulation.id);
-        } else if (simulation.state === StoredSimulationState.Rejected) {
-          log.debug('Dispatch rejected', simulation.id);
-          dispatchResponse({
-            id: simulation.id,
-            type: Response.Reject,
-          });
-          maybeRemoveId(simulation.id);
-        }
+      // Immediately respond continue.
+      dispatchResponse({
+        id: request.id,
+        type: Response.Continue,
       });
-    }
-  });
 
-  browser.runtime.sendMessage({
-    command: REQUEST_COMMAND,
-    data: request,
-  });
+      return;
+    }
+
+    // Page has sent an event, start listening to storage changes.
+    // This ensures we don't listen to storage changes on every singel webpage.
+    browser.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.simulations?.newValue) {
+        const newSimulations = changes.simulations.newValue;
+        log.info(newSimulations, 'Dispatching new values for simulation');
+
+        // Note: this will dispatch to **all** content pages.
+        // To address this later we can generate a random id for each page. Append it to the request.
+        // Either way, this should be pretty cheap. It's just DOM communication.
+        // TODO(jqphu): measure & generate random id's so we don't dispatch so many events.
+        newSimulations.forEach((simulation: StoredSimulation) => {
+          // Either dispatch the corresponding event, or push the item to new simulations.
+          if (simulation.state === StoredSimulationState.Confirmed) {
+            log.debug('Dispatch confirmed', simulation.id);
+            dispatchResponse({
+              id: simulation.id,
+              type: Response.Continue,
+            });
+            maybeRemoveId(simulation.id);
+          } else if (simulation.state === StoredSimulationState.Rejected) {
+            log.debug('Dispatch rejected', simulation.id);
+            dispatchResponse({
+              id: simulation.id,
+              type: Response.Reject,
+            });
+            maybeRemoveId(simulation.id);
+          }
+        });
+      }
+    });
+
+    browser.runtime.sendMessage({
+      command: REQUEST_COMMAND,
+      data: request,
+    });
+
+  })
 });

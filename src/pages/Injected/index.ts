@@ -28,7 +28,6 @@ let POCKET = `
 
 import logger from '../../lib/logger';
 import { RequestManager, Response } from '../../lib/request';
-import { settings, listenForSettingsUpdates } from '../../lib/settings';
 import { ethErrors } from 'eth-rpc-errors';
 
 declare global {
@@ -42,7 +41,6 @@ log.debug({ msg: 'Injected script loaded.' });
 
 /// Handling all the request communication.
 const REQUEST_MANAGER = new RequestManager();
-listenForSettingsUpdates();
 
 // Heavily taken from RevokeCash to ensure consistency. Thanks Rosco :)!
 //
@@ -76,13 +74,6 @@ const sendHandler = {
 
 const requestHandler = {
   apply: async (target: any, thisArg: any, args: any[]) => {
-    /*
-     * User has disabled PU, just reflect.
-     */
-    if (settings.disable) {
-      return Reflect.apply(target, thisArg, args);
-    }
-
     const [request] = args;
     if (!request) {
       return Reflect.apply(target, thisArg, args);
@@ -166,13 +157,6 @@ const requestHandler = {
 
 const sendAsyncHandler = {
   apply: async (target: any, thisArg: any, args: any[]) => {
-    /*
-     * User has disabled PU, just reflect.
-     */
-    if (settings.disable) {
-      return Reflect.apply(target, thisArg, args);
-    }
-
     const [request, callback] = args;
     if (!request) {
       return Reflect.apply(target, thisArg, args);
