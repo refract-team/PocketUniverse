@@ -2,6 +2,7 @@
 import logger from './logger';
 import { fetchSimulate, fetchSignature } from './server';
 import type { RequestArgs } from './request';
+import { v4 as uuidv4 } from 'uuid';
 import { Simulation, Response, ResponseType } from '../lib/models';
 import browser from 'webextension-polyfill';
 
@@ -114,9 +115,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        state,
-      }
+          ...x,
+          state,
+        }
       : x
   );
 
@@ -131,10 +132,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        error,
-        state: StoredSimulationState.Error,
-      }
+          ...x,
+          error,
+          state: StoredSimulationState.Error,
+        }
       : x
   );
 
@@ -152,7 +153,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.Simulation,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSimulate(args),
+      fetchSimulate({ clientId: await getClientId(), ...args }),
     ]);
 
     response = result[1];
@@ -163,7 +164,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.SignatureHash,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSignature(args),
+      fetchSignature({ clientId: await getClientId(), ...args }),
     ]);
 
     response = result[1];
@@ -174,7 +175,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.Signature,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSignature(args),
+      fetchSignature({ clientId: await getClientId(), ...args }),
     ]);
 
     response = result[1];
@@ -238,25 +239,25 @@ const updateIcon = (settings: Settings) => {
  */
 export const setSettings = async (args: Settings) => {
   // Default is enabled.
-  let { pocket_universe_settings = { disable: false } } = await browser.storage.local.get(
-    SETTINGS_KEY
-  );
+  let { pocket_universe_settings = { disable: false } } =
+    await browser.storage.local.get(SETTINGS_KEY);
   log.info({ settings: pocket_universe_settings, msg: 'Updating settings' });
 
   pocket_universe_settings.disable = args.disable;
 
   updateIcon(pocket_universe_settings);
 
-  return browser.storage.local.set({ [SETTINGS_KEY]: pocket_universe_settings });
+  return browser.storage.local.set({
+    [SETTINGS_KEY]: pocket_universe_settings,
+  });
 };
 
 /**
  * Get the settings.
  */
 export const getSettings = async (): Promise<Settings> => {
-  const { pocket_universe_settings = { disable: false } } = await browser.storage.local.get(
-    SETTINGS_KEY
-  );
+  const { pocket_universe_settings = { disable: false } } =
+    await browser.storage.local.get(SETTINGS_KEY);
   log.info({ settings: pocket_universe_settings, msg: 'Getting settings.' });
 
   return pocket_universe_settings as Settings;
@@ -286,3 +287,26 @@ export const simulationNeedsAction = (
 export const UPDATE_KEY = 'updates';
 export const UPDATE_MESSAGE_KEY = 'updates_message';
 export const UPDATE_LINK_KEY = 'updates_link';
+export const CLIENT_ID_KEY = 'pocket_universe_client_id';
+
+/**
+ * Get the clientId.
+ *
+ * Throws is client id is not set.
+ */
+export const getClientId = async (): Promise<string> => {
+  const { pocket_universe_client_id } = await browser.storage.local.get(
+    CLIENT_ID_KEY
+  );
+
+  log.info({ id: pocket_universe_client_id, msg: 'Getting client ID.' });
+
+  // Id has not been set yet.
+  if (!pocket_universe_client_id) {
+    let uuid = uuidv4();
+    browser.storage.local.set({ [CLIENT_ID_KEY]: uuid });
+    return uuid;
+  }
+
+  return pocket_universe_client_id;
+};

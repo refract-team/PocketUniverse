@@ -36,6 +36,7 @@ export const fetchUpdate = async (args: {
 };
 
 export const fetchSimulate = async (args: {
+  clientId: string;
   id: string;
   chainId: string;
   transaction: Transaction;
@@ -80,12 +81,14 @@ export const fetchSimulate = async (args: {
 export const fetchSignature = async (
   args:
     | {
+        clientId: string;
         id: string;
         chainId: string;
         domain: any;
         message: any;
       }
     | {
+        clientId: string;
         id: string;
         chainId: string;
         hash: any;
