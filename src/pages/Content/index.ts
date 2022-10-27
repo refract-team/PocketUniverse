@@ -7,7 +7,12 @@ import {
   Response,
 } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
-import { Settings, getSettings, removeSimulation, StoredSimulationState } from '../../lib/storage';
+import {
+  Settings,
+  getSettings,
+  removeSimulation,
+  StoredSimulationState,
+} from '../../lib/storage';
 
 import browser from 'webextension-polyfill';
 
@@ -44,7 +49,6 @@ listenToRequest(async (request: RequestArgs) => {
 
   getSettings().then((args: Settings) => {
     if (args.disable) {
-
       // Immediately respond continue.
       dispatchResponse({
         id: request.id,
@@ -90,6 +94,5 @@ listenToRequest(async (request: RequestArgs) => {
       command: REQUEST_COMMAND,
       data: request,
     });
-
-  })
+  });
 });
