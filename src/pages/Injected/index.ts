@@ -238,11 +238,25 @@ let timer: NodeJS.Timer | undefined = undefined;
 
 const addPocketUniverseProxy = (provider: any) => {
   if (provider && !provider?.isPocketUniverse) {
-    log.debug('Added proxy');
-    provider.request = new Proxy(provider.request, requestHandler);
-    provider.send = new Proxy(provider.send, sendHandler);
-    provider.sendAsync = new Proxy(provider.sendAsync, sendAsyncHandler);
-    provider.isPocketUniverse = true;
+    log.debug({ provider }, 'Added proxy');
+    // TODO(jqphu): Brave will not allow us to overwrite request/send/sendAsync as it is readonly.
+    //
+    // The workaround would be to proxy the entire window.ethereum object (but
+    // that could run into its own complications). For now we shall just skip
+    // brave wallet.
+    //
+    // This should still work for metamask and other wallets using the brave browser.
+    try {
+      if (!provider.isBraveWallet) {
+        provider.request = new Proxy(provider.request, requestHandler);
+        provider.send = new Proxy(provider.send, sendHandler);
+        provider.sendAsync = new Proxy(provider.sendAsync, sendAsyncHandler);
+        provider.isPocketUniverse = true;
+      }
+    } catch (error) {
+      // If we can't add ourselves to this provider, don't mess with other providers.
+      log.warn({ provider, error }, 'Could not attach to provider');
+    }
   }
 };
 

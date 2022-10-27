@@ -8,11 +8,11 @@ const config: Config = { dev: false, server: '', logLevel: 'debug' };
 
 // Changable Configurations //
 
-const dev = false;
+const dev = true;
 
 // Set of constants //
 
-const DEV_SERVER = 'http://localhost:3000/v1';
+const DEV_SERVER = 'https://pocketsimulator.app/v1';
 const PROD_SERVER = 'https://pocketsimulator.app/v1';
 
 config.dev = dev;
