@@ -1,4 +1,8 @@
 // PocketUniverse logo in ASCII form.
+import logger from '../../lib/logger';
+import { RequestManager, Response } from '../../lib/request';
+import { ethErrors } from 'eth-rpc-errors';
+
 let POCKET = `
 
                       ********////
@@ -25,10 +29,6 @@ let POCKET = `
                               ////////////////      ////((
                                 *//////////         (
 `;
-
-import logger from '../../lib/logger';
-import { RequestManager, Response } from '../../lib/request';
-import { ethErrors } from 'eth-rpc-errors';
 
 declare global {
   interface Window {
@@ -261,8 +261,6 @@ const sendAsyncHandler = {
   },
 };
 
-
-
 let timer: NodeJS.Timer | undefined = undefined;
 
 const addPocketUniverseProxy = (provider: any) => {
@@ -270,16 +268,15 @@ const addPocketUniverseProxy = (provider: any) => {
     log.debug('Added proxy');
     provider.request = new Proxy(provider.request, requestHandler);
     provider.send = new Proxy(provider.send, sendHandler);
-    provider.sendAsync = new Proxy(
-      provider.sendAsync,
-      sendAsyncHandler
-    );
+    provider.sendAsync = new Proxy(provider.sendAsync, sendAsyncHandler);
     provider.isPocketUniverse = true;
     console.log('Successfully added PocketUniverse', provider);
     console.log(POCKET);
-    console.log(`P.S. If you're reading this - reach out to us, let's build together :)`);
+    console.log(
+      `P.S. If you're reading this - reach out to us, let's build together :)`
+    );
   }
-}
+};
 
 const addProxy = () => {
   // Protect against double initialization.
@@ -289,7 +286,7 @@ const addProxy = () => {
     addPocketUniverseProxy(window.ethereum);
 
     if (window.ethereum.providers?.length) {
-      log.debug("New providers!");
+      log.debug('New providers!');
       window.ethereum.providers.forEach(addPocketUniverseProxy);
     }
   }
@@ -320,5 +317,5 @@ timer = setInterval(addProxy, 100);
 // reason. Thus after 5 seconds we give up on checking for the wallet.
 setTimeout(() => {
   window.removeEventListener('ethereum#initialized', addProxy);
-  clearTimeout(timer)
+  clearTimeout(timer);
 }, 5000);
