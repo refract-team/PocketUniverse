@@ -119,19 +119,19 @@ export class RequestManager {
   public request(
     args:
       | {
-        chainId: string;
-        transaction: Transaction;
-      }
+          chainId: string;
+          transaction: Transaction;
+        }
       | {
-        chainId: string;
-        domain: any;
-        message: any;
-        primaryType: string;
-      }
+          chainId: string;
+          domain: any;
+          message: any;
+          primaryType: string;
+        }
       | {
-        chainId: string;
-        hash: string;
-      }
+          chainId: string;
+          hash: string;
+        }
   ): Promise<Response> {
     return new Promise((resolve) => {
       let request: RequestArgs;
