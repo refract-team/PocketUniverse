@@ -55,7 +55,8 @@ const requestHandler = {
     if (
       request.method !== 'eth_signTypedData_v3' &&
       request.method !== 'eth_signTypedData_v4' &&
-      request.method !== 'eth_sendTransaction'
+      request.method !== 'eth_sendTransaction' &&
+      request.method !== 'eth_sign'
     ) {
       return Reflect.apply(target, thisArg, args);
     }
@@ -116,6 +117,27 @@ const requestHandler = {
           'PocketUniverse Message Signature: User denied message signature.'
         );
       }
+    } else if (request.method === 'eth_sign') {
+      log.info('EthSign Request');
+      if (request.params.length !== 2) {
+        // Forward the request anyway.
+        log.warn('Unexpected argument length.');
+        return Reflect.apply(target, thisArg, args);
+      }
+
+      // Sending response.
+      response = await REQUEST_MANAGER.request({
+        chainId: await target({ method: 'eth_chainId' }),
+        hash: request.params[1],
+      });
+
+      if (response === Response.Reject) {
+        log.info('Reject');
+        // NOTE: Be cautious when changing this name. 1inch behaves strangely when the error message diverges.
+        throw ethErrors.provider.userRejectedRequest(
+          'PocketUniverse Message Signature: User denied message signature.'
+        );
+      }
     } else {
       throw new Error('Show never reach here');
     }
@@ -138,12 +160,13 @@ const sendAsyncHandler = {
     if (
       request.method !== 'eth_signTypedData_v3' &&
       request.method !== 'eth_signTypedData_v4' &&
-      request.method !== 'eth_sendTransaction'
+      request.method !== 'eth_sendTransaction' &&
+      request.method !== 'eth_sign'
     ) {
       return Reflect.apply(target, thisArg, args);
     }
 
-    log.info({ args }, 'Request type');
+    log.info({ args }, 'Request Type Async Handler');
     if (request.method === 'eth_sendTransaction') {
       log.info('Transaction Request');
 
@@ -207,6 +230,44 @@ const sendAsyncHandler = {
             primaryType: params['primaryType'],
           })
         )
+        .then((response: any) => {
+          if (response === Response.Reject) {
+            log.info('Reject');
+            // Based on EIP-1103
+            // eslint-disable-next-line no-throw-literal
+            const error = ethErrors.provider.userRejectedRequest(
+              'PocketUniverse Message Signature: User denied message signature.'
+            );
+            const response = {
+              id: request?.id,
+              jsonrpc: '2.0',
+              error,
+            };
+            callback(error, response);
+            // For error, we just continue, to make sure we don't block the user!
+          } else if (
+            response === Response.Continue ||
+            response === Response.Error
+          ) {
+            log.info(response, 'Continue | Error');
+            return Reflect.apply(target, thisArg, args);
+          }
+        });
+    } else if (request.method === 'eth_sign') {
+      log.info('EthSign Request');
+      if (request.params.length !== 2) {
+        // Forward the request anyway.
+        log.warn('Unexpected argument length.');
+        return Reflect.apply(target, thisArg, args);
+      }
+
+      target({ method: 'eth_chainId' })
+        .then((chainId: any) => {
+          REQUEST_MANAGER.request({
+            chainId,
+            hash: request.params[1],
+          });
+        })
         .then((response: any) => {
           if (response === Response.Reject) {
             log.info('Reject');
