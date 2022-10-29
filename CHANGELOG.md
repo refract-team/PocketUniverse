@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.25] - 2022-10-28
 
+- Fix unintentional removal of eth_sign
 - Remove the PocketUniverse console logging.
 - Fix support for metamask on brave.
 - Disable native brave wallet.
