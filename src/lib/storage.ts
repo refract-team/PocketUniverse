@@ -2,7 +2,6 @@
 import logger from './logger';
 import { fetchSimulate, fetchSignature } from './server';
 import type { RequestArgs } from './request';
-import { v4 as uuidv4 } from 'uuid';
 import { Simulation, Response, ResponseType } from '../lib/models';
 import browser from 'webextension-polyfill';
 
@@ -153,7 +152,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.Simulation,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSimulate({ clientId: await getClientId(), ...args }),
+      fetchSimulate(args),
     ]);
 
     response = result[1];
@@ -164,7 +163,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.SignatureHash,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSignature({ clientId: await getClientId(), ...args }),
+      fetchSignature(args),
     ]);
 
     response = result[1];
@@ -175,7 +174,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         type: StoredType.Signature,
         state: StoredSimulationState.Simulating,
       }),
-      fetchSignature({ clientId: await getClientId(), ...args }),
+      fetchSignature(args),
     ]);
 
     response = result[1];
@@ -287,26 +286,3 @@ export const simulationNeedsAction = (
 export const UPDATE_KEY = 'updates';
 export const UPDATE_MESSAGE_KEY = 'updates_message';
 export const UPDATE_LINK_KEY = 'updates_link';
-export const CLIENT_ID_KEY = 'pocket_universe_client_id';
-
-/**
- * Get the clientId.
- *
- * Throws is client id is not set.
- */
-export const getClientId = async (): Promise<string> => {
-  const { pocket_universe_client_id } = await browser.storage.local.get(
-    CLIENT_ID_KEY
-  );
-
-  log.info({ id: pocket_universe_client_id, msg: 'Getting client ID.' });
-
-  // Id has not been set yet.
-  if (!pocket_universe_client_id) {
-    let uuid = uuidv4();
-    browser.storage.local.set({ [CLIENT_ID_KEY]: uuid });
-    return uuid;
-  }
-
-  return pocket_universe_client_id;
-};

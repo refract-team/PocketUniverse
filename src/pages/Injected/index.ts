@@ -298,7 +298,6 @@ const addPocketUniverseProxy = (provider: any) => {
     },
   };
 
-
   if (provider && !provider?.isPocketUniverse) {
     log.debug({ provider }, 'Added proxy');
     // TODO(jqphu): Brave will not allow us to overwrite request/send/sendAsync as it is readonly.

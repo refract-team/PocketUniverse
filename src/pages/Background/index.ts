@@ -26,8 +26,8 @@ Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
 
-/// Add a quick form for uninstalls to see if we can improve the product. 
-browser.runtime.setUninstallURL("https://forms.gle/YNRYTWWJRQnA99qV9");
+/// Add a quick form for uninstalls to see if we can improve the product.
+browser.runtime.setUninstallURL('https://forms.gle/YNRYTWWJRQnA99qV9');
 
 // Firefox we use manifest v2 where scripting won't be defined
 if (browser.scripting) {
