@@ -308,12 +308,11 @@ const addPocketUniverseProxy = (provider: any) => {
     //
     // This should still work for metamask and other wallets using the brave browser.
     try {
-      if (!provider.isBraveWallet) {
-        provider.request = new Proxy(provider.request, requestHandler);
-        provider.send = new Proxy(provider.send, sendHandler);
-        provider.sendAsync = new Proxy(provider.sendAsync, sendAsyncHandler);
-        provider.isPocketUniverse = true;
-      }
+      Object.defineProperty(provider, 'request', { value: new Proxy(provider.request, requestHandler) });
+      Object.defineProperty(provider, 'send', { value: new Proxy(provider.send, sendHandler) });
+      Object.defineProperty(provider, 'sendAsync', { value: new Proxy(provider.sendAsync, sendAsyncHandler) });
+      provider.isPocketUniverse = true;
+      console.log('Pocket Universe is running!');
     } catch (error) {
       // If we can't add ourselves to this provider, don't mess with other providers.
       log.warn({ provider, error }, 'Could not attach to provider');
