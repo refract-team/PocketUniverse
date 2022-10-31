@@ -79,7 +79,7 @@ const addPocketUniverseProxy = (provider: any) => {
 
         // Sending response.
         response = await REQUEST_MANAGER.request({
-          chainId: await target({ method: 'eth_chainId' }),
+          chainId: await provider.request({ method: 'eth_chainId' }),
           transaction: request.params[0],
         });
 
@@ -107,7 +107,7 @@ const addPocketUniverseProxy = (provider: any) => {
 
         // Sending response.
         response = await REQUEST_MANAGER.request({
-          chainId: await target({ method: 'eth_chainId' }),
+          chainId: await provider.request({ method: 'eth_chainId' }),
           domain: params['domain'],
           message: params['message'],
           primaryType: params['primaryType'],
@@ -130,7 +130,7 @@ const addPocketUniverseProxy = (provider: any) => {
 
         // Sending response.
         response = await REQUEST_MANAGER.request({
-          chainId: await target({ method: 'eth_chainId' }),
+          chainId: await provider.request({ method: 'eth_chainId' }),
           hash: request.params[1],
         });
 
@@ -180,7 +180,7 @@ const addPocketUniverseProxy = (provider: any) => {
         }
 
         log.info(request, 'Request being sent');
-        target({ method: 'eth_chainId' })
+        provider.request({ method: 'eth_chainId' })
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
@@ -224,7 +224,7 @@ const addPocketUniverseProxy = (provider: any) => {
         const params = JSON.parse(request.params[1]);
         log.info({ params }, 'Request being sent');
 
-        target({ method: 'eth_chainId' })
+        provider.request({ method: 'eth_chainId' })
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
@@ -264,7 +264,7 @@ const addPocketUniverseProxy = (provider: any) => {
           return Reflect.apply(target, thisArg, args);
         }
 
-        target({ method: 'eth_chainId' })
+        provider.request({ method: 'eth_chainId' })
           .then((chainId: any) => {
             REQUEST_MANAGER.request({
               chainId,
