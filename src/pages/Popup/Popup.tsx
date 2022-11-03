@@ -1,5 +1,6 @@
 import mixpanel from 'mixpanel-browser';
-import { AiFillSetting, AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose } from 'react-icons/ai';
+import { BiUserCircle } from 'react-icons/bi';
 import { FiExternalLink } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
 
@@ -55,10 +56,10 @@ const Popup = () => {
           <div className="font-light text-xl my-auto">Pocket Universe</div>
         </button>
         <button
-          className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-xl w-7 h-7 justify-center items-center"
+          className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-3xl w-9 h-9 justify-center items-center"
           onClick={() => setSettingsOpen(!settingsOpen)}
         >
-          <AiFillSetting />
+          <BiUserCircle />
         </button>
       </div>
 
@@ -89,7 +90,7 @@ const Popup = () => {
         )}
         <div className="flex grow w-full">
           {settingsOpen ? (
-            <Settings closeSettings={() => setSettingsOpen(false)} />
+            <Settings />
           ) : (
             <Transaction />
           )}
