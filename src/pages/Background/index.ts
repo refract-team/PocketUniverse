@@ -29,6 +29,14 @@ Sentry.init({
 /// Add a quick form for uninstalls to see if we can improve the product.
 browser.runtime.setUninstallURL('https://forms.gle/YNRYTWWJRQnA99qV9');
 
+/// Add an onboarding URL on install.
+browser.runtime.onInstalled.addListener((obj) => {
+  // On first install, create the tab.
+  if (obj.reason === "install") {
+    browser.tabs.create({ url: 'https://www.pocketuniverse.app/onboarding' });
+  }
+});
+
 // Firefox we use manifest v2 where scripting won't be defined
 if (browser.scripting) {
   /// Inject the PocketUniverse script.
