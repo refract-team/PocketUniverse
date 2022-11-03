@@ -48,13 +48,12 @@ const Popup = () => {
   return (
     <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[400px] min-h-screen items-center">
       <div className="flex flex-row p-4 text-center w-full">
-        <button
-          onClick={() => setSettingsOpen(false)}
-          className="flex flex-row gap-4 text-xl leading-6 font-medium text-purple-300 hover:bg-gray-600 rounded-lg"
+        <div
+          className="flex flex-row gap-4 text-xl leading-6 font-medium text-purple-300 rounded-lg"
         >
           <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
           <div className="font-light text-xl my-auto">Pocket Universe</div>
-        </button>
+        </div>
         <button
           className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-3xl w-9 h-9 justify-center items-center"
           onClick={() => setSettingsOpen(!settingsOpen)}
