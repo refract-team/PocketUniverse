@@ -1,5 +1,4 @@
 import mixpanel from 'mixpanel-browser';
-import { MdClose } from 'react-icons/md';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { setSettings, getSettings } from '../../lib/storage';
@@ -7,7 +6,7 @@ import React from 'react';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
-const Settings = ({ closeSettings }: { closeSettings: () => void }) => {
+const Settings = () => {
   const [enabled, setEnabled] = useState<boolean>(true);
 
   useEffect(() => {
@@ -30,12 +29,6 @@ const Settings = ({ closeSettings }: { closeSettings: () => void }) => {
       <div className="flex flex-col grow">
         <div className="flex flex-row border-t border-gray-600 py-4">
           <div className="text-xl font-bold text-gray-100 px-4">Settings</div>
-          <button
-            onClick={closeSettings}
-            className="text-2xl font-bold text-gray-400 ml-auto my-auto text-right mr-3 p-1 hover:bg-gray-600 hover:rounded-full"
-          >
-            <MdClose />
-          </button>
         </div>
         <div className="flex flex-col gap-4 px-4 pt-4 w-full">
           <div className="flex flex-row w-full">
