@@ -35,11 +35,11 @@ const KNOWN_MARKETPLACES = [
   // Opensea
   "0x00000000006c3852cbef3e08e8df289169ede581",
   // Blur
-  "0x000000000000Ad05Ccc4F10045630fb830B95127",
+  "0x000000000000ad05ccc4f10045630fb830b95127",
   // X2Y2
-  "0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3",
+  "0x74312363e45dcaba76c59ec49a7aa8a65a67eed3",
   // Looksrare
-  "0x59728544B08AB483533076417FbBB2fD0B17CE3a"
+  "0x59728544b08ab483533076417fbbb2fd0b17ce3a"
 ]
 
 // There is a bit of a memory leak here. If the user navigates away from this page before the request is sent in, the request will never be removed from storage.
