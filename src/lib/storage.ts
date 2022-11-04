@@ -114,9 +114,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          state,
-        }
+        ...x,
+        state,
+      }
       : x
   );
 
@@ -131,10 +131,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          error,
-          state: StoredSimulationState.Error,
-        }
+        ...x,
+        error,
+        state: StoredSimulationState.Error,
+      }
       : x
   );
 
@@ -221,6 +221,11 @@ export interface Settings {
    * Whether or not we should disable the extension.
    */
   disable: boolean;
+
+  /**
+   * Whether or not we should ignore popups for purchases on opensea.
+   */
+  sniperMode: boolean;
 }
 
 const updateIcon = (settings: Settings) => {
@@ -235,14 +240,27 @@ const updateIcon = (settings: Settings) => {
 
 /**
  * Set the settings to the given args.
+ *
+ * We can pass either disable or sniper mode.
+ *
+ * We'll set which ever field is set.
  */
-export const setSettings = async (args: Settings) => {
+export const setSettings = async (args: {
+  disable?: boolean;
+  sniperMode?: boolean
+}) => {
   // Default is enabled.
-  let { pocket_universe_settings = { disable: false } } =
+  let { pocket_universe_settings = { disable: false, sniperMode: false, } } =
     await browser.storage.local.get(SETTINGS_KEY);
-  log.info({ settings: pocket_universe_settings, msg: 'Updating settings' });
+  log.info({ settings: pocket_universe_settings, args, msg: 'Updating settings' });
 
-  pocket_universe_settings.disable = args.disable;
+  if (args.disable !== undefined) {
+    pocket_universe_settings.disable = args.disable;
+  }
+
+  if (args.sniperMode !== undefined) {
+    pocket_universe_settings.sniperMode = args.sniperMode;
+  }
 
   updateIcon(pocket_universe_settings);
 
@@ -255,7 +273,7 @@ export const setSettings = async (args: Settings) => {
  * Get the settings.
  */
 export const getSettings = async (): Promise<Settings> => {
-  const { pocket_universe_settings = { disable: false } } =
+  const { pocket_universe_settings = { disable: false, sniperMode: false } } =
     await browser.storage.local.get(SETTINGS_KEY);
   log.info({ settings: pocket_universe_settings, msg: 'Getting settings.' });
 

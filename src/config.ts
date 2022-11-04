@@ -13,7 +13,7 @@ const dev = false;
 // Set of constants //
 
 const DEV_SERVER = 'http://localhost:3000';
-const PROD_SERVER = 'https://pocketsimulator.app';
+const PROD_SERVER = 'https://dash.pocketuniverse.app/api';
 
 config.dev = dev;
 

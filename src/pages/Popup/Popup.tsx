@@ -45,6 +45,22 @@ const Popup = () => {
     });
   }, [manifestData.version]);
 
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    console.log('Fetching!');
+    fetch(`https://dash.pocketuniverse.app/api/auth/session`).then(async (result) => {
+      const session = await result.json();
+
+      if (!session?.user?.id) {
+        setLoggedIn(false)
+      } else {
+        setLoggedIn(true)
+      }
+    }
+    );
+  }, []);
+
   return (
     <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[400px] min-h-screen items-center">
       <div className="flex flex-row p-4 text-center w-full">
@@ -59,6 +75,7 @@ const Popup = () => {
           onClick={() => setSettingsOpen(!settingsOpen)}
         >
           <BiUserCircle />
+          {loggedIn}
         </button>
       </div>
 
@@ -89,7 +106,7 @@ const Popup = () => {
         )}
         <div className="flex grow w-full">
           {settingsOpen ? (
-            <Settings />
+            <Settings settingsOpen={settingsOpen} />
           ) : (
             <Transaction />
           )}

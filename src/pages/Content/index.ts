@@ -1,4 +1,5 @@
 import logger from '../../lib/logger';
+import mixpanel from 'mixpanel-browser';
 import type { RequestArgs } from '../../lib/request';
 import {
   listenToRequest,
@@ -24,9 +25,22 @@ s.onload = () => {
   s.remove();
 };
 
+mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
+
 const log = logger.child({ component: 'Content-Script' });
 
 log.debug({ msg: 'Content Script Loaded' });
+
+const KNOWN_MARKETPLACES = [
+  // Opensea
+  "0x00000000006c3852cbef3e08e8df289169ede581",
+  // Blur
+  "0x000000000000Ad05Ccc4F10045630fb830B95127",
+  // X2Y2
+  "0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3",
+  // Looksrare
+  "0x59728544B08AB483533076417FbBB2fD0B17CE3a"
+]
 
 // There is a bit of a memory leak here. If the user navigates away from this page before the request is sent in, the request will never be removed from storage.
 // There shouldn't be too many requests though so this is okay.
@@ -53,6 +67,25 @@ listenToRequest(async (request: RequestArgs) => {
       dispatchResponse({
         id: request.id,
         type: Response.Continue,
+      });
+
+      mixpanel.track('Skipping Request Pocket Disabled');
+
+      return;
+    }
+
+    if (args.sniperMode && 'transaction' in request && KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())) {
+
+      mixpanel.track('Enable Simulations');
+
+      // Immediately respond continue.
+      dispatchResponse({
+        id: request.id,
+        type: Response.Continue,
+      });
+
+      mixpanel.track('Skipping Request Sniper Mode Enabled', {
+        marketplace: request.transaction.to.toLowerCase()
       });
 
       return;
