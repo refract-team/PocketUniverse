@@ -18,7 +18,7 @@ export const fetchUpdate = async (args: {
   link: string;
 }> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: any = await fetch(`${SERVER_URL}/updates`, {
+  const result: any = await fetch(`${SERVER_URL}/v1/updates`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -44,7 +44,7 @@ export const fetchSimulate = async (args: {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result: any = await fetch(`${SERVER_URL}/simulate`, {
+    const result: any = await fetch(`${SERVER_URL}/v1/simulate`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -80,22 +80,22 @@ export const fetchSimulate = async (args: {
 export const fetchSignature = async (
   args:
     | {
-        id: string;
-        chainId: string;
-        domain: any;
-        message: any;
-      }
+      id: string;
+      chainId: string;
+      domain: any;
+      message: any;
+    }
     | {
-        id: string;
-        chainId: string;
-        hash: any;
-      }
+      id: string;
+      chainId: string;
+      hash: any;
+    }
 ): Promise<Response> => {
   log.info(args, 'Fetch signature');
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result: any = await fetch(`${SERVER_URL}/signature`, {
+    const result: any = await fetch(`${SERVER_URL}/v1/signature`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
