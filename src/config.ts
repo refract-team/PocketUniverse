@@ -12,8 +12,8 @@ const dev = false;
 
 // Set of constants //
 
-const DEV_SERVER = 'http://localhost:3000/v1';
-const PROD_SERVER = 'https://pocketsimulator.app/v1';
+const DEV_SERVER = 'http://localhost:3000';
+const PROD_SERVER = 'https://pocketsimulator.app';
 
 config.dev = dev;
 
