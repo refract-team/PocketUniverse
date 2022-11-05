@@ -1,0 +1,36 @@
+import config from '../config';
+import { setSettings } from './storage'
+
+const SERVER_URL = config.server;
+
+/**
+ * Update the premium status.
+ *
+ * This will retrieve whether they are premium. If premium is enabled we will
+ * keep the sniper mode settings as is.
+ *
+ * If premium is not enabled, we will turn off sniper mode in the storage.
+ *
+ * We should be able to run this function at any time since if they're logged
+ * in it should be stored in the cookies.
+ *
+ * This function will return the premium result.
+ *
+ * TODO(jqphu): This function name is not descriptive. It updates sniper mode
+ * but is not clear from the function name.
+ */
+export const updatePremiumStatus = async () => {
+  return fetch(`${SERVER_URL}/premium`).then(async (result) => {
+    const session = await result.json();
+
+    // If we don't have a session, or the user is not premium.
+    if (!session || !session.premium) {
+      // Turn off sniper mode, they're not logged in.
+      //
+      // This should not be flaky, since the user is persistently logged in.
+      setSettings({ sniperMode: false });
+    }
+
+    return session;
+  })
+}
