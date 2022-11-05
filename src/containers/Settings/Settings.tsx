@@ -39,6 +39,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [address, setAddress] = useState<string | undefined>(undefined);
+  const [premium, setPremium] = useState<boolean>(false);
 
   // We refresh the session details everytime the user clicks the settings button.
   //
@@ -49,12 +50,15 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
       setEnabledSniperMode(settings.sniperMode);
     })
 
-    fetch(`${SERVER_URL}/auth/session`).then(async (result) => {
+    fetch(`${SERVER_URL}/premium`).then(async (result) => {
       const session = await result.json()
-      console.log(session);
-      if (session?.user?.id) {
-        console.log(`Logged in as ${session.user.id}`)
-        setAddress(session.user.id);
+      // This could be undefined, this is fine since they're logged out.
+      setAddress(session?.address);
+
+      console.log(`Logged in as ${session?.address} with premium ${session?.premium}`);
+
+      if (session?.premium) {
+        setPremium(session.premium)
       }
     }).catch((e) => {
       console.error(`Error`, e);
@@ -110,6 +114,12 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   {address ?
                     <span className="text-purple-300 text-sm">
                       Logged in as {truncateAddress(address)}
+                      {
+                        !premium &&
+                        <span>
+                          &nbsp;but you don't have Premium. Click here to upgrade.
+                        </span>
+                      }
                     </span>
                     :
                     <span>
@@ -128,11 +138,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
                 Skips the popup for purchases on the OS/LR/X2 contracts - use at your own risk!
               </span>
             </div>
-            {!address ?
-              <div className="text-4xl text-gray-100 my-auto ml-auto w-9 h-9">
-                <AiFillLock />
-              </div>
-              :
+            {address && premium ?
               <Switch
                 checked={enabledSniperMode}
                 onChange={switchEnabledSniperMode}
@@ -146,6 +152,13 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
         pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                 />
               </Switch>
+              :
+              <div className="ml-auto my-auto w-16">
+                <div className="text-4xl text-gray-100 my-auto ml-auto w-9 h-9">
+                  <AiFillLock />
+                </div>
+              </div>
+
             }
           </div>
         </div>
