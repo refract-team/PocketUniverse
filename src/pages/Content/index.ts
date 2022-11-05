@@ -36,6 +36,8 @@ const KNOWN_MARKETPLACES = [
   "0x00000000006c3852cbef3e08e8df289169ede581",
   // Blur
   "0x000000000000ad05ccc4f10045630fb830b95127",
+  // Blur
+  "0x39da41747a83aee658334415666f3ef92dd0d541",
   // X2Y2
   "0x74312363e45dcaba76c59ec49a7aa8a65a67eed3",
   // Looksrare
