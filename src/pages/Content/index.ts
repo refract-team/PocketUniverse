@@ -69,8 +69,6 @@ listenToRequest(async (request: RequestArgs) => {
         type: Response.Continue,
       });
 
-      mixpanel.track('Skipping Request Pocket Disabled');
-
       return;
     }
 
@@ -82,10 +80,6 @@ listenToRequest(async (request: RequestArgs) => {
       dispatchResponse({
         id: request.id,
         type: Response.Continue,
-      });
-
-      mixpanel.track('Skipping Request Sniper Mode Enabled', {
-        marketplace: request.transaction.to.toLowerCase()
       });
 
       return;
