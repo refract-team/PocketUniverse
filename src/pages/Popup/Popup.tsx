@@ -3,6 +3,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { BiUserCircle } from 'react-icons/bi';
 import { FiExternalLink } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
+import { IconContext } from "react-icons";
 
 import Transaction from '../../containers/Transaction/Transaction';
 import Settings from '../../containers/Settings/Settings';
@@ -12,6 +13,8 @@ import {
   UPDATE_MESSAGE_KEY,
   UPDATE_LINK_KEY,
 } from '../../lib/storage';
+
+import { updatePremiumStatus } from '../../lib/premium';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
@@ -45,20 +48,14 @@ const Popup = () => {
     });
   }, [manifestData.version]);
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [premium, setPremium] = useState(false);
 
   useEffect(() => {
-    console.log('Fetching!');
-    fetch(`https://dash.pocketuniverse.app/api/auth/session`).then(async (result) => {
-      const session = await result.json();
-
-      if (!session?.user?.id) {
-        setLoggedIn(false)
-      } else {
-        setLoggedIn(true)
+    updatePremiumStatus().then((session) => {
+      if (session.premium) {
+        setPremium(true)
       }
-    }
-    );
+    })
   }, []);
 
   return (
@@ -70,13 +67,31 @@ const Popup = () => {
           <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
           <div className="font-light text-xl my-auto">Pocket Universe</div>
         </div>
-        <button
-          className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-3xl w-9 h-9 justify-center items-center"
-          onClick={() => setSettingsOpen(!settingsOpen)}
-        >
-          <BiUserCircle />
-          {loggedIn}
-        </button>
+        <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
+          <div className="mr-1 my-auto">
+            {premium ?
+              <div className="my-auto p-1">Premium</div>
+              :
+              <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2">
+                <a
+                  href="https://dash.pocketuniverse.app"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Upgrade
+                </a>
+              </button>
+            }
+          </div>
+          <button
+            className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <IconContext.Provider value={{ className: `p-1 ${premium ? "text-purple-400" : "text-gray-100"}`, size: "44px" }}>
+              <BiUserCircle />
+            </IconContext.Provider>
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col grow w-full">

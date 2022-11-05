@@ -74,8 +74,6 @@ listenToRequest(async (request: RequestArgs) => {
 
     if (args.sniperMode && 'transaction' in request && KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())) {
 
-      mixpanel.track('Enable Simulations');
-
       // Immediately respond continue.
       dispatchResponse({
         id: request.id,

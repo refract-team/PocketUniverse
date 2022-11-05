@@ -5,11 +5,9 @@ import { AiFillLock } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 import { setSettings, Settings, getSettings } from '../../lib/storage';
 import React from 'react';
-import config from '../../config';
+import { updatePremiumStatus } from '../../lib/premium';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
-
-const SERVER_URL = config.server;
 
 const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] = useState<boolean>(true);
@@ -45,14 +43,8 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
   //
   // TODO(jqphu): use a push notification from the website and the background page.
   useEffect(() => {
-    getSettings().then((settings: Settings) => {
-      setEnabledRunSimulations(!settings.disable);
-      setEnabledSniperMode(settings.sniperMode);
-    })
-
-    fetch(`${SERVER_URL}/premium`).then(async (result) => {
-      const session = await result.json()
-      // This could be undefined, this is fine since they're logged out.
+    // Update the premium status first, this might set the values in storage if the user is not logged in.
+    updatePremiumStatus().then((session) => {
       setAddress(session?.address);
 
       console.log(`Logged in as ${session?.address} with premium ${session?.premium}`);
@@ -62,9 +54,15 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
       }
     }).catch((e) => {
       console.error(`Error`, e);
-    }).finally(() => setLoading(false))
-  }, [settingsOpen])
+    }).finally(() => {
+      // We want to run this regardless if premium call succeeded or not.
+      getSettings().then((settings: Settings) => {
+        setEnabledRunSimulations(!settings.disable);
+        setEnabledSniperMode(settings.sniperMode);
+      }).finally(() => setLoading(false))
+    })
 
+  }, [settingsOpen])
 
   const truncateAddress = (input: string) => {
     return String()
