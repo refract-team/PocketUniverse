@@ -49,13 +49,14 @@ const Popup = () => {
   }, [manifestData.version]);
 
   const [premium, setPremium] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     updatePremiumStatus().then((session) => {
       if (session.premium) {
         setPremium(true)
       }
-    })
+    }).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -67,31 +68,33 @@ const Popup = () => {
           <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
           <div className="font-light text-xl my-auto">Pocket Universe</div>
         </div>
-        <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
-          <div className="mr-1 my-auto">
-            {premium ?
-              <div className="my-auto p-1">Premium</div>
-              :
-              <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2">
-                <a
-                  href="https://dash.pocketuniverse.app"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Upgrade
-                </a>
-              </button>
-            }
+        {!loading &&
+          <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
+            <div className="mr-1 my-auto">
+              {premium ?
+                <div className="my-auto p-1">Premium</div>
+                :
+                <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2">
+                  <a
+                    href="https://dash.pocketuniverse.app"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Upgrade
+                  </a>
+                </button>
+              }
+            </div>
+            <button
+              className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
+              onClick={() => setSettingsOpen(!settingsOpen)}
+            >
+              <IconContext.Provider value={{ className: `p-1 ${premium ? "text-purple-400" : "text-gray-100"}`, size: "44px" }}>
+                <BiUserCircle />
+              </IconContext.Provider>
+            </button>
           </div>
-          <button
-            className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
-            onClick={() => setSettingsOpen(!settingsOpen)}
-          >
-            <IconContext.Provider value={{ className: `p-1 ${premium ? "text-purple-400" : "text-gray-100"}`, size: "44px" }}>
-              <BiUserCircle />
-            </IconContext.Provider>
-          </button>
-        </div>
+        }
       </div>
 
       <div className="flex flex-col grow w-full">
