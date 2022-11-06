@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.30] - 2022-11-03
+## [0.0.33] - 2022-11-06
+
+- Fix loading for settings.
+
+## [0.0.32] - 2022-11-05
+
+- Added premium sniper mode and logging in feature.
+
+## [0.0.31] - 2022-11-03
 
 - Add an onboarding page when it is first installed
 
