@@ -141,7 +141,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
               <div className="flex flex-col text-lg text-gray-100 my-auto">
                 Sniper Mode
                 <span className="text-gray-100 text-xs">
-                  Skips the popup for purchases on the OS/LR/X2/Blur contracts - use at your own risk!
+                  Skips the popup for buying and accepting offers on the OS/LR/X2/Blur contracts - use at your own risk!
                 </span>
               </div>
               {address && premium ?
