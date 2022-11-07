@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.35] - 2022-11-07
 
 - Keep the settings button always displayed.
+- Rename sniper mode -> hyperdrive
 
 ## [0.0.34] - 2022-11-07
 

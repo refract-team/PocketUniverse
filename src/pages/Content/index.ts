@@ -74,7 +74,7 @@ listenToRequest(async (request: RequestArgs) => {
       return;
     }
 
-    if (args.sniperMode && 'transaction' in request && KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())) {
+    if (args.hyperdrive && 'transaction' in request && KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())) {
 
       // Immediately respond continue.
       dispatchResponse({
