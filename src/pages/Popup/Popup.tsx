@@ -68,8 +68,8 @@ const Popup = () => {
           <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
           <div className="font-light text-xl my-auto">Pocket Universe</div>
         </div>
-        {!loading &&
-          <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
+        <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
+          {!loading &&
             <div className="mr-1 my-auto">
               {premium ?
                 <div className="my-auto p-1">Premium</div>
@@ -85,16 +85,16 @@ const Popup = () => {
                 </button>
               }
             </div>
-            <button
-              className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
-              onClick={() => setSettingsOpen(!settingsOpen)}
-            >
-              <IconContext.Provider value={{ className: `p-1 ${premium ? "text-purple-400" : "text-gray-100"}`, size: "44px" }}>
-                <BiUserCircle />
-              </IconContext.Provider>
-            </button>
-          </div>
-        }
+          }
+          <button
+            className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <IconContext.Provider value={{ className: `p-1 ${premium ? "text-purple-400" : "text-gray-100"}`, size: "44px" }}>
+              <BiUserCircle />
+            </IconContext.Provider>
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col grow w-full">
@@ -130,7 +130,7 @@ const Popup = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
