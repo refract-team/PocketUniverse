@@ -1,7 +1,7 @@
 import config from '../config';
 import { setSettings } from './storage'
 
-const SERVER_URL = config.server;
+const AUTH_SERVER_URL = config.authServer;
 
 /**
  * Update the premium status.
@@ -20,7 +20,7 @@ const SERVER_URL = config.server;
  * but is not clear from the function name.
  */
 export const updatePremiumStatus = async () => {
-  return fetch(`${SERVER_URL}/premium`).then(async (result) => {
+  return fetch(`${AUTH_SERVER_URL}/api/premium`).then(async (result) => {
     const session = await result.json();
 
     // If we don't have a session, or the user is not premium.
