@@ -140,8 +140,17 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
             <div className="flex flex-row w-full">
               <div className="flex flex-col text-lg text-gray-100 my-auto">
                 Sniper Mode
-                <span className="text-gray-100 text-xs">
-                  Skips the popup for buying and accepting offers on the OS/LR/X2/Blur contracts - use at your own risk!
+                <span className="text-gray-100 text-sm">
+                  Use at your own risk!
+                  <a
+                    href="https://pocketuniverse.notion.site/Sniper-Mode-33dee2e5d41040a6a21708cd7167c030"
+                    target="_blank"
+                    className="text-purple-300 hover:underline inline"
+                    rel="noreferrer"
+                  >
+                    &nbsp;Click to learn more.
+                    <FiExternalLink className="inline pl-1 text-xl my-auto" />
+                  </a>
                 </span>
               </div>
               {address && premium ?
