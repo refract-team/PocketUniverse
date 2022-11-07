@@ -225,7 +225,7 @@ export interface Settings {
   /**
    * Whether or not we should ignore popups for purchases on opensea.
    */
-  sniperMode: boolean;
+  hyperdrive: boolean;
 }
 
 const updateIcon = (settings: Settings) => {
@@ -241,16 +241,16 @@ const updateIcon = (settings: Settings) => {
 /**
  * Set the settings to the given args.
  *
- * We can pass either disable or sniper mode.
+ * We can pass either disable or hyperdrive.
  *
  * We'll set which ever field is set.
  */
 export const setSettings = async (args: {
   disable?: boolean;
-  sniperMode?: boolean
+  hyperdrive?: boolean
 }) => {
   // Default is enabled.
-  let { pocket_universe_settings = { disable: false, sniperMode: false, } } =
+  let { pocket_universe_settings = { disable: false, hyperdrive: false, } } =
     await browser.storage.local.get(SETTINGS_KEY);
   log.info({ settings: pocket_universe_settings, args, msg: 'Updating settings' });
 
@@ -258,8 +258,8 @@ export const setSettings = async (args: {
     pocket_universe_settings.disable = args.disable;
   }
 
-  if (args.sniperMode !== undefined) {
-    pocket_universe_settings.sniperMode = args.sniperMode;
+  if (args.hyperdrive !== undefined) {
+    pocket_universe_settings.hyperdrive = args.hyperdrive;
   }
 
   updateIcon(pocket_universe_settings);
@@ -273,7 +273,7 @@ export const setSettings = async (args: {
  * Get the settings.
  */
 export const getSettings = async (): Promise<Settings> => {
-  const { pocket_universe_settings = { disable: false, sniperMode: false } } =
+  const { pocket_universe_settings = { disable: false, hyperdrive: false } } =
     await browser.storage.local.get(SETTINGS_KEY);
   log.info({ settings: pocket_universe_settings, msg: 'Getting settings.' });
 

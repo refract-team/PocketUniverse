@@ -23,16 +23,16 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
     setEnabledRunSimulations(enabled);
   };
 
-  const [enabledSniperMode, setEnabledSniperMode] = useState<boolean>(false);
-  const switchEnabledSniperMode = async (enabled: boolean) => {
+  const [enabledHyperdriveMode, setEnabledHyperdriveMode] = useState<boolean>(false);
+  const switchEnabledHyperdriveMode = async (enabled: boolean) => {
     if (enabled) {
       mixpanel.track('Enable Sniper Mode');
     } else {
       mixpanel.track('Disable Sniper Mode');
     }
 
-    await setSettings({ sniperMode: enabled });
-    setEnabledSniperMode(enabled);
+    await setSettings({ hyperdrive: enabled });
+    setEnabledHyperdriveMode(enabled);
   };
 
 
@@ -59,7 +59,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
       // We want to run this regardless if premium call succeeded or not.
       getSettings().then((settings: Settings) => {
         setEnabledRunSimulations(!settings.disable);
-        setEnabledSniperMode(settings.sniperMode);
+        setEnabledHyperdriveMode(settings.hyperdrive);
       }).finally(() => setLoading(false))
     })
 
@@ -93,7 +93,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
           <div className="px-4 w-full">
             <div className="flex flex-col gap-4 pt-4 w-full">
               <div className="flex flex-row w-full">
-                <div className="text-lg text-gray-100 my-auto">Run Simulations</div>
+                <div className="text-lg font-medium text-gray-100 my-auto">Run Simulations</div>
                 <Switch
                   checked={enabledRunSimulations}
                   onChange={switchedEnableRunSimulations}
@@ -139,11 +139,13 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
             </div>
             <div className="flex flex-row w-full">
               <div className="flex flex-col text-lg text-gray-100 my-auto">
-                Sniper Mode
-                <span className="text-gray-100 text-sm">
-                  Use at your own risk!
+                <div className="font-medium">
+                  Hyperdrive
+                </div>
+                <span className="text-gray-100 text-sm mr-2">
+                  Skips popups for purchases and accepting offers on marketplaces.
                   <a
-                    href="https://pocketuniverse.notion.site/Sniper-Mode-33dee2e5d41040a6a21708cd7167c030"
+                    href="https://pocketuniverse.notion.site/Hyperdrive-33dee2e5d41040a6a21708cd7167c030"
                     target="_blank"
                     className="text-purple-300 hover:underline inline"
                     rel="noreferrer"
@@ -155,15 +157,15 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
               </div>
               {address && premium ?
                 <Switch
-                  checked={enabledSniperMode}
-                  onChange={switchEnabledSniperMode}
-                  className={`${enabledSniperMode ? 'bg-blue-400' : 'bg-gray-500'}
+                  checked={enabledHyperdriveMode}
+                  onChange={switchEnabledHyperdriveMode}
+                  className={`${enabledHyperdriveMode ? 'bg-blue-400' : 'bg-gray-500'}
                 my-auto ml-auto relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full items-center border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
                   <span
                     aria-hidden="true"
-                    className={`${enabledSniperMode ? 'translate-x-6' : 'translate-x-0'}
+                    className={`${enabledHyperdriveMode ? 'translate-x-6' : 'translate-x-0'}
         pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                   />
                 </Switch>
