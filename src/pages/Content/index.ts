@@ -1,5 +1,4 @@
 import logger from '../../lib/logger';
-import mixpanel from 'mixpanel-browser';
 import type { RequestArgs } from '../../lib/request';
 import {
   listenToRequest,
@@ -24,8 +23,6 @@ s.src = browser.runtime.getURL('injectedScript.bundle.js');
 s.onload = () => {
   s.remove();
 };
-
-mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
 const log = logger.child({ component: 'Content-Script' });
 
