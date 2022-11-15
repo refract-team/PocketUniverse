@@ -1,7 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
-import { AiFillLock } from 'react-icons/ai';
+import { AiFillLock, AiFillCopy } from 'react-icons/ai';
 import { RiseLoader } from 'react-spinners';
 import { FiExternalLink } from 'react-icons/fi';
 import { setSettings, Settings, getSettings } from '../../lib/storage';
@@ -65,6 +65,8 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
 
   }, [settingsOpen])
 
+  const referralLink = `dash.pocketuniverse.app/ref/${address}`;
+
   const truncateAddress = (input: string) => {
     return String()
       .concat(
@@ -109,7 +111,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
                 </Switch>
               </div>
             </div>
-            <div className="flex flex-col py-8">
+            <div className="flex flex-col py-4">
               <div className="text-2xl font-bold text-gray-100">Premium Features</div>
               <div>
                 <a
@@ -137,7 +139,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-row w-full">
+            <div className="flex flex-row w-full pb-4">
               <div className="flex flex-col text-lg text-gray-100 my-auto">
                 <div className="font-medium">
                   Hyperdrive
@@ -175,7 +177,28 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
                     <AiFillLock />
                   </div>
                 </div>
-
+              }
+            </div>
+            <div className="flex flex-col w-full text-xl items-center text-center">
+              <a
+                href="https://dash.pocketuniverse.app/refer"
+                target="_blank"
+                className="text-purple-300 text-sm hover:underline inline"
+                rel="noreferrer"
+              >
+                Refer friends to unlock hyperdrive and more!
+                <FiExternalLink className="inline pl-1 text-xl my-auto" />
+              </a>
+              {address &&
+                <button className="pt-1 flex flex-row p-1 border border-white rounded-lg w-72 text-gray-100 justify-center text-center hover:bg-gray-800" onClick={async (e) => {
+                  e.preventDefault();
+                  await navigator.clipboard.writeText(referralLink);
+                }}>
+                  <div className="text-sm truncate w-64 text-center">
+                    {referralLink}
+                  </div>
+                  <AiFillCopy />
+                </button>
               }
             </div>
           </div>
