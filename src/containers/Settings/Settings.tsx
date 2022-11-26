@@ -65,7 +65,7 @@ const Settings = ({ settingsOpen }: { settingsOpen: boolean }) => {
 
   }, [settingsOpen])
 
-  const referralLink = `dash.pocketuniverse.app/ref/${address}`;
+  const referralLink = `https://dash.pocketuniverse.app/ref/${address}`;
 
   const truncateAddress = (input: string) => {
     return String()
