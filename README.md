@@ -1,6 +1,6 @@
 <img src="pocket_universe_info.png" />
 
-# PocketUniverse
+# Pocket Universe
 
 ![Known Vulnerabilities](https://snyk.io/test/github/jqphu/PocketUniverse/badge.svg)
 
@@ -8,7 +8,7 @@
 
 ## Injected
 
-The injected script proxies requests from the website to PocketUniverse before forwarding it to
+The injected script proxies requests from the website to Pocket Universe before forwarding it to
 `window.ethereum`.
 
 We don't modify the request but rather just wait until the user decides it wants to continue.
