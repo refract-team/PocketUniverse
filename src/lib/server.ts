@@ -80,16 +80,16 @@ export const fetchSimulate = async (args: {
 export const fetchSignature = async (
   args:
     | {
-      id: string;
-      chainId: string;
-      domain: any;
-      message: any;
-    }
+        id: string;
+        chainId: string;
+        domain: any;
+        message: any;
+      }
     | {
-      id: string;
-      chainId: string;
-      hash: any;
-    }
+        id: string;
+        chainId: string;
+        hash: any;
+      }
 ): Promise<Response> => {
   log.info(args, 'Fetch signature');
 
@@ -131,4 +131,33 @@ export const fetchSignature = async (
     console.log('ERROR: ', e);
     return { error: e.message, type: ResponseType.Error };
   }
+};
+
+export const fetchPhishing = async (hostname: string): Promise<boolean> => {
+  log.info(hostname, 'Fetch if this is a phishing link');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = await fetch(
+    `${SERVER_URL}/v2/phishing?` +
+      new URLSearchParams({
+        hostname,
+      }),
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  console.log(result);
+
+  if (result.status === 200) {
+    const data = await result.json();
+
+    return data.phishing;
+  }
+
+  return false;
 };
