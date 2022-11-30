@@ -1,16 +1,23 @@
 import * as Sentry from '@sentry/browser';
-
 import logger from '../../lib/logger';
-import type { RequestArgs } from '../../lib/request';
+import {
+  PHISHING_REQUEST_COMMAND,
+  PHISHING_RESPONSE_COMMAND,
+  RequestArgs,
+} from '../../lib/request';
+import punycode from 'punycode';
+import unidecode from 'unidecode';
+import levenshtein from 'fast-levenshtein';
 import { REQUEST_COMMAND } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   fetchSimulationAndUpdate,
+  getAllowlist,
+  addAllowlist,
   clearOldSimulations,
   simulationNeedsAction,
 } from '../../lib/storage';
 import { fetchUpdate } from '../../lib/server';
-
 import {
   UPDATE_KEY,
   UPDATE_MESSAGE_KEY,
@@ -32,7 +39,7 @@ browser.runtime.setUninstallURL('https://forms.gle/YNRYTWWJRQnA99qV9');
 /// Add an onboarding URL on install.
 browser.runtime.onInstalled.addListener((obj) => {
   // On first install, create the tab.
-  if (obj.reason === "install") {
+  if (obj.reason === 'install') {
     browser.tabs.create({ url: 'https://www.pocketuniverse.app/onboarding' });
   }
 });
@@ -177,15 +184,86 @@ browser.storage.onChanged.addListener((changes, area) => {
   });
 });
 
-browser.runtime.onMessage.addListener((request) => {
+const SAFE_DOMAIN_NAMES = ['opensea.com', 'blur.io'];
+
+// Strips the leading www and TLD
+const stripHostname = (hostname: string) => {
+  let strippedWWW = hostname.replace(/^(www\.)/, '');
+  let strippedTLD = strippedWWW.split('.').slice(0, -1).join('.');
+
+  return strippedTLD;
+};
+
+const hostnameDistance = (
+  leftStrippedHostname: string,
+  rightStrippedHostname: string
+) => {
+  let leftDeunicode = unidecode(punycode.toUnicode(leftStrippedHostname));
+  let rightDeunicode = unidecode(punycode.toUnicode(rightStrippedHostname));
+
+  let score = levenshtein.get(leftDeunicode, rightDeunicode);
+
+  return score;
+};
+
+const isPhishing = (hostname: string) => {
+  let strippedTestName = stripHostname(hostname);
+
+  // By default, do a 2 distance threshold.
+  let threshold = 2;
+
+  // This indicates, it has homographs that are puny encoded. Increase the
+  // threshold to catch a variety of character changes.
+  if (punycode.encode(hostname) !== hostname) {
+    threshold = 5;
+  }
+
+  for (const safeName of SAFE_DOMAIN_NAMES) {
+    let strippedSafeName = stripHostname(safeName);
+    // Not a safe URL but within 2 levenshtein distance report as phishing.
+    if (
+      strippedTestName != strippedSafeName &&
+      hostnameDistance(strippedTestName, strippedSafeName) <= 2
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+browser.runtime.onMessage.addListener((request, sender) => {
   Sentry.wrap(() => {
     if (request.command === REQUEST_COMMAND) {
       log.info(request, 'Request command');
 
       const args: RequestArgs = request.data;
       clearOldSimulations().then(() => fetchSimulationAndUpdate(args));
+    } else if (request.command === PHISHING_REQUEST_COMMAND) {
+      const hostname = request.url.hostname;
+
+      getAllowlist().then((allowlist) => {
+        // On allow list. Skip.
+        if (allowlist.includes(hostname)) {
+          return;
+        }
+
+        if (isPhishing(hostname) && sender?.tab?.id != undefined) {
+          browser.tabs.sendMessage(sender.tab.id, {
+            command: PHISHING_RESPONSE_COMMAND,
+            url: request.url,
+            phishing: true,
+          });
+        }
+      });
     } else {
-      log.warn('Unknown command', request);
+      log.warn(request, 'Unknown command');
     }
   });
+});
+
+// Should only be able to be called by pocketuniverse.app.
+browser.runtime.onMessageExternal.addListener((request) => {
+  console.log(`Adding "${request.hostname}" to allowlist`);
+  addAllowlist(request.hostname);
 });

@@ -180,7 +180,8 @@ const addPocketUniverseProxy = (provider: any) => {
         }
 
         log.info(request, 'Request being sent');
-        provider.request({ method: 'eth_chainId' })
+        provider
+          .request({ method: 'eth_chainId' })
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
@@ -224,7 +225,8 @@ const addPocketUniverseProxy = (provider: any) => {
         const params = JSON.parse(request.params[1]);
         log.info({ params }, 'Request being sent');
 
-        provider.request({ method: 'eth_chainId' })
+        provider
+          .request({ method: 'eth_chainId' })
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
@@ -264,7 +266,8 @@ const addPocketUniverseProxy = (provider: any) => {
           return Reflect.apply(target, thisArg, args);
         }
 
-        provider.request({ method: 'eth_chainId' })
+        provider
+          .request({ method: 'eth_chainId' })
           .then((chainId: any) => {
             REQUEST_MANAGER.request({
               chainId,
@@ -308,9 +311,15 @@ const addPocketUniverseProxy = (provider: any) => {
     //
     // This should still work for metamask and other wallets using the brave browser.
     try {
-      Object.defineProperty(provider, 'request', { value: new Proxy(provider.request, requestHandler) });
-      Object.defineProperty(provider, 'send', { value: new Proxy(provider.send, sendHandler) });
-      Object.defineProperty(provider, 'sendAsync', { value: new Proxy(provider.sendAsync, sendAsyncHandler) });
+      Object.defineProperty(provider, 'request', {
+        value: new Proxy(provider.request, requestHandler),
+      });
+      Object.defineProperty(provider, 'send', {
+        value: new Proxy(provider.send, sendHandler),
+      });
+      Object.defineProperty(provider, 'sendAsync', {
+        value: new Proxy(provider.sendAsync, sendAsyncHandler),
+      });
       provider.isPocketUniverse = true;
       console.log('Pocket Universe is running!');
     } catch (error) {

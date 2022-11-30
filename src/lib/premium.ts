@@ -1,5 +1,5 @@
 import config from '../config';
-import { setSettings } from './storage'
+import { setSettings } from './storage';
 
 const AUTH_SERVER_URL = config.authServer;
 
@@ -32,5 +32,5 @@ export const updatePremiumStatus = async () => {
     }
 
     return session;
-  })
-}
+  });
+};

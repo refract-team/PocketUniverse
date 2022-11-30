@@ -6,6 +6,7 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 /**
  * Taken from https://github.com/abhijithvijayan/wext-manifest-webpack-plugin
@@ -296,6 +297,8 @@ var options = {
       chunks: ['popup'],
       cache: false,
     }),
+
+    new NodePolyfillPlugin(),
   ],
   infrastructureLogging: {
     level: 'info',

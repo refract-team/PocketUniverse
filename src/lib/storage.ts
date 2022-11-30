@@ -114,9 +114,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        state,
-      }
+          ...x,
+          state,
+        }
       : x
   );
 
@@ -131,10 +131,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        error,
-        state: StoredSimulationState.Error,
-      }
+          ...x,
+          error,
+          state: StoredSimulationState.Error,
+        }
       : x
   );
 
@@ -247,12 +247,16 @@ const updateIcon = (settings: Settings) => {
  */
 export const setSettings = async (args: {
   disable?: boolean;
-  hyperdrive?: boolean
+  hyperdrive?: boolean;
 }) => {
   // Default is enabled.
-  let { pocket_universe_settings = { disable: false, hyperdrive: false, } } =
+  let { pocket_universe_settings = { disable: false, hyperdrive: false } } =
     await browser.storage.local.get(SETTINGS_KEY);
-  log.info({ settings: pocket_universe_settings, args, msg: 'Updating settings' });
+  log.info({
+    settings: pocket_universe_settings,
+    args,
+    msg: 'Updating settings',
+  });
 
   if (args.disable !== undefined) {
     pocket_universe_settings.disable = args.disable;
@@ -275,9 +279,32 @@ export const setSettings = async (args: {
 export const getSettings = async (): Promise<Settings> => {
   const { pocket_universe_settings = { disable: false, hyperdrive: false } } =
     await browser.storage.local.get(SETTINGS_KEY);
-  log.info({ settings: pocket_universe_settings, msg: 'Getting settings.' });
+  log.info({ settings: pocket_universe_settings, msg: 'Getting allowlist.' });
 
   return pocket_universe_settings as Settings;
+};
+
+export const ALLOWLIST_KEY = 'allowlist';
+
+export const getAllowlist = async (): Promise<string[]> => {
+  const { allowlist = [] } = await browser.storage.local.get(ALLOWLIST_KEY);
+
+  log.info({ allowlist, msg: 'Getting settings.' });
+
+  return allowlist;
+};
+
+export const addAllowlist = async (hostname: string) => {
+  const { allowlist = [] } = await browser.storage.local.get(ALLOWLIST_KEY);
+  log.info({ old: allowlist, new: allowlist }, 'Adding allowlist');
+
+  if (!allowlist.includes(hostname)) {
+    // Add hostname to allowlist.
+    allowlist.push(hostname);
+    await browser.storage.local.set({ allowlist });
+  }
+
+  return;
 };
 
 /**
