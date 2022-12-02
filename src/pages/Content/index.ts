@@ -1,9 +1,11 @@
 import logger from '../../lib/logger';
-import type { RequestArgs } from '../../lib/request';
+import { RequestArgs } from '../../lib/request';
 import {
   listenToRequest,
   dispatchResponse,
   REQUEST_COMMAND,
+  PHISHING_REQUEST_COMMAND,
+  PHISHING_RESPONSE_COMMAND,
   Response,
 } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
@@ -30,16 +32,16 @@ log.debug({ msg: 'Content Script Loaded' });
 
 const KNOWN_MARKETPLACES = [
   // Opensea
-  "0x00000000006c3852cbef3e08e8df289169ede581",
+  '0x00000000006c3852cbef3e08e8df289169ede581',
   // Blur
-  "0x000000000000ad05ccc4f10045630fb830b95127",
+  '0x000000000000ad05ccc4f10045630fb830b95127',
   // Blur
-  "0x39da41747a83aee658334415666f3ef92dd0d541",
+  '0x39da41747a83aee658334415666f3ef92dd0d541',
   // X2Y2
-  "0x74312363e45dcaba76c59ec49a7aa8a65a67eed3",
+  '0x74312363e45dcaba76c59ec49a7aa8a65a67eed3',
   // Looksrare
-  "0x59728544b08ab483533076417fbbb2fd0b17ce3a"
-]
+  '0x59728544b08ab483533076417fbbb2fd0b17ce3a',
+];
 
 // There is a bit of a memory leak here. If the user navigates away from this page before the request is sent in, the request will never be removed from storage.
 // There shouldn't be too many requests though so this is okay.
@@ -71,8 +73,11 @@ listenToRequest(async (request: RequestArgs) => {
       return;
     }
 
-    if (args.hyperdrive && 'transaction' in request && KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())) {
-
+    if (
+      args.hyperdrive &&
+      'transaction' in request &&
+      KNOWN_MARKETPLACES.includes(request.transaction.to.toLowerCase())
+    ) {
       // Immediately respond continue.
       dispatchResponse({
         id: request.id,
@@ -119,4 +124,35 @@ listenToRequest(async (request: RequestArgs) => {
       data: request,
     });
   });
+});
+
+const getRedirectString = (hostname: string, href: string) => {
+  const querystring = new URLSearchParams({ hostname, href });
+
+  return `https://dash.pocketuniverse.app/phishing?${querystring}`;
+};
+
+const phishingRedirect = () => {
+  // Get the current location.
+  const { hostname, href } = window.location;
+
+  console.warn('Redirecting due to phishing link detected', hostname);
+
+  // Update the location.
+  window.location.href = getRedirectString(hostname, href);
+};
+
+browser.runtime.sendMessage({
+  command: PHISHING_REQUEST_COMMAND,
+  url: window.location,
+});
+
+browser.runtime.onMessage.addListener((message) => {
+  // If the response was made for this tab, redirect to phishing.
+  if (message.command === PHISHING_RESPONSE_COMMAND) {
+    const { hostname } = window.location;
+    if (message.url.hostname === hostname) {
+      phishingRedirect();
+    }
+  }
 });
