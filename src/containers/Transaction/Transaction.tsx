@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { utils, BigNumber } from 'ethers';
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
-import { MdVerified } from 'react-icons/md';
+import { MdVerified, MdIosShare } from 'react-icons/md';
 import { AiFillCopy } from 'react-icons/ai';
 import { BeatLoader } from 'react-spinners';
 import { useState, useEffect } from 'react';
@@ -92,11 +92,10 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${
-            event.type === EventType.TransferIn
-              ? 'text-green-500'
-              : 'text-red-500'
-          } ml-auto my-auto text-lg`}
+          className={`${event.type === EventType.TransferIn
+            ? 'text-green-500'
+            : 'text-red-500'
+            } ml-auto my-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
@@ -144,9 +143,8 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${
-          event.collection_url ? 'hover:underline' : ''
-        }`}
+        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
+          }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -315,7 +313,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-          state === StoredSimulationState.Revert
+            state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -572,6 +570,14 @@ const TransactionComponent = () => {
           {filteredSimulations.length - 1} queued
         </div>
       )}
+      <div className="absolute flex w-full justify-end py-6 px-6">
+        <a href="https://twitter.com/intent/tweet?text=X%20looks%20like%20a%20scam%21%0A%0ADetected%20by%20%40PocketUniverseZ%0A%0A---%28delete%20below%20before%20posting%29---%0AInclude%20a%20screenshot%20in%20your%20post%21%0A%E2%97%86%20Shift%20%2B%20Command%20%2B%204%20%28Mac%29%0A%E2%97%86%20Windows%20key%20%2B%20Shift%20%2B%20S%20%28Windows%29" target="_blank">
+          <button title="share on twitter" className="flex flex-col items-center text-gray-300 hover:text-gray-400 ">
+            <MdIosShare size={24} />
+          </button>
+        </a>
+      </div>
+
       <img
         className="w-full border-t border-gray-600"
         src="waves_top.png"
