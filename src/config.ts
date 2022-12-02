@@ -5,7 +5,12 @@ interface Config {
   logLevel: string;
 }
 
-const config: Config = { dev: false, server: '', authServer: '', logLevel: 'debug' };
+const config: Config = {
+  dev: false,
+  server: '',
+  authServer: '',
+  logLevel: 'debug',
+};
 
 // Changable Configurations //
 
@@ -15,7 +20,6 @@ const dev = false;
 
 const DEV_SERVER = 'http://localhost:3000';
 const PROD_SERVER = 'https://pocketsimulator.app';
-
 
 const DEV_AUTH_SERVER = 'http://localhost:4000';
 const PROD_AUTH_SERVER = 'https://dash.pocketuniverse.app';

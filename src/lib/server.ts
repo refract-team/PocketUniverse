@@ -80,16 +80,16 @@ export const fetchSimulate = async (args: {
 export const fetchSignature = async (
   args:
     | {
-      id: string;
-      chainId: string;
-      domain: any;
-      message: any;
-    }
+        id: string;
+        chainId: string;
+        domain: any;
+        message: any;
+      }
     | {
-      id: string;
-      chainId: string;
-      hash: any;
-    }
+        id: string;
+        chainId: string;
+        hash: any;
+      }
 ): Promise<Response> => {
   log.info(args, 'Fetch signature');
 
