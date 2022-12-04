@@ -250,12 +250,12 @@ const hostnameDistance = (
 const isPhishing = (hostname: string) => {
   const strippedTestName = stripHostname(hostname);
 
-  let threshold = 1;
-
-  // If there's punycode, we're going to increase the threshold for this being a scam.
-  if (punycode.toUnicode(hostname) != hostname) {
-    threshold = 5;
+  // Only check hyroglphic domains.
+  if (punycode.toUnicode(hostname) == hostname) {
+    return;
   }
+
+  let threshold = 5;
 
   for (const safeName of SAFE_DOMAIN_NAMES) {
     const strippedSafeName = stripHostname(safeName);
