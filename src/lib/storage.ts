@@ -78,6 +78,21 @@ const completeSimulation = async (id: string, simulation: Simulation) => {
   return browser.storage.local.set({ simulations });
 };
 
+// Skip the popup, this is used for incorrect chain id.
+export const skipSimulation = async (id: string) => {
+  const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
+  log.info({ id }, 'Skipping simulation');
+
+  simulations.forEach((storedSimulation: StoredSimulation) => {
+    if (storedSimulation.id === id) {
+      log.debug('Simulation found id', id);
+      storedSimulation.state = StoredSimulationState.Confirmed;
+    }
+  });
+
+  return browser.storage.local.set({ simulations });
+}
+
 const revertSimulation = async (id: string, error?: string) => {
   const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
   log.info({ old: simulations, error }, 'Simulation reverted');
@@ -114,9 +129,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          state,
-        }
+        ...x,
+        state,
+      }
       : x
   );
 
@@ -131,10 +146,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-          ...x,
-          error,
-          state: StoredSimulationState.Error,
-        }
+        ...x,
+        error,
+        state: StoredSimulationState.Error,
+      }
       : x
   );
 
@@ -145,12 +160,18 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
   log.info(args, 'Fetch simulation and update');
   let response: Response;
 
+  let state = StoredSimulationState.Simulating;
+  if (args.chainId !== "0x1" && args.chainId !== "1") {
+    // Automatically confirm if chain id is incorrect. This prevents the popup.
+    state = StoredSimulationState.Confirmed;
+  }
+
   if ('transaction' in args) {
     const result = await Promise.all([
       addSimulation({
         id: args.id,
         type: StoredType.Simulation,
-        state: StoredSimulationState.Simulating,
+        state,
       }),
       fetchSimulate(args),
     ]);
@@ -161,7 +182,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
       addSimulation({
         id: args.id,
         type: StoredType.SignatureHash,
-        state: StoredSimulationState.Simulating,
+        state,
       }),
       fetchSignature(args),
     ]);
@@ -172,7 +193,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
       addSimulation({
         id: args.id,
         type: StoredType.Signature,
-        state: StoredSimulationState.Simulating,
+        state,
       }),
       fetchSignature(args),
     ]);
@@ -182,7 +203,12 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
 
   if (response.type === ResponseType.Error) {
     log.info(response, 'Response error');
-    return updateSimulatioWithErrorMsg(args.id, response.error);
+    if (response?.error === 'invalid chain id') {
+      // This will likely be a no-op but we want to handle it anyway.
+      return skipSimulation(args.id);
+    } else {
+      return updateSimulatioWithErrorMsg(args.id, response.error);
+    }
   }
   if (response.type === ResponseType.Revert) {
     log.info(response, 'Reverted simulation');
