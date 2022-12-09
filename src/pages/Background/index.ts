@@ -226,6 +226,7 @@ const SAFE_DOMAIN_NAMES = [
   'bungee.exchange',
   'app.aave.com',
   'swap.transit.finance',
+  'cockpunch.com',
 ];
 
 // Strips the leading TLD
