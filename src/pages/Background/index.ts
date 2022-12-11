@@ -225,6 +225,7 @@ const SAFE_DOMAIN_NAMES = [
   'app.aave.com',
   'swap.transit.finance',
   'cockpunch.com',
+  'dyno.gg',
 ];
 
 // Strips the leading TLD
