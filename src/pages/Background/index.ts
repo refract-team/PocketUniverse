@@ -186,8 +186,6 @@ browser.storage.onChanged.addListener((changes, area) => {
 
 // Safe domains to fuzzy check against. Do not include the https:// or www.
 const SAFE_DOMAIN_NAMES = [
-  // TODO(jqphu): remove this before prod.
-  'example.test',
   'opensea.io',
   'looksrare.org',
   'x2y2.io',
@@ -256,7 +254,7 @@ const isPhishing = (hostname: string) => {
     return;
   }
 
-  let threshold = 5;
+  let threshold = 2;
 
   for (const safeName of SAFE_DOMAIN_NAMES) {
     const strippedSafeName = stripHostname(safeName);
