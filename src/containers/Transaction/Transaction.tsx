@@ -99,7 +99,7 @@ const EventComponent = ({ event }: { event: Event }) => {
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
-          {event.tokenType === TokenType.ERC721 ? 'NFT' : event.name}
+          {(event.tokenType === TokenType.ERC721 || event.tokenType === TokenType.ERC1155) ? 'NFT' : event.name}
         </div>
       );
     }
