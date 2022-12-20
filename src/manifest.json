@@ -1,37 +1,31 @@
 {
   "manifest_version": 3,
   "__firefox__manifest_version": 2,
-
   "name": "Pocket Universe",
-  "version": "0.0.41.3",
+  "version": "0.0.42.1",
   "description": "A transaction checker that helps you avoid crypto scams.",
   "background": {
     "__chrome__service_worker": "background.bundle.js",
     "__firefox__scripts": ["background.bundle.js"]
   },
-
   "__firefox__browser_specific_settings": {
     "gecko": {
       "id": "pocketuniverse@refractlabs.io"
     }
   },
-
   "__chrome__action": {
     "default_title": "Pocket Universe",
     "default_popup": "popup.html",
     "default_icon": "icon-32.png"
   },
-
   "__firefox__browser_action": {
     "default_title": "Pocket Universe",
     "default_popup": "popup.html",
     "default_icon": "icon-32.png"
   },
-
   "icons": {
     "128": "icon-128.png"
   },
-
   "web_accessible_resources": [
     {
       "resources": [
@@ -49,7 +43,6 @@
       "matches": []
     }
   ],
-
   "__firefox__web_accessible_resources": [
     "icon-128.png",
     "icon-32.png",
@@ -63,9 +56,7 @@
     "waves.png",
     "injectedScript.bundle.js"
   ],
-
   "__chrome__host_permissions": ["file://*/*", "http://*/*", "https://*/*"],
-
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
@@ -74,12 +65,9 @@
       "run_at": "document_start"
     }
   ],
-
   "permissions": ["storage", "scripting"],
-
   "externally_connectable": {
     "matches": ["https://*.pocketuniverse.app/*"]
   },
-
   "__firefox__permissions": ["<all_urls>", "storage"]
 }
