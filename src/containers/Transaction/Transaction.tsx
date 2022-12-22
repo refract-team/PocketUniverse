@@ -30,10 +30,26 @@ mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
 const NoTransactionComponent = () => {
   return (
-    <div className="text-lg text-center p-5">
+    <div className="text-lg text-center">
       <img className="m-auto w-32" src="rocket.png" alt="rocket taking off" />
+      <div className="flex flex-col gap-4">
       <div className="p-2 text-gray-100">
-        Trigger a transaction to get started.
+        Trigger an Ethereum transaction to start
+      </div>
+      <div className="p-2 text-base text-gray-100">
+        We currently only work on Ethereum Mainnet. You will not see a pop-up for other chains.
+      </div>
+
+      <div className="p-2 text-base text-gray-100">
+      Come chat with us in  <a
+                    href="https://discord.gg/nVdz8tKkBr"
+                    target="_blank"
+                    className="text-purple-300 text-base hover:underline inline"
+                    rel="noreferrer"
+                    >
+                    Discord
+                    </a> if you want help!
+      </div>
       </div>
     </div>
   );
