@@ -305,32 +305,8 @@ export const setSettings = async (args: {
 export const getSettings = async (): Promise<Settings> => {
   const { pocket_universe_settings = { disable: false, hyperdrive: false } } =
     await browser.storage.local.get(SETTINGS_KEY);
-  log.info({ settings: pocket_universe_settings, msg: 'Getting allowlist.' });
 
   return pocket_universe_settings as Settings;
-};
-
-export const ALLOWLIST_KEY = 'allowlist';
-
-export const getAllowlist = async (): Promise<string[]> => {
-  const { allowlist = [] } = await browser.storage.local.get(ALLOWLIST_KEY);
-
-  log.info({ allowlist, msg: 'Getting settings.' });
-
-  return allowlist;
-};
-
-export const addAllowlist = async (hostname: string) => {
-  const { allowlist = [] } = await browser.storage.local.get(ALLOWLIST_KEY);
-  log.info({ old: allowlist, new: allowlist }, 'Adding allowlist');
-
-  if (!allowlist.includes(hostname)) {
-    // Add hostname to allowlist.
-    allowlist.push(hostname);
-    await browser.storage.local.set({ allowlist });
-  }
-
-  return;
 };
 
 /**

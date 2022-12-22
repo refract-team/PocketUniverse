@@ -1,19 +1,12 @@
 import * as Sentry from '@sentry/browser';
 import logger from '../../lib/logger';
 import {
-  PHISHING_REQUEST_COMMAND,
-  PHISHING_RESPONSE_COMMAND,
   RequestArgs,
 } from '../../lib/request';
-import punycode from 'punycode';
-import unidecode from 'unidecode';
-import levenshtein from 'fast-levenshtein';
 import { REQUEST_COMMAND } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   fetchSimulationAndUpdate,
-  getAllowlist,
-  addAllowlist,
   clearOldSimulations,
   simulationNeedsAction,
 } from '../../lib/storage';
@@ -184,131 +177,15 @@ browser.storage.onChanged.addListener((changes, area) => {
   });
 });
 
-// Safe domains to fuzzy check against. Do not include the https:// or www.
-const SAFE_DOMAIN_NAMES = [
-  'opensea.io',
-  'looksrare.org',
-  'x2y2.io',
-  'blur.io',
-  'sudoswap.xyz',
-  'foundation.app',
-  'element.market',
-  'rarible.com',
-  'superrare.com',
-  'nftx.io',
-  'genie.xyz',
-  'celmates.wtf',
-  'boredapeyachtclub.com',
-  'artblocks.io',
-  'artgobblers.com',
-  'revoke.cash',
-  'rtfkt.com',
-  'azuki.com',
-  'premint.xyz',
-  'crypto.com',
-  'app.uniswap.org',
-  'app.dodoex.io',
-  'swapr.eth.link',
-  'balancer.fi',
-  'bridgers.xyz',
-  'binance.com',
-  'across.to',
-  'metamask.io',
-  'app.1inch.io',
-  'wallet.polygon.technology',
-  'app.sushi.com',
-  'stargate.finance',
-  'stake.lido.fi',
-  'curve.fi',
-  'swap.cow.fi',
-  'bungee.exchange',
-  'app.aave.com',
-  'swap.transit.finance',
-  'cockpunch.com',
-  'dyno.gg',
-];
-
-// Strips the leading TLD
-const stripHostname = (hostname: string) => {
-  const strippedTLD = hostname.split('.').slice(0, -1).join('.');
-
-  return strippedTLD;
-};
-
-const hostnameDistance = (
-  leftStrippedHostname: string,
-  rightStrippedHostname: string
-) => {
-  const leftDeunicode = unidecode(punycode.toUnicode(leftStrippedHostname));
-  const rightDeunicode = unidecode(punycode.toUnicode(rightStrippedHostname));
-
-  const score = levenshtein.get(leftDeunicode, rightDeunicode);
-
-  return score;
-};
-
-const isPhishing = (hostname: string) => {
-  const strippedTestName = stripHostname(hostname);
-
-  // Only check hyroglphic domains.
-  if (punycode.toUnicode(hostname) == hostname) {
-    return;
-  }
-
-  let threshold = 2;
-
-  for (const safeName of SAFE_DOMAIN_NAMES) {
-    const strippedSafeName = stripHostname(safeName);
-    const distance = hostnameDistance(strippedTestName, strippedSafeName);
-    // Not a safe URL but within 2 levenshtein distance report as phishing.
-    if (
-      // Check against the regular name not stripped name. Since we want to catch things like revoke.site and revoke.cash
-      hostname !== safeName &&
-      distance <= threshold
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-browser.runtime.onMessage.addListener((request, sender) => {
+browser.runtime.onMessage.addListener((request) => {
   Sentry.wrap(() => {
     if (request.command === REQUEST_COMMAND) {
       log.info(request, 'Request command');
 
       const args: RequestArgs = request.data;
       clearOldSimulations().then(() => fetchSimulationAndUpdate(args));
-    } else if (request.command === PHISHING_REQUEST_COMMAND) {
-      // Always remove the www.
-      const hostname = request.url.hostname.replace(/^(www\.)/, '');
-
-      getAllowlist().then((allowlist) => {
-        // On allow list. Skip.
-        if (allowlist.includes(hostname)) {
-          return;
-        }
-
-        if (isPhishing(hostname) && sender?.tab?.id !== undefined) {
-          console.log(`Phishing detected: ${hostname}`);
-          browser.tabs.sendMessage(sender.tab.id, {
-            command: PHISHING_RESPONSE_COMMAND,
-            url: request.url,
-            phishing: true,
-          });
-        }
-      });
     } else {
       log.warn(request, 'Unknown command');
     }
   });
-});
-
-// Should only be able to be called by pocketuniverse.app.
-browser.runtime.onMessageExternal.addListener((request) => {
-  const hostname = request.hostname.replace(/^(www\.)/, '');
-
-  console.log(`Adding "${hostname}" to allowlist`);
-  addAllowlist(hostname);
 });

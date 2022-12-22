@@ -95,16 +95,6 @@ export type RequestArgs =
 export const REQUEST_COMMAND = 'request';
 
 /**
- * Phishing link check command.
- */
-export const PHISHING_REQUEST_COMMAND = 'phishing-request';
-
-/**
- * Phishing link response command.
- */
-export const PHISHING_RESPONSE_COMMAND = 'phishing-response';
-
-/**
  * Map request to replies.
  *
  * This is stored in memory, after the page shuts down this is gone.

@@ -4,8 +4,6 @@ import {
   listenToRequest,
   dispatchResponse,
   REQUEST_COMMAND,
-  PHISHING_REQUEST_COMMAND,
-  PHISHING_RESPONSE_COMMAND,
   Response,
 } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
@@ -124,35 +122,4 @@ listenToRequest(async (request: RequestArgs) => {
       data: request,
     });
   });
-});
-
-const getRedirectString = (hostname: string, href: string) => {
-  const querystring = new URLSearchParams({ hostname, href });
-
-  return `https://dash.pocketuniverse.app/phishing?${querystring}`;
-};
-
-const phishingRedirect = () => {
-  // Get the current location.
-  const { hostname, href } = window.location;
-
-  console.warn('Redirecting due to phishing link detected', hostname);
-
-  // Update the location.
-  window.location.href = getRedirectString(hostname, href);
-};
-
-browser.runtime.sendMessage({
-  command: PHISHING_REQUEST_COMMAND,
-  url: window.location,
-});
-
-browser.runtime.onMessage.addListener((message) => {
-  // If the response was made for this tab, redirect to phishing.
-  if (message.command === PHISHING_RESPONSE_COMMAND) {
-    const { hostname } = window.location;
-    if (message.url.hostname === hostname) {
-      phishingRedirect();
-    }
-  }
 });
