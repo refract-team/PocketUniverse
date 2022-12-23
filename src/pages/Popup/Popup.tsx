@@ -4,6 +4,7 @@ import { BiUserCircle } from 'react-icons/bi';
 import { FiExternalLink } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
 import { IconContext } from 'react-icons';
+import posthog from 'posthog-js';
 
 import Transaction from '../../containers/Transaction/Transaction';
 import Settings from '../../containers/Settings/Settings';
@@ -17,6 +18,7 @@ import {
 import { updatePremiumStatus } from '../../lib/premium';
 
 mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
+posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com' });
 
 const Popup = () => {
   const manifestData = chrome.runtime.getManifest();

@@ -1617,6 +1617,11 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.11.1.tgz#06e2827f6ba37159c33644208a0453b86d25e232"
   integrity sha512-gIEhOPxC2cjrxQ0+K2SFJ1P6e/an5osSxVc9OOtekN28eHtVsXFCLB8XVWeNQnS7N2VkrVrkqORMBz1kvIcvVQ==
 
+"@sentry/types@7.22.0":
+  version "7.22.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.22.0.tgz#58e4ce77b523048e0f31e2ea4b597946d76f6079"
+  integrity sha512-LhCL+wb1Jch+OesB2CIt6xpfO1Ab6CRvoNYRRzVumWPLns1T3ZJkarYfhbLaOEIb38EIbPgREdxn2AJT560U4Q==
+
 "@sentry/utils@7.11.1":
   version "7.11.1"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.11.1.tgz#1635c5b223369d9428bc83c9b8908c9c3287ee10"
@@ -4007,6 +4012,11 @@ faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
+fflate@^0.4.1:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.4.8.tgz#f90b82aefbd8ac174213abb338bd7ef848f0f5ae"
+  integrity sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==
+
 file-entry-cache@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-6.0.1.tgz#211b2dd9659cb0394b073e7323ac3c933d522027"
@@ -6145,6 +6155,15 @@ postcss@^8.4.14, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
+posthog-js@^1.38.1:
+  version "1.38.1"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.38.1.tgz#891101f8435fdbb292e798e5d2f6124b13a4b2df"
+  integrity sha512-9YK+QPnilKkDOq3G2hMsHfzu3c30pOIQUzg239u1GHm4BuOBCYtyUwSW5D5zUeEyXz6w3BcA+GkeTw0k+Nttog==
+  dependencies:
+    "@sentry/types" "7.22.0"
+    fflate "^0.4.1"
+    rrweb-snapshot "^1.1.14"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -6624,6 +6643,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+rrweb-snapshot@^1.1.14:
+  version "1.1.14"
+  resolved "https://registry.yarnpkg.com/rrweb-snapshot/-/rrweb-snapshot-1.1.14.tgz#9d4d9be54a28a893373428ee4393ec7e5bd83fcc"
+  integrity sha512-eP5pirNjP5+GewQfcOQY4uBiDnpqxNRc65yKPW0eSoU1XamDfc4M8oqpXGMyUyvLyxFDB0q0+DChuxxiU2FXBQ==
 
 run-parallel@^1.1.9:
   version "1.2.0"
