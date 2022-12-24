@@ -90,6 +90,11 @@ export const fetchSignature = async (
         chainId: string;
         hash: any;
       }
+    | {
+      id: string;
+      chainId: string;
+      signMessage: string;
+    }
 ): Promise<Response> => {
   log.info(args, 'Fetch signature');
 

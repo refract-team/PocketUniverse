@@ -84,10 +84,29 @@ export type SignatureHashSignArgs = {
   hash: string;
 };
 
+export type PersonalSignArgs = {
+  /**
+   * UUID for this request.
+   */
+  id: string;
+
+  /**
+   * Chain ID for this request in hex.
+   */
+  chainId: string;
+
+  /**
+   * Message to be signed.
+   */
+  signMessage: string;
+};
+
 export type RequestArgs =
   | SimulateRequestArgs
   | SignatureRequestArgs
-  | SignatureHashSignArgs;
+  | SignatureHashSignArgs
+  | PersonalSignArgs
+   
 
 /**
  * Command to simulate request between content script and service worker.
@@ -132,9 +151,13 @@ export class RequestManager {
           chainId: string;
           hash: string;
         }
+      | {
+          chainId: string,
+          signMessage: string,
+        }
   ): Promise<Response> {
     return new Promise((resolve) => {
-      let request: RequestArgs;
+      let request: RequestArgs | undefined;
       const id = uuidv4();
       const chainId = args.chainId;
 
@@ -150,7 +173,7 @@ export class RequestManager {
           chainId,
           hash: args.hash,
         };
-      } else {
+      } else if ('message' in args) {
         request = {
           id,
           chainId,
@@ -158,10 +181,21 @@ export class RequestManager {
           message: args.message,
           primaryType: args.primaryType,
         };
+      } else if ('signMessage' in args) {
+        request = {
+          id,
+          chainId,
+          signMessage: args.signMessage,
+        };
+      } else {
+        console.warn('Unexpected Request', args);
       }
-      this.mappings.set(id, resolve);
 
-      this._dispatchRequest(request);
+      if(request != undefined) {
+        this.mappings.set(id, resolve);
+
+        this._dispatchRequest(request);
+      }
     });
   }
 

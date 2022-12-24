@@ -30,6 +30,7 @@ export enum StoredType {
   Simulation,
   Signature,
   SignatureHash,
+  PersonalSign,
 }
 
 export interface StoredSimulation {
@@ -182,6 +183,17 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
       addSimulation({
         id: args.id,
         type: StoredType.SignatureHash,
+        state,
+      }),
+      fetchSignature(args),
+    ]);
+
+    response = result[1];
+  } else if ('signMessage' in args) {
+    const result = await Promise.all([
+      addSimulation({
+        id: args.id,
+        type: StoredType.PersonalSign,
         state,
       }),
       fetchSignature(args),

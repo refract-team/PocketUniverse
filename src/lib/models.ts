@@ -138,7 +138,7 @@ export class Simulation {
     public mustWarn?: boolean,
 
     // Optional message to display when we warn people.
-    public mustWarnMessage?: string
+    public mustWarnMessage?: string,
   ) {}
 
   public static fromJSON(obj: any): Simulation {
@@ -149,7 +149,7 @@ export class Simulation {
       obj.toAddress,
       obj.shouldWarn,
       obj.mustWarn,
-      obj.mustWarnMessage
+      obj.mustWarnMessage,
     );
   }
 }

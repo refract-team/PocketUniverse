@@ -498,6 +498,30 @@ const StoredSimulationComponent = ({
           </div>
         </div>
       );
+    } else if (storedSimulation.type === StoredType.PersonalSign) {
+      if (storedSimulation.simulation?.mustWarn) {
+      return (
+        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+          <div className="text-center text-lg font-bold text-green-500">
+            ✅ Personal Sign Hash
+          </div>
+          <div className="text-base px-6 py-2 text-center">
+          Signing you in with message
+          </div>
+        </div>
+      );
+      } else {
+      return (
+        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+          <div className="text-center text-lg font-bold text-green-500">
+            ✅ Personal Sign
+          </div>
+          <div className="text-base px-6 py-2 text-center">
+          Signing you in with message
+          </div>
+        </div>
+      );
+        }
     } else {
       // TODO: handle the TO address separately.
       return (
