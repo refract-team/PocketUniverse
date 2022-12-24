@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react';
 import { utils, BigNumber } from 'ethers';
-import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { MdVerified, MdIosShare } from 'react-icons/md';
 import { AiFillCopy } from 'react-icons/ai';
@@ -25,8 +24,6 @@ const log = logger.child({ component: 'Popup' });
 Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
-
-mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 
 const NoTransactionComponent = () => {
   return (
@@ -307,10 +304,6 @@ const ConfirmSimulationButton = ({
         <button
           className="text-base bg-gray-600 hover:bg-gray-400 text-white w-28 py-2 rounded-full"
           onClick={() => {
-            mixpanel.track('Simulation Rejected', {
-              id,
-              state,
-            });
             log.info({ id, state }, 'Simulation Rejected');
             updateSimulationState(id, StoredSimulationState.Rejected);
           }}
@@ -320,10 +313,6 @@ const ConfirmSimulationButton = ({
         <button
           className="text-base bg-gray-100 hover:bg-gray-300 text-black w-28 rounded-full"
           onClick={() => {
-            mixpanel.track('Simulation Continue', {
-              id,
-              state,
-            });
             log.info({ id, state }, 'Simulation Continue');
             updateSimulationState(id, StoredSimulationState.Confirmed);
           }}

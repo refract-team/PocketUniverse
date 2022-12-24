@@ -1,4 +1,3 @@
-import mixpanel from 'mixpanel-browser';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { AiFillLock, AiFillCopy } from 'react-icons/ai';
@@ -8,17 +7,10 @@ import { setSettings, Settings, getSettings } from '../../lib/storage';
 import React from 'react';
 import { updatePremiumStatus } from '../../lib/premium';
 
-mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
-
 const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] =
     useState<boolean>(true);
   const switchedEnableRunSimulations = async (enabled: boolean) => {
-    if (enabled) {
-      mixpanel.track('Enable Simulations');
-    } else {
-      mixpanel.track('Disable Simulations');
-    }
 
     await setSettings({ disable: !enabled });
     setEnabledRunSimulations(enabled);
@@ -27,11 +19,6 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledHyperdriveMode, setEnabledHyperdriveMode] =
     useState<boolean>(false);
   const switchEnabledHyperdriveMode = async (enabled: boolean) => {
-    if (enabled) {
-      mixpanel.track('Enable Sniper Mode');
-    } else {
-      mixpanel.track('Disable Sniper Mode');
-    }
 
     await setSettings({ hyperdrive: enabled });
     setEnabledHyperdriveMode(enabled);

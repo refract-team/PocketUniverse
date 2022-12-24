@@ -1,4 +1,3 @@
-import mixpanel from 'mixpanel-browser';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BiUserCircle } from 'react-icons/bi';
 import { FiExternalLink } from 'react-icons/fi';
@@ -17,7 +16,6 @@ import {
 
 import { updatePremiumStatus } from '../../lib/premium';
 
-mixpanel.init('00d3b8bc7c620587ecb1439557401a87');
 posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com' });
 
 const Popup = () => {
@@ -44,7 +42,6 @@ const Popup = () => {
     document.title = 'Pocket Universe';
     browser.storage.sync.get('first_open').then((result) => {
       if (Object.keys(result).length === 0) {
-        mixpanel.track('First Open');
         browser.storage.sync.set({ first_open: true });
       }
     });
