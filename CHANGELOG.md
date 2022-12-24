@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for polygon
 
+## [0.0.43] - 2022-12-25
+
+- Handle Personal Sign Messages
+
 ## [0.0.42] - 2022-12-23
 
 - Clearer message about what chains we support.
