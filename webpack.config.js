@@ -290,7 +290,24 @@ var options = {
         },
       ],
     }),
-
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/sign-in-image.png',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/unknown-box.png',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
       filename: 'popup.html',

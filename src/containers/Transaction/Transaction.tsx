@@ -502,22 +502,34 @@ const StoredSimulationComponent = ({
       if (storedSimulation.simulation?.mustWarn) {
       return (
         <div className="flex flex-col grow items-center justify-center pt-4 w-full">
-          <div className="text-center text-lg font-bold text-green-500">
-            ✅ Personal Sign Hash
-          </div>
+          <img className="w-48" src="unknown-box.png" alt="unknown-box" />
           <div className="text-base px-6 py-2 text-center">
-          Signing you in with message
+            This signature cannot be translated. Please be careful.
+          </div>
+          <div className="text-sm text-gray-300 px-6 py-2 text-center">
+            Note: if you're on X2Y2.io, you'll see this for listing assets. This is safe.
+          </div>
+          <div className="text-sm text-gray-300 px-6 text-center">
+          See more info about these signatures <a
+                    href="https://twitter.com/PocketUniverseZ/status/1604373525610999808"
+                    target="_blank"
+                    className="text-purple-300 hover:underline inline"
+                    rel="noreferrer"
+                    >
+                    here
+                    </a>
           </div>
         </div>
       );
       } else {
       return (
-        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
-          <div className="text-center text-lg font-bold text-green-500">
-            ✅ Personal Sign
+        <div className="flex flex-col grow items-center justify-center pt-4 gap-4 w-full">
+          <div className="text-center text-xl text-green-400">
+            Sign In
           </div>
+          <img className="w-48" src="sign-in-image.png" alt="sign-in-image" />
           <div className="text-base px-6 py-2 text-center">
-          Signing you in with message
+            This is a safe signature which cannot move your assets. It's usually used for signing in.
           </div>
         </div>
       );
