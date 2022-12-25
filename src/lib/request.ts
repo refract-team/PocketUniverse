@@ -25,32 +25,12 @@ export interface Transaction {
 
 export type SimulateRequestArgs = {
   /**
-   * UUID for this request.
-   */
-  id: string;
-
-  /**
-   * Chain ID for this request in hex.
-   */
-  chainId: string;
-
-  /**
    * Transaction we want to forward.
    */
   transaction: Transaction;
 };
 
 export type SignatureRequestArgs = {
-  /**
-   * UUID for this request.
-   */
-  id: string;
-
-  /**
-   * Chain ID for this request in hex.
-   */
-  chainId: string;
-
   /**
    * Domain for this signature request.
    */
@@ -69,16 +49,6 @@ export type SignatureRequestArgs = {
 
 export type SignatureHashSignArgs = {
   /**
-   * UUID for this request.
-   */
-  id: string;
-
-  /**
-   * Chain ID for this request in hex.
-   */
-  chainId: string;
-
-  /**
    * Hash being signed.
    */
   hash: string;
@@ -86,6 +56,13 @@ export type SignatureHashSignArgs = {
 
 export type PersonalSignArgs = {
   /**
+   * Message to be signed.
+   */
+  signMessage: string;
+};
+
+export type RequestArgs = {
+  /**
    * UUID for this request.
    */
   id: string;
@@ -96,18 +73,16 @@ export type PersonalSignArgs = {
   chainId: string;
 
   /**
-   * Message to be signed.
+   * Signer for this request.
    */
-  signMessage: string;
-};
-
-export type RequestArgs =
-  | SimulateRequestArgs
+  signer: string;
+} & (
+  SimulateRequestArgs
   | SignatureRequestArgs
   | SignatureHashSignArgs
   | PersonalSignArgs
+)
    
-
 /**
  * Command to simulate request between content script and service worker.
  */
@@ -137,46 +112,49 @@ export class RequestManager {
    */
   public request(
     args:
-      | {
-          chainId: string;
+      { signer: string, chainId: string} &
+      (
+      {
           transaction: Transaction;
         }
       | {
-          chainId: string;
           domain: any;
           message: any;
           primaryType: string;
         }
       | {
-          chainId: string;
           hash: string;
         }
       | {
-          chainId: string,
           signMessage: string,
         }
+    )
   ): Promise<Response> {
     return new Promise((resolve) => {
       let request: RequestArgs | undefined;
       const id = uuidv4();
       const chainId = args.chainId;
+      const signer = args.signer;
 
       if ('transaction' in args) {
         request = {
           id,
           chainId,
+          signer,
           transaction: args.transaction,
         };
       } else if ('hash' in args) {
         request = {
           id,
           chainId,
+          signer,
           hash: args.hash,
         };
       } else if ('message' in args) {
         request = {
           id,
           chainId,
+          signer,
           domain: args.domain,
           message: args.message,
           primaryType: args.primaryType,
@@ -185,6 +163,7 @@ export class RequestManager {
         request = {
           id,
           chainId,
+          signer,
           signMessage: args.signMessage,
         };
       } else {

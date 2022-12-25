@@ -6,6 +6,7 @@ import { AiFillCopy } from 'react-icons/ai';
 import { BeatLoader } from 'react-spinners';
 import { useState, useEffect } from 'react';
 import ReactTooltip from 'react-tooltip';
+import posthog from 'posthog-js';
 import browser from 'webextension-polyfill';
 
 import logger from '../../lib/logger';
@@ -24,6 +25,7 @@ const log = logger.child({ component: 'Popup' });
 Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
+posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com' });
 
 const NoTransactionComponent = () => {
   return (
@@ -292,18 +294,24 @@ const SimulationComponent = ({ simulation }: { simulation: Simulation }) => {
 };
 
 const ConfirmSimulationButton = ({
-  id,
-  state,
+  storedSimulation
 }: {
-  id: string;
-  state: StoredSimulationState;
+  storedSimulation: StoredSimulation;
 }) => {
+    const {
+        id,
+        signer,
+        state
+      } = storedSimulation;
+
   if (simulationNeedsAction(state)) {
     return (
       <div className="flex flex-row space-x-16 p-4 justify-center">
         <button
           className="text-base bg-gray-600 hover:bg-gray-400 text-white w-28 py-2 rounded-full"
           onClick={() => {
+            posthog.alias(signer);
+            posthog.capture('simulation rejected', storedSimulation);
             log.info({ id, state }, 'Simulation Rejected');
             updateSimulationState(id, StoredSimulationState.Rejected);
           }}
@@ -313,6 +321,8 @@ const ConfirmSimulationButton = ({
         <button
           className="text-base bg-gray-100 hover:bg-gray-300 text-black w-28 rounded-full"
           onClick={() => {
+            posthog.alias(signer);
+            posthog.capture('simulation confirmed', storedSimulation);
             log.info({ id, state }, 'Simulation Continue');
             updateSimulationState(id, StoredSimulationState.Confirmed);
           }}
@@ -632,8 +642,7 @@ const TransactionComponent = () => {
         <img className="mt-auto w-full" src="waves_bottom.png" alt="" />
         <div className="mt-auto border-t border-gray-600 w-full">
           <ConfirmSimulationButton
-            id={filteredSimulations[0].id}
-            state={filteredSimulations[0].state}
+            storedSimulation={filteredSimulations[0]}
           />
         </div>
       </div>

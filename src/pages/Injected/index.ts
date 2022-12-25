@@ -81,6 +81,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
+          signer: request.params[0].from,
           transaction: request.params[0],
         });
 
@@ -109,6 +110,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
+          signer: params[0],
           domain: params['domain'],
           message: params['message'],
           primaryType: params['primaryType'],
@@ -132,6 +134,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
+          signer: request.params[0],
           hash: request.params[1],
         });
 
@@ -144,7 +147,7 @@ const addPocketUniverseProxy = (provider: any) => {
         }
       } else if (request.method === 'personal_sign') {
         log.info('Presonal Sign Request');
-        if (request.params.length == 0) {
+        if (request.params.length < 2) {
           // Forward the request anyway.
           log.warn('Unexpected argument length.');
           return Reflect.apply(target, thisArg, args);
@@ -153,6 +156,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
+          signer: request.params[1],
           signMessage: request.params[0],
         });
 
@@ -208,6 +212,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
+              signer: request.params[0].from,
               transaction: request.params[0],
             })
           )
@@ -253,6 +258,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) =>
             REQUEST_MANAGER.request({
               chainId,
+              signer: params[0],
               domain: params['domain'],
               message: params['message'],
               primaryType: params['primaryType'],
@@ -294,6 +300,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             REQUEST_MANAGER.request({
               chainId,
+              signer: request.params[0],
               hash: request.params[1],
             });
           })
@@ -333,6 +340,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             REQUEST_MANAGER.request({
               chainId,
+              signer: request.params[1],
               signMessage: request.params[0],
             });
           })

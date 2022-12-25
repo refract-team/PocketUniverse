@@ -36,6 +36,9 @@ export enum StoredType {
 export interface StoredSimulation {
   id: string;
 
+  /// Signer who initiated this signature.
+  signer: string;
+
   /// Type of request.
   type: StoredType;
 
@@ -171,6 +174,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
     const result = await Promise.all([
       addSimulation({
         id: args.id,
+        signer: args.signer,
         type: StoredType.Simulation,
         state,
       }),
@@ -182,6 +186,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
     const result = await Promise.all([
       addSimulation({
         id: args.id,
+        signer: args.signer,
         type: StoredType.SignatureHash,
         state,
       }),
@@ -193,6 +198,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
     const result = await Promise.all([
       addSimulation({
         id: args.id,
+        signer: args.signer,
         type: StoredType.PersonalSign,
         state,
       }),
@@ -204,6 +210,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
     const result = await Promise.all([
       addSimulation({
         id: args.id,
+        signer: args.signer,
         type: StoredType.Signature,
         state,
       }),
