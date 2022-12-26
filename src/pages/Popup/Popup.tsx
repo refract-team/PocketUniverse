@@ -16,7 +16,7 @@ import {
 
 import { updatePremiumStatus } from '../../lib/premium';
 
-posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com' });
+posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com', persistence:'localStorage', disable_session_recording: true});
 
 const Popup = () => {
   const manifestData = chrome.runtime.getManifest();
