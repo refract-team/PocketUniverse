@@ -209,13 +209,13 @@ const addPocketUniverseProxy = (provider: any) => {
         log.info(request, 'Request being sent');
         provider
           .request({ method: 'eth_chainId' })
-          .then((chainId: any) =>
-            REQUEST_MANAGER.request({
+          .then((chainId: any) => {
+            return REQUEST_MANAGER.request({
               chainId,
               signer: request.params[0].from,
               transaction: request.params[0],
-            })
-          )
+            });
+          })
           .then((response: any) => {
             if (response === Response.Reject) {
               log.info('Reject');
@@ -255,15 +255,15 @@ const addPocketUniverseProxy = (provider: any) => {
 
         provider
           .request({ method: 'eth_chainId' })
-          .then((chainId: any) =>
-            REQUEST_MANAGER.request({
+          .then((chainId: any) => {
+            return REQUEST_MANAGER.request({
               chainId,
               signer: params[0],
               domain: params['domain'],
               message: params['message'],
               primaryType: params['primaryType'],
-            })
-          )
+            });
+          })
           .then((response: any) => {
             if (response === Response.Reject) {
               log.info('Reject');
@@ -298,7 +298,7 @@ const addPocketUniverseProxy = (provider: any) => {
         provider
           .request({ method: 'eth_chainId' })
           .then((chainId: any) => {
-            REQUEST_MANAGER.request({
+            return REQUEST_MANAGER.request({
               chainId,
               signer: request.params[0],
               hash: request.params[1],
@@ -338,7 +338,7 @@ const addPocketUniverseProxy = (provider: any) => {
         provider
           .request({ method: 'eth_chainId' })
           .then((chainId: any) => {
-            REQUEST_MANAGER.request({
+            return REQUEST_MANAGER.request({
               chainId,
               signer: request.params[1],
               signMessage: request.params[0],
