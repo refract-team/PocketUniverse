@@ -1,6 +1,6 @@
 {
   "name": "pocketuniverse",
-  "version": "0.0.43.4",
+  "version": "0.0.43.6",
   "description": "A transaction checker that helps you avoid crypto scams.",
   "scripts": {
     "build:chrome": "TARGET_BROWSER=chrome node utils/build.js ",
