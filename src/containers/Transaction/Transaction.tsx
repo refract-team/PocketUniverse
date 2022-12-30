@@ -25,7 +25,8 @@ const log = logger.child({ component: 'Popup' });
 Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
-posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com' });
+
+posthog.init('phc_XmauXFN8C70Ty226giVZgohSLWQHAECtwupYpYzNkMM', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
 
 const NoTransactionComponent = () => {
   return (
@@ -623,7 +624,9 @@ const TransactionComponent = () => {
       )}
       <div className="absolute flex w-full justify-end py-6 px-6">
         <a href="https://twitter.com/intent/tweet?text=X%20looks%20like%20a%20scam%21%0A%0ADetected%20by%20%40PocketUniverseZ%0A%0A---%28delete%20below%20before%20posting%29---%0AInclude%20a%20screenshot%20in%20your%20post%21%0A%E2%97%86%20Shift%20%2B%20Command%20%2B%204%20%28Mac%29%0A%E2%97%86%20Windows%20key%20%2B%20Shift%20%2B%20S%20%28Windows%29" target="_blank">
-          <button title="share on twitter" className="flex flex-col items-center text-gray-300 hover:text-gray-400 ">
+          <button onClick={() => {
+            posthog.capture('click share')
+          }}title="share on twitter" className="flex flex-col items-center text-gray-300 hover:text-gray-400 ">
             <MdIosShare size={24} />
           </button>
         </a>

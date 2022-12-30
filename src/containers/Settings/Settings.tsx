@@ -1,3 +1,4 @@
+import posthog from 'posthog-js';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { AiFillLock, AiFillCopy } from 'react-icons/ai';
@@ -7,10 +8,13 @@ import { setSettings, Settings, getSettings } from '../../lib/storage';
 import React from 'react';
 import { updatePremiumStatus } from '../../lib/premium';
 
+posthog.init('phc_XmauXFN8C70Ty226giVZgohSLWQHAECtwupYpYzNkMM', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
+
 const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] =
     useState<boolean>(true);
   const switchedEnableRunSimulations = async (enabled: boolean) => {
+    posthog.capture('set run simulations', { enabled });
 
     await setSettings({ disable: !enabled });
     setEnabledRunSimulations(enabled);
@@ -19,6 +23,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledHyperdriveMode, setEnabledHyperdriveMode] =
     useState<boolean>(false);
   const switchEnabledHyperdriveMode = async (enabled: boolean) => {
+    posthog.capture('set hyperdrive', { enabled });
 
     await setSettings({ hyperdrive: enabled });
     setEnabledHyperdriveMode(enabled);
@@ -194,6 +199,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   className="pt-1 flex flex-row p-1 border border-white rounded-lg w-72 text-gray-100 justify-center text-center hover:bg-gray-800"
                   onClick={async (e) => {
                     e.preventDefault();
+                    posthog.capture('copied referral')
                     await navigator.clipboard.writeText(referralLink);
                   }}
                 >

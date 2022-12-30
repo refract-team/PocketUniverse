@@ -16,7 +16,7 @@ import {
 
 import { updatePremiumStatus } from '../../lib/premium';
 
-posthog.init('phc_gzRYvv138ZfcXOOsW2Kxd90YkjNPcG6gFnTScMZlXrL', { api_host: 'https://app.posthog.com', persistence:'localStorage', disable_session_recording: true});
+posthog.init('phc_XmauXFN8C70Ty226giVZgohSLWQHAECtwupYpYzNkMM', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
 
 const Popup = () => {
   const manifestData = chrome.runtime.getManifest();
@@ -73,7 +73,9 @@ const Popup = () => {
               {premium ? (
                 <div className="my-auto p-1">Premium</div>
               ) : (
-                <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2">
+                <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2" onClick={() => {
+                posthog.capture('click upgrade');
+                  }}>
                   <a
                     href="https://dash.pocketuniverse.app"
                     target="_blank"
