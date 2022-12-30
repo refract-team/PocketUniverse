@@ -464,6 +464,7 @@ const StoredSimulationComponent = ({
             </div>
           </div>
         )}
+        <div className="flex flex-row gap-x-2 items-center">
         <button
           data-tip=""
           data-for="clipboard"
@@ -489,6 +490,10 @@ const StoredSimulationComponent = ({
             <AiFillCopy />
           </div>
         </button>
+        <a href={`https://etherscan.io/address/${toAddress}`} target="_blank">
+        <img className="h-4 w-4 hover:h-5 hover:w-5 m-auto overflow-hidden" src="etherscan-logo-circle.svg" alt="etherscan-logo" />
+        </a>
+        </div>
       </div>
     );
   };

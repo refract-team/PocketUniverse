@@ -302,6 +302,15 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
+          from: 'src/assets/img/etherscan-logo-circle.svg',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
           from: 'src/assets/img/unknown-box.png',
           to: buildPath,
           force: true,
