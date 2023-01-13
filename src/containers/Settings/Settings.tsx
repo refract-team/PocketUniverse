@@ -7,14 +7,17 @@ import { FiExternalLink } from 'react-icons/fi';
 import { setSettings, Settings, getSettings } from '../../lib/storage';
 import React from 'react';
 import { updatePremiumStatus } from '../../lib/premium';
+import mixpanel from 'mixpanel-browser';
 
 posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true}); 
 
 const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] =
     useState<boolean>(true);
   const switchedEnableRunSimulations = async (enabled: boolean) => {
     posthog.capture('set run simulations', { enabled });
+    mixpanel.track('set run simulations', {enabled});
 
     await setSettings({ disable: !enabled });
     setEnabledRunSimulations(enabled);
@@ -24,6 +27,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
     useState<boolean>(false);
   const switchEnabledHyperdriveMode = async (enabled: boolean) => {
     posthog.capture('set hyperdrive', { enabled });
+    mixpanel.track('set hyperdrive', {enabled});
 
     await setSettings({ hyperdrive: enabled });
     setEnabledHyperdriveMode(enabled);
@@ -200,6 +204,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   onClick={async (e) => {
                     e.preventDefault();
                     posthog.capture('copied referral')
+                    mixpanel.track('copied referral');
                     await navigator.clipboard.writeText(referralLink);
                   }}
                 >

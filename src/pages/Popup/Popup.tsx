@@ -4,6 +4,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
 import { IconContext } from 'react-icons';
 import posthog from 'posthog-js';
+import mixpanel from 'mixpanel-browser';
 
 import Transaction from '../../containers/Transaction/Transaction';
 import Settings from '../../containers/Settings/Settings';
@@ -17,6 +18,7 @@ import {
 import { updatePremiumStatus } from '../../lib/premium';
 
 posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true}); 
 
 const Popup = () => {
   const manifestData = chrome.runtime.getManifest();
@@ -75,6 +77,7 @@ const Popup = () => {
               ) : (
                 <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2" onClick={() => {
                 posthog.capture('click upgrade');
+                mixpanel.track('click upgrade')
                   }}>
                   <a
                     href="https://dash.pocketuniverse.app"

@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import ReactTooltip from 'react-tooltip';
 import posthog from 'posthog-js';
 import browser from 'webextension-polyfill';
+import mixpanel from 'mixpanel-browser';
 
 import logger from '../../lib/logger';
 import { Simulation, Event, EventType, TokenType } from '../../lib/models';
@@ -27,6 +28,7 @@ Sentry.init({
 });
 
 posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true }); 
 
 const NoTransactionComponent = () => {
   return (
@@ -312,7 +314,9 @@ const ConfirmSimulationButton = ({
           className="text-base bg-gray-600 hover:bg-gray-400 text-white w-28 py-2 rounded-full"
           onClick={() => {
             posthog.alias(signer);
-            posthog.capture('simulation rejected', storedSimulation);
+            mixpanel.alias(signer);
+            posthog.capture('simulation rejected', { storedSimulation });
+            mixpanel.track('simulation rejected', { storedSimulation });
             log.info({ id, state }, 'Simulation Rejected');
             updateSimulationState(id, StoredSimulationState.Rejected);
           }}
@@ -323,7 +327,9 @@ const ConfirmSimulationButton = ({
           className="text-base bg-gray-100 hover:bg-gray-300 text-black w-28 rounded-full"
           onClick={() => {
             posthog.alias(signer);
-            posthog.capture('simulation confirmed', storedSimulation);
+            mixpanel.alias(signer);
+            posthog.capture('simulation confirmed', { storedSimulation });
+            mixpanel.track('simulation confirmed', { storedSimulation });
             log.info({ id, state }, 'Simulation Continue');
             updateSimulationState(id, StoredSimulationState.Confirmed);
           }}
@@ -631,6 +637,7 @@ const TransactionComponent = () => {
         <a href="https://twitter.com/intent/tweet?text=X%20looks%20like%20a%20scam%21%0A%0ADetected%20by%20%40PocketUniverseZ%0A%0A---%28delete%20below%20before%20posting%29---%0AInclude%20a%20screenshot%20in%20your%20post%21%0A%E2%97%86%20Shift%20%2B%20Command%20%2B%204%20%28Mac%29%0A%E2%97%86%20Windows%20key%20%2B%20Shift%20%2B%20S%20%28Windows%29" target="_blank">
           <button onClick={() => {
             posthog.capture('click share')
+            mixpanel.track('click share')
           }}title="share on twitter" className="flex flex-col items-center text-gray-300 hover:text-gray-400 ">
             <MdIosShare size={24} />
           </button>
