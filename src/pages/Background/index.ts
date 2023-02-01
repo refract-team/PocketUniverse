@@ -1,8 +1,6 @@
 import * as Sentry from '@sentry/browser';
 import logger from '../../lib/logger';
-import {
-  RequestArgs,
-} from '../../lib/request';
+import { RequestArgs } from '../../lib/request';
 import { REQUEST_COMMAND } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
 import {

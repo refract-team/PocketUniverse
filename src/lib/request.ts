@@ -77,12 +77,12 @@ export type RequestArgs = {
    */
   signer: string;
 } & (
-  SimulateRequestArgs
+  | SimulateRequestArgs
   | SignatureRequestArgs
   | SignatureHashSignArgs
   | PersonalSignArgs
-)
-   
+);
+
 /**
  * Command to simulate request between content script and service worker.
  */
@@ -111,10 +111,8 @@ export class RequestManager {
    * Add a request and store it in the request manager.
    */
   public request(
-    args:
-      { signer: string, chainId: string} &
-      (
-      {
+    args: { signer: string; chainId: string } & (
+      | {
           transaction: Transaction;
         }
       | {
@@ -126,7 +124,7 @@ export class RequestManager {
           hash: string;
         }
       | {
-          signMessage: string,
+          signMessage: string;
         }
     )
   ): Promise<Response> {
@@ -170,7 +168,7 @@ export class RequestManager {
         console.warn('Unexpected Request', args);
       }
 
-      if(request != undefined) {
+      if (request != undefined) {
         this.mappings.set(id, resolve);
 
         this._dispatchRequest(request);

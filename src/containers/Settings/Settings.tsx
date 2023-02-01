@@ -9,15 +9,23 @@ import React from 'react';
 import { updatePremiumStatus } from '../../lib/premium';
 import mixpanel from 'mixpanel-browser';
 
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
-mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true}); 
+posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
+  api_host: 'https://app.posthog.com',
+  autocapture: false,
+  capture_pageview: false,
+});
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
+  persistence: 'localStorage',
+  api_host: 'https://cloudrun.pocketuniverse.app',
+  ignore_dnt: true,
+});
 
 const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] =
     useState<boolean>(true);
   const switchedEnableRunSimulations = async (enabled: boolean) => {
     posthog.capture('set run simulations', { enabled });
-    mixpanel.track('set run simulations', {enabled});
+    mixpanel.track('set run simulations', { enabled });
 
     await setSettings({ disable: !enabled });
     setEnabledRunSimulations(enabled);
@@ -27,7 +35,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
     useState<boolean>(false);
   const switchEnabledHyperdriveMode = async (enabled: boolean) => {
     posthog.capture('set hyperdrive', { enabled });
-    mixpanel.track('set hyperdrive', {enabled});
+    mixpanel.track('set hyperdrive', { enabled });
 
     await setSettings({ hyperdrive: enabled });
     setEnabledHyperdriveMode(enabled);
@@ -85,17 +93,17 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col grow border-t border-gray-600">
+      <div className="flex grow flex-col border-t border-gray-600">
         {loading ? (
-          <div className="flex grow flex-col justify-center items-center">
+          <div className="flex grow flex-col items-center justify-center">
             <RiseLoader color="white" />
-            <div className="text-gray-100 text-2xl pt-4">Loading...</div>
+            <div className="pt-4 text-2xl text-gray-100">Loading...</div>
           </div>
         ) : (
-          <div className="px-4 w-full">
-            <div className="flex flex-col gap-4 pt-4 w-full">
-              <div className="flex flex-row w-full">
-                <div className="text-lg font-medium text-gray-100 my-auto">
+          <div className="w-full px-4">
+            <div className="flex w-full flex-col gap-4 pt-4">
+              <div className="flex w-full flex-row">
+                <div className="my-auto text-lg font-medium text-gray-100">
                   Run Simulations
                 </div>
                 <Switch
@@ -104,7 +112,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   className={`${
                     enabledRunSimulations ? 'bg-blue-400' : 'bg-gray-500'
                   }
-          my-auto ml-auto relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full items-center border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+          relative my-auto ml-auto inline-flex h-6 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
                   <span
@@ -125,11 +133,11 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                 <a
                   href="https://dash.pocketuniverse.app"
                   target="_blank"
-                  className="text-purple-300 text-sm hover:underline inline"
+                  className="inline text-sm text-purple-300 hover:underline"
                   rel="noreferrer"
                 >
                   {address ? (
-                    <span className="text-purple-300 text-sm">
+                    <span className="text-sm text-purple-300">
                       Logged in as {truncateAddress(address)}
                       {!premium && (
                         <span>
@@ -141,24 +149,24 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   ) : (
                     <span>Click here to upgrade to premium or login in</span>
                   )}
-                  <FiExternalLink className="inline pl-1 text-xl my-auto" />
+                  <FiExternalLink className="my-auto inline pl-1 text-xl" />
                 </a>
               </div>
             </div>
-            <div className="flex flex-row w-full pb-4">
-              <div className="flex flex-col text-lg text-gray-100 my-auto">
+            <div className="flex w-full flex-row pb-4">
+              <div className="my-auto flex flex-col text-lg text-gray-100">
                 <div className="font-medium">Hyperdrive</div>
-                <span className="text-gray-100 text-sm mr-2">
+                <span className="mr-2 text-sm text-gray-100">
                   Skips popups for purchases and accepting offers on
                   marketplaces.
                   <a
                     href="https://pocketuniverse.notion.site/Hyperdrive-33dee2e5d41040a6a21708cd7167c030"
                     target="_blank"
-                    className="text-purple-300 hover:underline inline"
+                    className="inline text-purple-300 hover:underline"
                     rel="noreferrer"
                   >
                     &nbsp;Click to learn more.
-                    <FiExternalLink className="inline pl-1 text-xl my-auto" />
+                    <FiExternalLink className="my-auto inline pl-1 text-xl" />
                   </a>
                 </span>
               </div>
@@ -169,7 +177,7 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   className={`${
                     enabledHyperdriveMode ? 'bg-blue-400' : 'bg-gray-500'
                   }
-                my-auto ml-auto relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full items-center border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                relative my-auto ml-auto inline-flex h-6 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
                   <span
@@ -181,34 +189,34 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   />
                 </Switch>
               ) : (
-                <div className="ml-auto my-auto w-16">
-                  <div className="text-4xl text-gray-100 my-auto ml-auto w-9 h-9">
+                <div className="my-auto ml-auto w-16">
+                  <div className="my-auto ml-auto h-9 w-9 text-4xl text-gray-100">
                     <AiFillLock />
                   </div>
                 </div>
               )}
             </div>
-            <div className="flex flex-col w-full text-xl items-center text-center">
+            <div className="flex w-full flex-col items-center text-center text-xl">
               <a
                 href="https://dash.pocketuniverse.app/refer"
                 target="_blank"
-                className="text-purple-300 text-sm hover:underline inline"
+                className="inline text-sm text-purple-300 hover:underline"
                 rel="noreferrer"
               >
                 Refer friends to unlock hyperdrive and more!
-                <FiExternalLink className="inline pl-1 text-xl my-auto" />
+                <FiExternalLink className="my-auto inline pl-1 text-xl" />
               </a>
               {address && (
                 <button
-                  className="pt-1 flex flex-row p-1 border border-white rounded-lg w-72 text-gray-100 justify-center text-center hover:bg-gray-800"
+                  className="flex w-72 flex-row justify-center rounded-lg border border-white p-1 pt-1 text-center text-gray-100 hover:bg-gray-800"
                   onClick={async (e) => {
                     e.preventDefault();
-                    posthog.capture('copied referral')
+                    posthog.capture('copied referral');
                     mixpanel.track('copied referral');
                     await navigator.clipboard.writeText(referralLink);
                   }}
                 >
-                  <div className="text-sm truncate w-64 text-center">
+                  <div className="w-64 truncate text-center text-sm">
                     {referralLink}
                   </div>
                   <AiFillCopy />

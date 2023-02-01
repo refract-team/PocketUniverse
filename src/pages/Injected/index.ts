@@ -59,7 +59,7 @@ const addPocketUniverseProxy = (provider: any) => {
         request.method !== 'eth_signTypedData_v3' &&
         request.method !== 'eth_signTypedData_v4' &&
         request.method !== 'eth_sendTransaction' &&
-        request.method !== 'eth_sign' && 
+        request.method !== 'eth_sign' &&
         request.method !== 'personal_sign'
       ) {
         return Reflect.apply(target, thisArg, args);

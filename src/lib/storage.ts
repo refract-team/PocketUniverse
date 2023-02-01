@@ -95,7 +95,7 @@ export const skipSimulation = async (id: string) => {
   });
 
   return browser.storage.local.set({ simulations });
-}
+};
 
 const revertSimulation = async (id: string, error?: string) => {
   const { simulations = [] } = await browser.storage.local.get(STORAGE_KEY);
@@ -133,9 +133,9 @@ export const updateSimulationState = async (
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        state,
-      }
+          ...x,
+          state,
+        }
       : x
   );
 
@@ -150,10 +150,10 @@ const updateSimulatioWithErrorMsg = async (id: string, error?: string) => {
   simulations = simulations.map((x: StoredSimulation) =>
     x.id === id
       ? {
-        ...x,
-        error,
-        state: StoredSimulationState.Error,
-      }
+          ...x,
+          error,
+          state: StoredSimulationState.Error,
+        }
       : x
   );
 
@@ -165,7 +165,12 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
   let response: Response;
 
   let state = StoredSimulationState.Simulating;
-  if (args.chainId !== "0x1" && args.chainId !== "1" && args.chainId !== "137" && args.chainId !== '0x89') {
+  if (
+    args.chainId !== '0x1' &&
+    args.chainId !== '1' &&
+    args.chainId !== '137' &&
+    args.chainId !== '0x89'
+  ) {
     // Automatically confirm if chain id is incorrect. This prevents the popup.
     state = StoredSimulationState.Confirmed;
   }

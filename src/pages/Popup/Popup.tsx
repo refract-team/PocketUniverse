@@ -17,8 +17,16 @@ import {
 
 import { updatePremiumStatus } from '../../lib/premium';
 
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
-mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true}); 
+posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
+  api_host: 'https://app.posthog.com',
+  autocapture: false,
+  capture_pageview: false,
+});
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
+  persistence: 'localStorage',
+  api_host: 'https://cloudrun.pocketuniverse.app',
+  ignore_dnt: true,
+});
 
 const Popup = () => {
   const manifestData = chrome.runtime.getManifest();
@@ -63,22 +71,25 @@ const Popup = () => {
   }, []);
 
   return (
-    <div className="flex flex-col text-white bg-gray-900 overflow-hidden min-w-[400px] min-h-screen items-center">
-      <div className="flex flex-row p-4 text-center w-full">
-        <div className="flex flex-row gap-4 text-xl leading-6 font-medium text-purple-300 rounded-lg">
-          <img src="icon-128.png" className="h-10 my-auto" alt="logo" />
-          <div className="font-light text-xl my-auto">Pocket Universe</div>
+    <div className="flex min-h-screen min-w-[400px] flex-col items-center overflow-hidden bg-gray-900 text-white">
+      <div className="flex w-full flex-row p-4 text-center">
+        <div className="flex flex-row gap-4 rounded-lg text-xl font-medium leading-6 text-purple-300">
+          <img src="icon-128.png" className="my-auto h-10" alt="logo" />
+          <div className="my-auto text-xl font-light">Pocket Universe</div>
         </div>
-        <div className="flex flex-row ml-auto text-base text-purple-300 my-auto">
+        <div className="my-auto ml-auto flex flex-row text-base text-purple-300">
           {!loading && (
-            <div className="mr-1 my-auto">
+            <div className="my-auto mr-1">
               {premium ? (
                 <div className="my-auto p-1">Premium</div>
               ) : (
-                <button className="my-auto border border-purple-300 hover:bg-gray-600 rounded-full p-1 px-2" onClick={() => {
-                posthog.capture('click upgrade');
-                mixpanel.track('click upgrade')
-                  }}>
+                <button
+                  className="my-auto rounded-full border border-purple-300 p-1 px-2 hover:bg-gray-600"
+                  onClick={() => {
+                    posthog.capture('click upgrade');
+                    mixpanel.track('click upgrade');
+                  }}
+                >
                   <a
                     href="https://dash.pocketuniverse.app"
                     target="_blank"
@@ -91,13 +102,14 @@ const Popup = () => {
             </div>
           )}
           <button
-            className="flex ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 justify-center items-center"
+            className="my-auto ml-auto flex items-center justify-center text-gray-200 hover:rounded-full hover:bg-gray-600"
             onClick={() => setSettingsOpen(!settingsOpen)}
           >
             <IconContext.Provider
               value={{
-                className: `p-1 ${premium ? 'text-purple-400' : 'text-gray-100'
-                  }`,
+                className: `p-1 ${
+                  premium ? 'text-purple-400' : 'text-gray-100'
+                }`,
                 size: '44px',
               }}
             >
@@ -107,20 +119,20 @@ const Popup = () => {
         </div>
       </div>
 
-      <div className="flex flex-col grow w-full">
+      <div className="flex w-full grow flex-col">
         {updateMessage && updateLink && (
-          <div className="flex flex-row border-t border-gray-600 w-full p-2 pl-4">
+          <div className="flex w-full flex-row border-t border-gray-600 p-2 pl-4">
             <a
               href={updateLink}
               target="_blank"
-              className="text-purple-300 text-base hover:underline inline"
+              className="inline text-base text-purple-300 hover:underline"
               rel="noreferrer"
             >
               {updateMessage}
-              <FiExternalLink className="inline pl-1 text-xl my-auto" />
+              <FiExternalLink className="my-auto inline pl-1 text-xl" />
             </a>
             <button
-              className="ml-auto my-auto hover:bg-gray-600 hover:rounded-full text-gray-200 text-xl mr-3"
+              className="my-auto ml-auto mr-3 text-xl text-gray-200 hover:rounded-full hover:bg-gray-600"
               onClick={() => {
                 browser.storage.local.set({
                   [UPDATE_KEY]: manifestData.version,
@@ -132,7 +144,7 @@ const Popup = () => {
             </button>
           </div>
         )}
-        <div className="flex grow w-full">
+        <div className="flex w-full grow">
           {settingsOpen ? (
             <Settings settingsOpen={settingsOpen} />
           ) : (

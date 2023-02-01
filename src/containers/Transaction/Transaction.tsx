@@ -27,31 +27,42 @@ Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
 
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', { api_host: 'https://app.posthog.com', autocapture: false, capture_pageview: false });
-mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {persistence: "localStorage", api_host: "https://cloudrun.pocketuniverse.app", "ignore_dnt": true }); 
+posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
+  api_host: 'https://app.posthog.com',
+  autocapture: false,
+  capture_pageview: false,
+});
+mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
+  persistence: 'localStorage',
+  api_host: 'https://cloudrun.pocketuniverse.app',
+  ignore_dnt: true,
+});
 
 const NoTransactionComponent = () => {
   return (
-    <div className="text-lg text-center">
+    <div className="text-center text-lg">
       <img className="m-auto w-32" src="rocket.png" alt="rocket taking off" />
       <div className="flex flex-col gap-4">
-      <div className="p-2 text-gray-100">
-        Trigger an Ethereum transaction to start
-      </div>
-      <div className="p-2 text-base text-gray-100">
-        We currently only work on Ethereum Mainnet. You will not see a pop-up for other chains.
-      </div>
+        <div className="p-2 text-gray-100">
+          Trigger an Ethereum transaction to start
+        </div>
+        <div className="p-2 text-base text-gray-100">
+          We currently only work on Ethereum Mainnet. You will not see a pop-up
+          for other chains.
+        </div>
 
-      <div className="p-2 text-base text-gray-100">
-      Come chat with us in  <a
-                    href="https://discord.gg/nVdz8tKkBr"
-                    target="_blank"
-                    className="text-purple-300 text-base hover:underline inline"
-                    rel="noreferrer"
-                    >
-                    Discord
-                    </a> if you want help!
-      </div>
+        <div className="p-2 text-base text-gray-100">
+          Come chat with us in{' '}
+          <a
+            href="https://discord.gg/nVdz8tKkBr"
+            target="_blank"
+            className="inline text-base text-purple-300 hover:underline"
+            rel="noreferrer"
+          >
+            Discord
+          </a>{' '}
+          if you want help!
+        </div>
       </div>
     </div>
   );
@@ -110,14 +121,18 @@ const EventComponent = ({ event }: { event: Event }) => {
     ) {
       return (
         <div
-          className={`${event.type === EventType.TransferIn
-            ? 'text-green-500'
-            : 'text-red-500'
-            } ml-auto my-auto text-lg`}
+          className={`${
+            event.type === EventType.TransferIn
+              ? 'text-green-500'
+              : 'text-red-500'
+          } my-auto ml-auto text-lg`}
         >
           {event.type === EventType.TransferIn ? '+' : '-'}
           {formattedAmount}{' '}
-          {(event.tokenType === TokenType.ERC721 || event.tokenType === TokenType.ERC1155) ? 'NFT' : event.name}
+          {event.tokenType === TokenType.ERC721 ||
+          event.tokenType === TokenType.ERC1155
+            ? 'NFT'
+            : event.name}
         </div>
       );
     }
@@ -126,7 +141,7 @@ const EventComponent = ({ event }: { event: Event }) => {
         ? 'text-gray-100'
         : 'text-red-500';
       return (
-        <div className={`${color} text-base text-right ml-auto my-auto`}>
+        <div className={`${color} my-auto ml-auto text-right text-base`}>
           Permission to withdraw{' '}
           {event.tokenType !== TokenType.ERC721 &&
             `${formattedAmount} ${event.name}`}
@@ -139,7 +154,7 @@ const EventComponent = ({ event }: { event: Event }) => {
         : 'text-red-500';
 
       return (
-        <div className={`${color} ml-auto my-auto text-base text-right`}>
+        <div className={`${color} my-auto ml-auto text-right text-base`}>
           <div>Can withdraw </div>
           {event.tokenType === TokenType.ERC721 ? (
             <div>
@@ -161,8 +176,9 @@ const EventComponent = ({ event }: { event: Event }) => {
   return (
     <div className="flex gap-x-2">
       <a
-        className={`flex gap-x-2 ${event.collection_url ? 'hover:underline' : ''
-          }`}
+        className={`flex gap-x-2 ${
+          event.collection_url ? 'hover:underline' : ''
+        }`}
         href={event.collection_url}
         target="_blank"
         rel="noreferrer"
@@ -174,7 +190,7 @@ const EventComponent = ({ event }: { event: Event }) => {
           width="48"
           height="48"
         />
-        <div className="text-base text-gray-100 my-auto">
+        <div className="my-auto text-base text-gray-100">
           {event.name || 'Unknown Name'}
         </div>
         <div className="my-auto">
@@ -210,7 +226,7 @@ const PotentialWarnings = ({
 
   if (type === StoredType.Simulation) {
     const NoApprovalForAll = (
-      <div className="text-base text-center text-gray-400 pb-4 px-2">
+      <div className="px-2 pb-4 text-center text-base text-gray-400">
         Changes being made in this transaction
       </div>
     );
@@ -222,7 +238,7 @@ const PotentialWarnings = ({
           <div className="text-center text-lg font-bold text-red-500">
             🚨 WARNING 🚨
           </div>
-          <div className="text-sm px-4 py-2 text-red-500 text-center">
+          <div className="px-4 py-2 text-center text-sm text-red-500">
             You are giving approval to withdraw all.
             <div className="font-bold">
               Please make sure it is not a wallet drainer.
@@ -239,7 +255,7 @@ const PotentialWarnings = ({
             <div className="text-center text-lg font-bold text-red-500">
               🚨 WARNING 🚨
             </div>
-            <div className="text-sm px-4 py-2 text-red-500 text-center">
+            <div className="px-4 py-2 text-center text-sm text-red-500">
               <div className="font-bold">{simulation.mustWarnMessage}</div>
             </div>
           </div>
@@ -249,7 +265,7 @@ const PotentialWarnings = ({
     );
   } else {
     const PotentialChangesMessage = (
-      <div className="text-base text-center text-gray-400 pb-4 px-2">
+      <div className="px-2 pb-4 text-center text-base text-gray-400">
         Changes that can be made by signing this message
       </div>
     );
@@ -261,7 +277,7 @@ const PotentialWarnings = ({
             <div className="text-center text-lg font-bold text-red-500">
               🚨 WARNING 🚨
             </div>
-            <div className="text-sm px-4 py-2 text-red-500 text-center">
+            <div className="px-4 py-2 text-center text-sm text-red-500">
               <div className="font-bold">
                 {simulation.mustWarnMessage ||
                   'Please make sure this is not a scam!'}
@@ -279,13 +295,13 @@ const SimulationComponent = ({ simulation }: { simulation: Simulation }) => {
   const simulationEvents = () => {
     if (simulation.events.length === 0) {
       return (
-        <div className="flex flex-col p-5 gap-4 text-center text-xl w-full">
+        <div className="flex w-full flex-col gap-4 p-5 text-center text-xl">
           No changes in assets found!
         </div>
       );
     }
     return (
-      <div className="flex flex-col p-5 gap-4 w-full">
+      <div className="flex w-full flex-col gap-4 p-5">
         {simulation.events.map((event: any, index: number) => {
           return <EventComponent key={`${index}`} event={event} />;
         })}
@@ -293,25 +309,21 @@ const SimulationComponent = ({ simulation }: { simulation: Simulation }) => {
     );
   };
 
-  return <div className="self-start w-full">{simulationEvents()}</div>;
+  return <div className="w-full self-start">{simulationEvents()}</div>;
 };
 
 const ConfirmSimulationButton = ({
-  storedSimulation
+  storedSimulation,
 }: {
   storedSimulation: StoredSimulation;
 }) => {
-    const {
-        id,
-        signer,
-        state
-      } = storedSimulation;
+  const { id, signer, state } = storedSimulation;
 
   if (simulationNeedsAction(state)) {
     return (
-      <div className="flex flex-row space-x-16 p-4 justify-center">
+      <div className="flex flex-row justify-center space-x-16 p-4">
         <button
-          className="text-base bg-gray-600 hover:bg-gray-400 text-white w-28 py-2 rounded-full"
+          className="w-28 rounded-full bg-gray-600 py-2 text-base text-white hover:bg-gray-400"
           onClick={() => {
             posthog.alias(signer);
             mixpanel.alias(signer);
@@ -324,7 +336,7 @@ const ConfirmSimulationButton = ({
           Reject
         </button>
         <button
-          className="text-base bg-gray-100 hover:bg-gray-300 text-black w-28 rounded-full"
+          className="w-28 rounded-full bg-gray-100 text-base text-black hover:bg-gray-300"
           onClick={() => {
             posthog.alias(signer);
             mixpanel.alias(signer);
@@ -335,7 +347,7 @@ const ConfirmSimulationButton = ({
           }}
         >
           {state === StoredSimulationState.Success ||
-            state === StoredSimulationState.Revert
+          state === StoredSimulationState.Revert
             ? 'Continue'
             : 'Skip'}
         </button>
@@ -355,11 +367,11 @@ const StoredSimulationComponent = ({
   const [copyText, setCopyText] = useState(COPY_TEXT);
   if (storedSimulation.state === StoredSimulationState.Simulating) {
     return (
-      <div className="flex flex-col grow justify-center items-center w-full">
+      <div className="flex w-full grow flex-col items-center justify-center">
         <img className="w-32" src="robot.png" alt="robot" />
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col items-center justify-center">
           <BeatLoader className="m-auto" color="purple" />
-          <div className="text-white text-lg pt-2">Simulating</div>
+          <div className="pt-2 text-lg text-white">Simulating</div>
         </div>
       </div>
     );
@@ -370,10 +382,10 @@ const StoredSimulationComponent = ({
     storedSimulation?.type === StoredType.Signature
   ) {
     return (
-      <div className="flex flex-col grow justify-center items-center w-11/12">
+      <div className="flex w-11/12 grow flex-col items-center justify-center">
         <img className="w-48" src="failed.png" alt="failed" />
-        <div className="text-gray-300 text-center text-base p-2">
-          <div className="text-lg text-orange-400 p-4">
+        <div className="p-2 text-center text-base text-gray-300">
+          <div className="p-4 text-lg text-orange-400">
             Please make sure you trust this website before continuing.
           </div>
           <div>
@@ -387,9 +399,9 @@ const StoredSimulationComponent = ({
 
   if (storedSimulation.state === StoredSimulationState.Revert) {
     return (
-      <div className="flex flex-col grow justify-center items-center w-11/12">
+      <div className="flex w-11/12 grow flex-col items-center justify-center">
         <img className="w-48" src="failed.png" alt="failed" />
-        <div className="text-gray-300 text-center text-base p-2">
+        <div className="p-2 text-center text-base text-gray-300">
           <div>
             Simulation shows the transaction will fail
             {storedSimulation.error &&
@@ -406,9 +418,9 @@ const StoredSimulationComponent = ({
 
   if (storedSimulation.state === StoredSimulationState.Error) {
     return (
-      <div className="flex flex-col grow justify-center items-center w-11/12">
+      <div className="flex w-11/12 grow flex-col items-center justify-center">
         <img className="w-32" src="glass.png" alt="failure" />
-        <div className="text-gray-300 text-center text-base p-2">
+        <div className="p-2 text-center text-base text-gray-300">
           <div>
             Simulation could not be ran{' '}
             {storedSimulation.error &&
@@ -460,45 +472,53 @@ const StoredSimulationComponent = ({
     }
 
     return (
-      <div className="flex flex-col items-center justify-center w-full text-base text-gray-400 pb-4">
+      <div className="flex w-full flex-col items-center justify-center pb-4 text-base text-gray-400">
         <div className="my-auto text-gray-400">{interactionText}</div>
         {verifiedAddressName && (
-          <div className="flex flex-row text-lg justify-center text-gray-100 text-center my-auto">
+          <div className="my-auto flex flex-row justify-center text-center text-lg text-gray-100">
             <div className="p-1">{verifiedAddressName}</div>
             <div className="my-auto text-blue-300">
               <MdVerified />
             </div>
           </div>
         )}
-        <div className="flex flex-row gap-x-2 items-center">
-        <button
-          data-tip=""
-          data-for="clipboard"
-          className="text-sm flex flex-row border border-gray-600 rounded-lg text-gray-100 p-0.5 px-1 hover:bg-gray-700"
-          onClick={() => {
-            navigator.clipboard.writeText(toAddress || '');
-            setCopyText(COPIED_TEXT);
+        <div className="flex flex-row items-center gap-x-2">
+          <button
+            data-tip=""
+            data-for="clipboard"
+            className="flex flex-row rounded-lg border border-gray-600 p-0.5 px-1 text-sm text-gray-100 hover:bg-gray-700"
+            onClick={() => {
+              navigator.clipboard.writeText(toAddress || '');
+              setCopyText(COPIED_TEXT);
 
-            // Revert after 2 second.
-            setTimeout(() => {
-              setCopyText(COPY_TEXT);
-            }, 2000);
-          }}
-        >
-          <ReactTooltip
-            id="clipboard"
-            effect="solid"
-            place="bottom"
-            getContent={() => copyText}
-          />
-          <div className="truncate w-24">{toAddress}</div>
-          <div className="my-auto pl-0.5">
-            <AiFillCopy />
-          </div>
-        </button>
-        <a href={`https://etherscan.io/address/${toAddress}`} target="_blank">
-        <img className="h-4 w-4 hover:h-5 hover:w-5 m-auto overflow-hidden" src="etherscan-logo-circle.svg" alt="etherscan-logo" />
-        </a>
+              // Revert after 2 second.
+              setTimeout(() => {
+                setCopyText(COPY_TEXT);
+              }, 2000);
+            }}
+          >
+            <ReactTooltip
+              id="clipboard"
+              effect="solid"
+              place="bottom"
+              getContent={() => copyText}
+            />
+            <div className="w-24 truncate">{toAddress}</div>
+            <div className="my-auto pl-0.5">
+              <AiFillCopy />
+            </div>
+          </button>
+          <a
+            href={`https://etherscan.io/address/${toAddress}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              className="m-auto h-4 w-4 overflow-hidden hover:h-5 hover:w-5"
+              src="etherscan-logo-circle.svg"
+              alt="etherscan-logo"
+            />
+          </a>
         </div>
       </div>
     );
@@ -507,13 +527,13 @@ const StoredSimulationComponent = ({
   if (storedSimulation.state === StoredSimulationState.Success) {
     if (storedSimulation.type === StoredType.SignatureHash) {
       return (
-        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+        <div className="flex w-full grow flex-col items-center justify-center pt-4">
           <div className="text-center text-lg font-bold text-red-500">
             🚨 WARNING 🚨
           </div>
-          <div className="text-base px-6 py-2 text-red-500 text-center">
+          <div className="px-6 py-2 text-center text-base text-red-500">
             Confirming this signature can transfer all your NFTs or Tokens!
-            <div className="text-sm px-6 py-2 text-gray-400 text-center">
+            <div className="px-6 py-2 text-center text-sm text-gray-400">
               This is very dangerous and is likely a scam. Please triple check
               to ensure you trust this website.
             </div>
@@ -522,53 +542,54 @@ const StoredSimulationComponent = ({
       );
     } else if (storedSimulation.type === StoredType.PersonalSign) {
       if (storedSimulation.simulation?.mustWarn) {
-      return (
-        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
-          <img className="w-48" src="unknown-box.png" alt="unknown-box" />
-          <div className="text-base px-6 py-2 text-center">
-            This signature cannot be translated. Please be careful.
+        return (
+          <div className="flex w-full grow flex-col items-center justify-center pt-4">
+            <img className="w-48" src="unknown-box.png" alt="unknown-box" />
+            <div className="px-6 py-2 text-center text-base">
+              This signature cannot be translated. Please be careful.
+            </div>
+            <div className="px-6 py-2 text-center text-sm text-gray-300">
+              Note: if you're on X2Y2.io, you'll see this for listing assets.
+              This is safe.
+            </div>
+            <div className="px-6 text-center text-sm text-gray-300">
+              See more info about these signatures{' '}
+              <a
+                href="https://twitter.com/PocketUniverseZ/status/1604373525610999808"
+                target="_blank"
+                className="inline text-purple-300 hover:underline"
+                rel="noreferrer"
+              >
+                here
+              </a>
+            </div>
           </div>
-          <div className="text-sm text-gray-300 px-6 py-2 text-center">
-            Note: if you're on X2Y2.io, you'll see this for listing assets. This is safe.
-          </div>
-          <div className="text-sm text-gray-300 px-6 text-center">
-          See more info about these signatures <a
-                    href="https://twitter.com/PocketUniverseZ/status/1604373525610999808"
-                    target="_blank"
-                    className="text-purple-300 hover:underline inline"
-                    rel="noreferrer"
-                    >
-                    here
-                    </a>
-          </div>
-        </div>
-      );
+        );
       } else {
-      return (
-        <div className="flex flex-col grow items-center justify-center pt-4 gap-4 w-full">
-          <div className="text-center text-xl text-green-400">
-            Sign In
+        return (
+          <div className="flex w-full grow flex-col items-center justify-center gap-4 pt-4">
+            <div className="text-center text-xl text-green-400">Sign In</div>
+            <img className="w-48" src="sign-in-image.png" alt="sign-in-image" />
+            <div className="px-6 py-2 text-center text-base">
+              This is a safe signature which cannot move your assets. It's
+              usually used for signing in.
+            </div>
           </div>
-          <img className="w-48" src="sign-in-image.png" alt="sign-in-image" />
-          <div className="text-base px-6 py-2 text-center">
-            This is a safe signature which cannot move your assets. It's usually used for signing in.
-          </div>
-        </div>
-      );
-        }
+        );
+      }
     } else {
       // TODO: handle the TO address separately.
       return (
-        <div className="flex flex-col grow items-center justify-center pt-4 w-full">
+        <div className="flex w-full grow flex-col items-center justify-center pt-4">
           {interactingAddress()}
-          <div className="flex flex-col grow items-center justify-center w-full">
+          <div className="flex w-full grow flex-col items-center justify-center">
             <PotentialWarnings
               simulation={simulation}
               type={storedSimulation.type}
               verified={verifiedAddressName !== undefined}
             />
 
-            <div className="m-2 border-y border-gray-600 w-full w-11/12">
+            <div className="m-2 w-full w-11/12 border-y border-gray-600">
               <SimulationComponent simulation={simulation} />
             </div>
           </div>
@@ -608,7 +629,7 @@ const TransactionComponent = () => {
 
   if (!filteredSimulations || filteredSimulations.length === 0) {
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex w-full flex-col">
         <div>
           <img
             className="w-full border-t border-gray-600"
@@ -616,7 +637,7 @@ const TransactionComponent = () => {
             alt=""
           />
         </div>
-        <div className="flex grow justify-center items-center w-full">
+        <div className="flex w-full grow items-center justify-center">
           <NoTransactionComponent />
         </div>
         <div>
@@ -627,18 +648,26 @@ const TransactionComponent = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-between w-full">
+    <div className="flex w-full flex-col items-center justify-between">
       {filteredSimulations.length !== 1 && (
-        <div className="p-2 text-base flex items-center justify-center text-gray-400 border-t border-gray-600 w-full">
+        <div className="flex w-full items-center justify-center border-t border-gray-600 p-2 text-base text-gray-400">
           {filteredSimulations.length - 1} queued
         </div>
       )}
       <div className="absolute flex w-full justify-end py-6 px-6">
-        <a href="https://twitter.com/intent/tweet?text=X%20looks%20like%20a%20scam%21%0A%0ADetected%20by%20%40PocketUniverseZ%0A%0A---%28delete%20below%20before%20posting%29---%0AInclude%20a%20screenshot%20in%20your%20post%21%0A%E2%97%86%20Shift%20%2B%20Command%20%2B%204%20%28Mac%29%0A%E2%97%86%20Windows%20key%20%2B%20Shift%20%2B%20S%20%28Windows%29" target="_blank">
-          <button onClick={() => {
-            posthog.capture('click share')
-            mixpanel.track('click share')
-          }}title="share on twitter" className="flex flex-col items-center text-gray-300 hover:text-gray-400 ">
+        <a
+          href="https://twitter.com/intent/tweet?text=X%20looks%20like%20a%20scam%21%0A%0ADetected%20by%20%40PocketUniverseZ%0A%0A---%28delete%20below%20before%20posting%29---%0AInclude%20a%20screenshot%20in%20your%20post%21%0A%E2%97%86%20Shift%20%2B%20Command%20%2B%204%20%28Mac%29%0A%E2%97%86%20Windows%20key%20%2B%20Shift%20%2B%20S%20%28Windows%29"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <button
+            onClick={() => {
+              posthog.capture('click share');
+              mixpanel.track('click share');
+            }}
+            title="share on twitter"
+            className="flex flex-col items-center text-gray-300 hover:text-gray-400 "
+          >
             <MdIosShare size={24} />
           </button>
         </a>
@@ -649,16 +678,14 @@ const TransactionComponent = () => {
         src="waves_top.png"
         alt=""
       />
-      <div className="flex flex-col grow w-full justify-center items-center">
+      <div className="flex w-full grow flex-col items-center justify-center">
         <StoredSimulationComponent
           key={filteredSimulations[0].id}
           storedSimulation={filteredSimulations[0]}
         />
         <img className="mt-auto w-full" src="waves_bottom.png" alt="" />
-        <div className="mt-auto border-t border-gray-600 w-full">
-          <ConfirmSimulationButton
-            storedSimulation={filteredSimulations[0]}
-          />
+        <div className="mt-auto w-full border-t border-gray-600">
+          <ConfirmSimulationButton storedSimulation={filteredSimulations[0]} />
         </div>
       </div>
     </div>
