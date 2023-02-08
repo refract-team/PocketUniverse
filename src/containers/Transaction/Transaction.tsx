@@ -10,6 +10,7 @@ import posthog from 'posthog-js';
 import browser from 'webextension-polyfill';
 import mixpanel from 'mixpanel-browser';
 
+import { VALID_CONTINUE_COMMAND } from '../../lib/request';
 import logger from '../../lib/logger';
 import { Simulation, Event, EventType, TokenType } from '../../lib/models';
 import type { StoredSimulation } from '../../lib/storage';
@@ -327,6 +328,7 @@ const ConfirmSimulationButton = ({
           onClick={() => {
             posthog.alias(signer);
             mixpanel.alias(signer);
+
             posthog.capture('simulation rejected', { storedSimulation });
             mixpanel.track('simulation rejected', { storedSimulation });
             log.info({ id, state }, 'Simulation Rejected');
@@ -337,12 +339,18 @@ const ConfirmSimulationButton = ({
         </button>
         <button
           className="w-28 rounded-full bg-gray-100 text-base text-black hover:bg-gray-300"
-          onClick={() => {
+          onClick={async () => {
             posthog.alias(signer);
             mixpanel.alias(signer);
+
             posthog.capture('simulation confirmed', { storedSimulation });
             mixpanel.track('simulation confirmed', { storedSimulation });
             log.info({ id, state }, 'Simulation Continue');
+            // Wait for the message to reach the background script first such that we can update the valid requests before it gets sent to MM.
+            await browser.runtime.sendMessage({
+              command: VALID_CONTINUE_COMMAND,
+              data: storedSimulation,
+            });
             updateSimulationState(id, StoredSimulationState.Confirmed);
           }}
         >
@@ -365,6 +373,7 @@ const StoredSimulationComponent = ({
   const COPY_TEXT = 'Copy to clipboard';
   const COPIED_TEXT = 'Copied!';
   const [copyText, setCopyText] = useState(COPY_TEXT);
+
   if (storedSimulation.state === StoredSimulationState.Simulating) {
     return (
       <div className="flex w-full grow flex-col items-center justify-center">
@@ -569,7 +578,7 @@ const StoredSimulationComponent = ({
         return (
           <div className="flex w-full grow flex-col items-center justify-center gap-4 pt-4">
             <div className="text-center text-xl text-green-400">Sign In</div>
-            <img className="w-48" src="sign-in-image.png" alt="sign-in-image" />
+            <img className="w-48" src="sign-in-image.png" alt="sign in" />
             <div className="px-6 py-2 text-center text-base">
               This is a safe signature which cannot move your assets. It's
               usually used for signing in.

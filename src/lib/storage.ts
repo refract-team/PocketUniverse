@@ -1,7 +1,7 @@
 /// Storage wrapper for updating the storage.
 import logger from './logger';
 import { fetchSimulate, fetchSignature } from './server';
-import type { RequestArgs } from './request';
+import { isSupportedChainId, RequestArgs } from './request';
 import { Simulation, Response, ResponseType } from '../lib/models';
 import browser from 'webextension-polyfill';
 
@@ -44,6 +44,9 @@ export interface StoredSimulation {
 
   /// The state this simulation is in.
   state: StoredSimulationState;
+
+  /// Raw request args.
+  args?: RequestArgs;
 
   /// Simulation set on success.
   simulation?: Simulation;
@@ -166,10 +169,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
 
   let state = StoredSimulationState.Simulating;
   if (
-    args.chainId !== '0x1' &&
-    args.chainId !== '1' &&
-    args.chainId !== '137' &&
-    args.chainId !== '0x89'
+    !isSupportedChainId(args.chainId)
   ) {
     // Automatically confirm if chain id is incorrect. This prevents the popup.
     state = StoredSimulationState.Confirmed;
@@ -181,6 +181,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         id: args.id,
         signer: args.signer,
         type: StoredType.Simulation,
+        args,
         state,
       }),
       fetchSimulate(args),
@@ -193,6 +194,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         id: args.id,
         signer: args.signer,
         type: StoredType.SignatureHash,
+        args,
         state,
       }),
       fetchSignature(args),
@@ -205,6 +207,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         id: args.id,
         signer: args.signer,
         type: StoredType.PersonalSign,
+        args,
         state,
       }),
       fetchSignature(args),
@@ -217,6 +220,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
         id: args.id,
         signer: args.signer,
         type: StoredType.Signature,
+        args,
         state,
       }),
       fetchSignature(args),
@@ -253,11 +257,12 @@ export const clearOldSimulations = async () => {
   log.info(simulations, 'Clear old simulations');
 
   // Remove confirmed/rejected simulations.
-  simulations = simulations.filter(
-    (x: StoredSimulation) =>
+  simulations = simulations.filter((x: StoredSimulation) => {
+    return (
       x.state !== StoredSimulationState.Rejected &&
       x.state !== StoredSimulationState.Confirmed
-  );
+    );
+  });
 
   return browser.storage.local.set({ simulations });
 };

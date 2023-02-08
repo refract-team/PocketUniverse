@@ -1,7 +1,12 @@
 import * as Sentry from '@sentry/browser';
 import logger from '../../lib/logger';
-import { RequestArgs } from '../../lib/request';
-import { REQUEST_COMMAND } from '../../lib/request';
+import {
+  REQUEST_COMMAND,
+  BYPASS_COMMAND,
+  VALID_CONTINUE_COMMAND,
+} from '../../lib/request';
+import lodash from 'lodash';
+import { PartialRequestArgs, RequestArgs } from '../../lib/request';
 import type { StoredSimulation } from '../../lib/storage';
 import {
   fetchSimulationAndUpdate,
@@ -98,6 +103,8 @@ browser.windows.onRemoved.addListener((windowId: number) => {
 browser.storage.onChanged.addListener((changes, area) => {
   Sentry.wrap(() => {
     if (area === 'local' && changes.simulations?.newValue) {
+      const popup = currentPopup;
+
       const oldSimulations = changes.simulations.oldValue;
       const newSimulations = changes.simulations.newValue;
 
@@ -114,7 +121,7 @@ browser.storage.onChanged.addListener((changes, area) => {
 
       log.debug(
         {
-          currentPopup,
+          popup,
           oldSimulations,
           newSimulations,
           oldFiltered,
@@ -126,10 +133,7 @@ browser.storage.onChanged.addListener((changes, area) => {
       // New values added, let's trigger a popup.
       // TODO(jqphu): do we need to check old values?
       // We have no popup and either we no filter at all (first add) or we now have a new element
-      if (
-        !currentPopup &&
-        (!oldFiltered || newFiltered.length > oldFiltered.length)
-      ) {
+      if (!popup && (!oldFiltered || newFiltered.length > oldFiltered.length)) {
         // Indicate we're creating a popup so we don't have many.
         currentPopup = -1;
 
@@ -150,13 +154,8 @@ browser.storage.onChanged.addListener((changes, area) => {
         return;
       }
 
-      if (
-        newFiltered.length === 0 &&
-        oldFiltered.length === 1 &&
-        currentPopup &&
-        currentPopup !== -1
-      ) {
-        const closeId = currentPopup;
+      if (newFiltered.length === 0 && popup && popup !== -1) {
+        const closeId = popup;
         log.info(closeId, 'Trying to remove popup');
         currentPopup = undefined;
         browser.windows.remove(closeId);
@@ -165,15 +164,32 @@ browser.storage.onChanged.addListener((changes, area) => {
       }
 
       // Let's send it to the front if it already exists
-      if (currentPopup && currentPopup !== -1) {
+      if (popup && popup !== -1) {
         log.info('Focusing popup.');
-        browser.windows.update(currentPopup, {
+        browser.windows.update(popup, {
           focused: true,
         });
       }
     }
   });
 });
+
+const openBypassPopup = async () => {
+  // Tiny delay to have metamask popup first then we popup on top.
+  const delayPromise = new Promise((resolve) => setTimeout(resolve, 500));
+
+  delayPromise.then(() => {
+    browser.windows.create({
+      url: 'bypass.html',
+      type: 'popup',
+      width: 760,
+      height: 760,
+    });
+  });
+};
+
+// List of requests the user has authorized.
+const validRequests: StoredSimulation[] = [];
 
 browser.runtime.onMessage.addListener((request) => {
   Sentry.wrap(() => {
@@ -182,8 +198,65 @@ browser.runtime.onMessage.addListener((request) => {
 
       const args: RequestArgs = request.data;
       clearOldSimulations().then(() => fetchSimulationAndUpdate(args));
+    } else if (request.command === BYPASS_COMMAND) {
+      const partialRequestArgs: PartialRequestArgs = request.data;
+      // If we can't find the request in our stored simulation, then it has bypassed. Show a warning.
+      findRequest(partialRequestArgs, validRequests).then((idx) => {
+        if (idx !== -1) {
+          // Remove this request from valid requests, we've checked it.
+          validRequests.splice(idx, 1);
+        } else {
+          // We couldn't find the request, show bypass popup.
+          openBypassPopup();
+        }
+      });
+    } else if (request.command === VALID_CONTINUE_COMMAND) {
+      // Valid request has been added.
+      validRequests.push(request.data);
     } else {
       log.warn(request, 'Unknown command');
     }
   });
 });
+
+// Returns the id of the request if it exists.
+const findRequest = async (
+  args: PartialRequestArgs,
+  simulations: StoredSimulation[]
+) => {
+  const idx = simulations.findIndex((sim) => {
+    // If there are no args this is an old request.
+    if (!sim.args) {
+      return false;
+    }
+
+    const simArgs = sim.args;
+
+    if (simArgs.signer !== args.signer) {
+      return false;
+    }
+
+    if ('transaction' in simArgs && 'transaction' in args) {
+      return (
+        simArgs.transaction.from === args.transaction.from &&
+        simArgs.transaction.to === args.transaction.to &&
+        simArgs.transaction.value === args.transaction.value &&
+        simArgs.transaction.data === args.transaction.data
+      );
+    } else if ('hash' in simArgs && 'hash' in args) {
+      return simArgs.hash === args.hash;
+    } else if ('signMessage' in simArgs && 'signMessage' in args) {
+      return simArgs.signMessage === args.signMessage;
+    } else if ('domain' in simArgs && 'domain' in args) {
+      return (
+        lodash.isEqual(simArgs.domain, args.domain) &&
+        lodash.isEqual(simArgs.message, args.message) &&
+        lodash.isEqual(simArgs.primaryType, args.primaryType)
+      );
+    } else {
+      return false;
+    }
+  });
+
+  return idx;
+};

@@ -1,6 +1,10 @@
 // PocketUniverse logo in ASCII form.
 import logger from '../../lib/logger';
-import { RequestManager, Response } from '../../lib/request';
+import {
+  RequestManager,
+  toPartialRequestArgs,
+  Response,
+} from '../../lib/request';
 import { ethErrors } from 'eth-rpc-errors';
 
 declare global {
@@ -81,8 +85,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
-          signer: request.params[0].from,
-          transaction: request.params[0],
+          ...toPartialRequestArgs(request.method, request.params ?? []),
         });
 
         if (response === Response.Reject) {
@@ -110,10 +113,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
-          signer: params[0],
-          domain: params['domain'],
-          message: params['message'],
-          primaryType: params['primaryType'],
+          ...toPartialRequestArgs(request.method, request.params ?? []),
         });
 
         if (response === Response.Reject) {
@@ -134,8 +134,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
-          signer: request.params[0],
-          hash: request.params[1],
+          ...toPartialRequestArgs(request.method, request.params ?? []),
         });
 
         if (response === Response.Reject) {
@@ -156,8 +155,7 @@ const addPocketUniverseProxy = (provider: any) => {
         // Sending response.
         response = await REQUEST_MANAGER.request({
           chainId: await provider.request({ method: 'eth_chainId' }),
-          signer: request.params[1],
-          signMessage: request.params[0],
+          ...toPartialRequestArgs(request.method, request.params ?? []),
         });
 
         if (response === Response.Reject) {
@@ -212,8 +210,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             return REQUEST_MANAGER.request({
               chainId,
-              signer: request.params[0].from,
-              transaction: request.params[0],
+              ...toPartialRequestArgs(request.method, request.params ?? []),
             });
           })
           .then((response: any) => {
@@ -258,10 +255,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             return REQUEST_MANAGER.request({
               chainId,
-              signer: params[0],
-              domain: params['domain'],
-              message: params['message'],
-              primaryType: params['primaryType'],
+              ...toPartialRequestArgs(request.method, request.params ?? []),
             });
           })
           .then((response: any) => {
@@ -300,8 +294,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             return REQUEST_MANAGER.request({
               chainId,
-              signer: request.params[0],
-              hash: request.params[1],
+              ...toPartialRequestArgs(request.method, request.params ?? []),
             });
           })
           .then((response: any) => {
@@ -340,8 +333,7 @@ const addPocketUniverseProxy = (provider: any) => {
           .then((chainId: any) => {
             return REQUEST_MANAGER.request({
               chainId,
-              signer: request.params[1],
-              signMessage: request.params[0],
+              ...toPartialRequestArgs(request.method, request.params ?? []),
             });
           })
           .then((response: any) => {

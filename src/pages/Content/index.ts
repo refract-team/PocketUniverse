@@ -1,12 +1,14 @@
 import logger from '../../lib/logger';
-import { RequestArgs } from '../../lib/request';
+import { isSupportedChainId, RequestArgs } from '../../lib/request';
 import {
   listenToRequest,
   dispatchResponse,
+  toPartialRequestArgs,
   REQUEST_COMMAND,
+  BYPASS_COMMAND,
   Response,
 } from '../../lib/request';
-import type { StoredSimulation } from '../../lib/storage';
+import { StoredSimulation } from '../../lib/storage';
 import {
   Settings,
   getSettings,
@@ -107,10 +109,12 @@ listenToRequest(async (request: RequestArgs) => {
             maybeRemoveId(simulation.id);
           } else if (simulation.state === StoredSimulationState.Rejected) {
             log.debug('Dispatch rejected', simulation.id);
+
             dispatchResponse({
               id: simulation.id,
               type: Response.Reject,
             });
+
             maybeRemoveId(simulation.id);
           }
         });
@@ -122,4 +126,64 @@ listenToRequest(async (request: RequestArgs) => {
       data: request,
     });
   });
+});
+
+// Bypass checks
+// Thanks Rosco - https://github.com/RevokeCash/browser-extension/blob/master/src/content-scripts/bypass-check.tsx
+
+let chainId = 1;
+
+// Bypass checks for MetaMask
+window.addEventListener('message', async (message) => {
+  const { target } = message?.data ?? {};
+  const { name, data } = message?.data?.data ?? {};
+
+  if (name !== 'metamask-provider' || !data) return;
+  if (target === 'metamask-contentscript') {
+    // Trying to send messages directly to metamask should not be supported. It should go through pocket universe.
+    if (
+      data.method === 'eth_sendTransaction' ||
+      data.method === 'eth_signTypedData_v3' ||
+      data.method === 'eth_signTypedData_v4' ||
+      data.method === 'eth_sendTransaction' ||
+      data.method === 'eth_sign' ||
+      data.method === 'personal_sign'
+    ) {
+      getSettings().then(async (args: Settings) => {
+        const requestArgs = toPartialRequestArgs(
+          data.method,
+          data.params ?? []
+        );
+
+        // We're not enabled.
+        if (args.disable) {
+          return;
+        }
+
+        // This was whitelisted address, skip anyway.
+        if (
+          args.hyperdrive &&
+          'transaction' in requestArgs &&
+          KNOWN_MARKETPLACES.includes(requestArgs.transaction.to.toLowerCase())
+        ) {
+          return;
+        }
+
+        // Unsupported chain id.
+        if(!isSupportedChainId(chainId.toString())) {
+          return;
+        }
+
+        browser.runtime.sendMessage({
+          command: BYPASS_COMMAND,
+          data: requestArgs,
+        });
+      });
+    }
+  }
+
+
+  if (target === 'metamask-inpage' && data?.method?.includes('chainChanged')) {
+    chainId = Number(data?.params?.chainId ?? chainId);
+  }
 });

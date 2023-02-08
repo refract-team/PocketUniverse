@@ -107,6 +107,7 @@ var options = {
   entry: {
     manifest: './src/manifest.json',
     popup: path.join(__dirname, 'src', 'pages', 'Popup', 'index.jsx'),
+    bypass: path.join(__dirname, 'src', 'pages', 'Bypass', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.ts'),
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
     injectedScript: path.join(
@@ -326,13 +327,27 @@ var options = {
         },
       ],
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/bypass.png',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
       filename: 'popup.html',
       chunks: ['popup'],
       cache: false,
     }),
-
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'pages', 'Bypass', 'index.html'),
+      filename: 'bypass.html',
+      chunks: ['bypass'],
+      cache: false,
+    }),
     new NodePolyfillPlugin(),
   ],
   infrastructureLogging: {
