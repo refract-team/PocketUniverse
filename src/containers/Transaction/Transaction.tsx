@@ -45,10 +45,10 @@ const NoTransactionComponent = () => {
       <img className="m-auto w-32" src="rocket.png" alt="rocket taking off" />
       <div className="flex flex-col gap-4">
         <div className="p-2 text-gray-100">
-          Trigger an Ethereum transaction to start
+          Trigger a transaction to start
         </div>
         <div className="p-2 text-base text-gray-100">
-          We currently only work on Ethereum Mainnet. You will not see a pop-up
+          We currently support Ethereum and Polygon. You will not see a pop-up
           for other chains.
         </div>
 
