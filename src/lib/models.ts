@@ -138,7 +138,16 @@ export class Simulation {
     public mustWarn?: boolean,
 
     // Optional message to display when we warn people.
-    public mustWarnMessage?: string
+    public mustWarnMessage?: string,
+
+    // If it's a collabland signature
+    public collabLand?: boolean,
+
+    // Name of collab land signature.
+    public collabLandName?: string,
+
+    // Community for collab land signature.
+    public collabLandCommunity?: string,
   ) {}
 
   public static fromJSON(obj: any): Simulation {
@@ -149,7 +158,10 @@ export class Simulation {
       obj.toAddress,
       obj.shouldWarn,
       obj.mustWarn,
-      obj.mustWarnMessage
+      obj.mustWarnMessage,
+      obj.collabLand,
+      obj.collabLandName,
+      obj.collabLandCommunity,
     );
   }
 }

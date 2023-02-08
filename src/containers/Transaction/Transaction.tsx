@@ -577,6 +577,23 @@ const StoredSimulationComponent = ({
           </div>
         );
       }
+    } else if (storedSimulation.type === StoredType.Signature && storedSimulation.simulation?.collabLand)  {
+        return (
+          <div className="flex w-full grow flex-col items-center justify-center gap-4 pt-4">
+            <img className="w-48" src="collabland.png" alt="collabland logo" />
+            <div className="text-center text-xl text-green-400">Verifying ownership with Collab.Land</div>
+            { storedSimulation.simulation.collabLandName && 
+            <div className="px-6 py-2 text-center text-base">
+            Hi {storedSimulation.simulation.collabLandName}.
+            <div>
+            Welcome to {storedSimulation.simulation.collabLandCommunity}.
+            </div>
+            </div> }
+            <div className="px-6 py-2 text-center text-base">
+            This is a read-only signature that cannot move your assets.
+            </div>
+          </div>
+        );
     } else {
       // TODO: handle the TO address separately.
       return (

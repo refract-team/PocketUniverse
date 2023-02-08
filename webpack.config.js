@@ -317,6 +317,15 @@ var options = {
         },
       ],
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/assets/img/collabland.png',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
       filename: 'popup.html',
