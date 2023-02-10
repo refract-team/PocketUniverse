@@ -226,7 +226,7 @@ const PotentialWarnings = ({
   const event = events[0];
 
   if (type === StoredType.Simulation) {
-    const NoApprovalForAll = (
+    let NoApprovalForAll = (
       <div className="px-2 pb-4 text-center text-base text-gray-400">
         Changes being made in this transaction
       </div>
@@ -247,6 +247,10 @@ const PotentialWarnings = ({
           </div>
         </div>
       );
+    } else if (event.type === EventType.ApprovalForAll && verified) {
+      NoApprovalForAll = (<div className="px-8 pb-4 text-center text-base text-gray-400">
+          This is a normal permission exchanges and marketplaces need in order to sell your assets.
+      </div>);
     }
 
     return (
