@@ -44,9 +44,7 @@ const NoTransactionComponent = () => {
     <div className="text-center text-lg">
       <img className="m-auto w-32" src="rocket.png" alt="rocket taking off" />
       <div className="flex flex-col gap-4">
-        <div className="p-2 text-gray-100">
-          Trigger a transaction to start
-        </div>
+        <div className="p-2 text-gray-100">Trigger a transaction to start</div>
         <div className="p-2 text-base text-gray-100">
           We currently support Ethereum and Polygon. You will not see a pop-up
           for other chains.
@@ -248,9 +246,12 @@ const PotentialWarnings = ({
         </div>
       );
     } else if (event.type === EventType.ApprovalForAll && verified) {
-      NoApprovalForAll = (<div className="px-8 pb-4 text-center text-base text-gray-400">
-          This is a normal permission exchanges and marketplaces need in order to sell your assets.
-      </div>);
+      NoApprovalForAll = (
+        <div className="px-8 pb-4 text-center text-base text-gray-400">
+          This is a normal permission exchanges and marketplaces need in order
+          to sell your assets.
+        </div>
+      );
     }
 
     return (

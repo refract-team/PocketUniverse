@@ -168,9 +168,7 @@ export const fetchSimulationAndUpdate = async (args: RequestArgs) => {
   let response: Response;
 
   let state = StoredSimulationState.Simulating;
-  if (
-    !isSupportedChainId(args.chainId)
-  ) {
+  if (!isSupportedChainId(args.chainId)) {
     // Automatically confirm if chain id is incorrect. This prevents the popup.
     state = StoredSimulationState.Confirmed;
   }

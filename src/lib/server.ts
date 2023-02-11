@@ -1,7 +1,7 @@
 import config from '../config';
 
 import logger from './logger';
-import type { Transaction } from './request';
+import type { Transaction, PartialRequestArgs } from './request';
 import { Response, ResponseType, Simulation } from './models';
 
 const log = logger.child({ component: 'Server' });
@@ -32,6 +32,38 @@ export const fetchUpdate = async (args: {
     return data;
   } else {
     throw new Error(`Error fetching update message: ${result.status}`);
+  }
+};
+
+export const fetchBypass = async (args: {
+  request: PartialRequestArgs;
+  hostname: string;
+  chainId: string;
+}) => {
+  log.info(args, 'Fetch Bypass');
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = await fetch(`${SERVER_URL}/v1/bypass`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
+    });
+
+    if (result.status === 200) {
+      const data = await result.json();
+
+      return data;
+    }
+
+    return false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    console.log('ERROR: ', e);
+    return false;
   }
 };
 

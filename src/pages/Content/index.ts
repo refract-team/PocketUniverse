@@ -137,6 +137,7 @@ let chainId = 1;
 window.addEventListener('message', async (message) => {
   const { target } = message?.data ?? {};
   const { name, data } = message?.data?.data ?? {};
+  const { hostname } = window.location;
 
   if (name !== 'metamask-provider' || !data) return;
   if (target === 'metamask-contentscript') {
@@ -150,38 +151,45 @@ window.addEventListener('message', async (message) => {
       data.method === 'personal_sign'
     ) {
       getSettings().then(async (args: Settings) => {
-        const requestArgs = toPartialRequestArgs(
-          data.method,
-          data.params ?? []
-        );
+        try {
+          // This could fail due to a very malformed request - this is okay
+          // since MetaMask will reject it as well. Let's just move on.
+          const requestArgs = toPartialRequestArgs(
+            data.method,
+            data.params ?? []
+          );
 
-        // We're not enabled.
-        if (args.disable) {
-          return;
+          // We're not enabled.
+          if (args.disable) {
+            return;
+          }
+
+          // This was whitelisted address, skip anyway.
+          if (
+            args.hyperdrive &&
+            'transaction' in requestArgs &&
+            KNOWN_MARKETPLACES.includes(
+              requestArgs.transaction.to.toLowerCase()
+            )
+          ) {
+            return;
+          }
+
+          // Unsupported chain id.
+          if (!isSupportedChainId(chainId.toString())) {
+            return;
+          }
+
+          browser.runtime.sendMessage({
+            command: BYPASS_COMMAND,
+            data: { request: requestArgs, hostname, chainId },
+          });
+        } catch (e) {
+          console.error('PocketUniverse failed to process bypass check', e);
         }
-
-        // This was whitelisted address, skip anyway.
-        if (
-          args.hyperdrive &&
-          'transaction' in requestArgs &&
-          KNOWN_MARKETPLACES.includes(requestArgs.transaction.to.toLowerCase())
-        ) {
-          return;
-        }
-
-        // Unsupported chain id.
-        if(!isSupportedChainId(chainId.toString())) {
-          return;
-        }
-
-        browser.runtime.sendMessage({
-          command: BYPASS_COMMAND,
-          data: requestArgs,
-        });
       });
     }
   }
-
 
   if (target === 'metamask-inpage' && data?.method?.includes('chainChanged')) {
     chainId = Number(data?.params?.chainId ?? chainId);

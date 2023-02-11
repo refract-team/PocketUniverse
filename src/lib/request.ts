@@ -96,12 +96,14 @@ export const BYPASS_COMMAND = 'bypass';
 /// Send a message to the background script with a valid simulation.
 export const VALID_CONTINUE_COMMAND = 'valid';
 
-export const isSupportedChainId = (chainId: string) =>  {
-  return chainId === '0x1' ||
+export const isSupportedChainId = (chainId: string) => {
+  return (
+    chainId === '0x1' ||
     chainId === '1' ||
     chainId === '137' ||
-    chainId === '0x89';
-}
+    chainId === '0x89'
+  );
+};
 
 export const toPartialRequestArgs = (
   method: string,

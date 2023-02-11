@@ -13,7 +13,7 @@ import {
   clearOldSimulations,
   simulationNeedsAction,
 } from '../../lib/storage';
-import { fetchUpdate } from '../../lib/server';
+import { fetchUpdate, fetchBypass } from '../../lib/server';
 import {
   UPDATE_KEY,
   UPDATE_MESSAGE_KEY,
@@ -174,18 +174,22 @@ browser.storage.onChanged.addListener((changes, area) => {
   });
 });
 
-const openBypassPopup = async () => {
-  // Tiny delay to have metamask popup first then we popup on top.
-  const delayPromise = new Promise((resolve) => setTimeout(resolve, 500));
+const openBypassPopup = async (
+  request: PartialRequestArgs,
+  hostname: string,
+  chainId: string
+) => {
+  // Given enough malicious bypass requests to a hostname we will block it.
+  const shouldPopup = await fetchBypass({ request, hostname, chainId });
 
-  delayPromise.then(() => {
+  if (shouldPopup) {
     browser.windows.create({
       url: 'bypass.html',
       type: 'popup',
       width: 760,
       height: 760,
     });
-  });
+  }
 };
 
 // List of requests the user has authorized.
@@ -199,7 +203,10 @@ browser.runtime.onMessage.addListener((request) => {
       const args: RequestArgs = request.data;
       clearOldSimulations().then(() => fetchSimulationAndUpdate(args));
     } else if (request.command === BYPASS_COMMAND) {
-      const partialRequestArgs: PartialRequestArgs = request.data;
+      const partialRequestArgs: PartialRequestArgs = request.data.request;
+      const hostname = request.data.hostname;
+      const chainId = request.data.chainId;
+
       // If we can't find the request in our stored simulation, then it has bypassed. Show a warning.
       findRequest(partialRequestArgs, validRequests).then((idx) => {
         if (idx !== -1) {
@@ -207,7 +214,7 @@ browser.runtime.onMessage.addListener((request) => {
           validRequests.splice(idx, 1);
         } else {
           // We couldn't find the request, show bypass popup.
-          openBypassPopup();
+          openBypassPopup(partialRequestArgs, hostname, chainId);
         }
       });
     } else if (request.command === VALID_CONTINUE_COMMAND) {
@@ -232,21 +239,22 @@ const findRequest = async (
 
     const simArgs = sim.args;
 
-    if (simArgs.signer !== args.signer) {
+    if (!lodash.isEqual(simArgs.signer, args.signer)) {
       return false;
     }
 
     if ('transaction' in simArgs && 'transaction' in args) {
       return (
-        simArgs.transaction.from === args.transaction.from &&
-        simArgs.transaction.to === args.transaction.to &&
-        simArgs.transaction.value === args.transaction.value &&
-        simArgs.transaction.data === args.transaction.data
+        lodash.isEqual(simArgs.transaction.from, args.transaction.from) &&
+        lodash.isEqual(simArgs.transaction.to, args.transaction.to) &&
+        lodash.isEqual(simArgs.transaction.value, args.transaction.value) &&
+        lodash.isEqual(simArgs.transaction.data, args.transaction.data)
       );
     } else if ('hash' in simArgs && 'hash' in args) {
-      return simArgs.hash === args.hash;
+      return lodash.isEqual(simArgs.hash, args.hash);
     } else if ('signMessage' in simArgs && 'signMessage' in args) {
-      return simArgs.signMessage === args.signMessage;
+      // We need to use lodash since these fields might be wrong (e.g. app error returning NaN we still need this to be true).
+      return lodash.isEqual(simArgs.signMessage, args.signMessage);
     } else if ('domain' in simArgs && 'domain' in args) {
       return (
         lodash.isEqual(simArgs.domain, args.domain) &&
