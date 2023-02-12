@@ -176,6 +176,7 @@ browser.storage.onChanged.addListener((changes, area) => {
 
 // List of requests the user has authorized.
 const validRequests: StoredSimulation[] = [];
+let lastValidRequest: StoredSimulation;
 
 const openBypassPopup = async (
   request: PartialRequestArgs,
@@ -183,7 +184,7 @@ const openBypassPopup = async (
   chainId: string
 ) => {
   // Given enough malicious bypass requests to a hostname we will block it.
-  const shouldPopup = await fetchBypass({ request, hostname, chainId, validRequests });
+  const shouldPopup = await fetchBypass({ request, hostname, chainId, validRequests, lastValidRequest });
 
   if (shouldPopup) {
     browser.windows.create({
@@ -220,6 +221,7 @@ browser.runtime.onMessage.addListener((request) => {
     } else if (request.command === VALID_CONTINUE_COMMAND) {
       // Valid request has been added.
       validRequests.push(request.data);
+      lastValidRequest = request.data;
     } else {
       log.warn(request, 'Unknown command');
     }
