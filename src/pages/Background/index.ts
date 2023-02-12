@@ -220,7 +220,6 @@ browser.runtime.onMessage.addListener((request) => {
     } else if (request.command === VALID_CONTINUE_COMMAND) {
       // Valid request has been added.
       validRequests.push(request.data);
-      console.log('Adding', validRequests);
     } else {
       log.warn(request, 'Unknown command');
     }
@@ -232,11 +231,12 @@ const findRequest = async (
   args: PartialRequestArgs,
   simulations: StoredSimulation[]
 ) => {
-
-  // Delay 200ms.
+  // Delay 100ms.
   //
   // This ensures the valid continue request has come in, as well as helping out popup come out AFTER metamask.
-  await new Promise(resolve => setTimeout(resolve, 200));
+  //
+  // Note: this does not slow down the hot path of the txns.
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   const idx = simulations.findIndex((sim) => {
     // If there are no args this is an old request.
@@ -245,10 +245,6 @@ const findRequest = async (
     }
 
     const simArgs = sim.args;
-
-    if (!lodash.isEqual(simArgs.signer, args.signer)) {
-      return false;
-    }
 
     if ('transaction' in simArgs && 'transaction' in args) {
       return (
