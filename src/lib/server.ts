@@ -1,5 +1,7 @@
 import config from '../config';
 
+import browser from 'webextension-polyfill';
+import { v4 as uuidv4 } from 'uuid';
 import logger from './logger';
 import type { Transaction, PartialRequestArgs } from './request';
 import { Response, ResponseType, Simulation } from './models';
@@ -10,6 +12,18 @@ const log = logger.child({ component: 'Server' });
 const SERVER_URL = config.server;
 
 log.info(SERVER_URL, 'SERVER_URL');
+
+let clientId: string = '00000000-0000-0000-0000-000000000001';
+
+const initClient = async () => {
+  let key = 'pocket-universe:id';
+  const storage = await browser.storage.sync.get(key);
+  const storedId = storage[key];
+  clientId = storedId ?? uuidv4();
+  if (!storedId) await browser.storage.sync.set({ [key]: clientId });
+};
+
+initClient();
 
 export const fetchUpdate = async (args: {
   manifestVersion: string;
@@ -24,7 +38,10 @@ export const fetchUpdate = async (args: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(args),
+    body: JSON.stringify({
+      clientId,
+      ...args,
+    }),
   });
 
   if (result.status === 200) {
@@ -50,7 +67,10 @@ export const fetchBypass = async (args: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(args),
+      body: JSON.stringify({
+        clientId,
+        ...args,
+      }),
     });
 
     if (result.status === 200) {
@@ -83,7 +103,10 @@ export const fetchSimulate = async (args: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(args),
+      body: JSON.stringify({
+        clientId,
+        ...args,
+      }),
     });
 
     if (result.status === 200) {
@@ -134,7 +157,10 @@ export const fetchSignature = async (
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(args),
+      body: JSON.stringify({
+        clientId,
+        ...args,
+      }),
     });
 
     if (result.status === 200) {
