@@ -220,6 +220,7 @@ browser.runtime.onMessage.addListener((request) => {
     } else if (request.command === VALID_CONTINUE_COMMAND) {
       // Valid request has been added.
       validRequests.push(request.data);
+      console.log('Adding', validRequests);
     } else {
       log.warn(request, 'Unknown command');
     }
@@ -231,6 +232,12 @@ const findRequest = async (
   args: PartialRequestArgs,
   simulations: StoredSimulation[]
 ) => {
+
+  // Delay 200ms.
+  //
+  // This ensures the valid continue request has come in, as well as helping out popup come out AFTER metamask.
+  await new Promise(resolve => setTimeout(resolve, 200));
+
   const idx = simulations.findIndex((sim) => {
     // If there are no args this is an old request.
     if (!sim.args) {
