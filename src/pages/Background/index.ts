@@ -174,13 +174,16 @@ browser.storage.onChanged.addListener((changes, area) => {
   });
 });
 
+// List of requests the user has authorized.
+const validRequests: StoredSimulation[] = [];
+
 const openBypassPopup = async (
   request: PartialRequestArgs,
   hostname: string,
   chainId: string
 ) => {
   // Given enough malicious bypass requests to a hostname we will block it.
-  const shouldPopup = await fetchBypass({ request, hostname, chainId });
+  const shouldPopup = await fetchBypass({ request, hostname, chainId, validRequests });
 
   if (shouldPopup) {
     browser.windows.create({
@@ -191,9 +194,6 @@ const openBypassPopup = async (
     });
   }
 };
-
-// List of requests the user has authorized.
-const validRequests: StoredSimulation[] = [];
 
 browser.runtime.onMessage.addListener((request) => {
   Sentry.wrap(() => {

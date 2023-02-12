@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from './logger';
 import type { Transaction, PartialRequestArgs } from './request';
 import { Response, ResponseType, Simulation } from './models';
+import type { StoredSimulation } from '../lib/storage';
 
 const log = logger.child({ component: 'Server' });
 
@@ -56,6 +57,7 @@ export const fetchBypass = async (args: {
   request: PartialRequestArgs;
   hostname: string;
   chainId: string;
+  validRequests: StoredSimulation[];
 }) => {
   log.info(args, 'Fetch Bypass');
 
