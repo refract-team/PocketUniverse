@@ -121,7 +121,7 @@ export const toPartialRequestArgs = (
     const jsonParams = JSON.parse(params[1]);
 
     return {
-      signer: jsonParams[0],
+      signer: params[0],
       domain: jsonParams['domain'],
       message: jsonParams['message'],
       primaryType: jsonParams['primaryType'],
