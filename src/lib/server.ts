@@ -59,6 +59,7 @@ export const fetchBypass = async (args: {
   chainId: string;
   validRequests: StoredSimulation[];
   lastValidRequest: StoredSimulation;
+  version: string;
 }) => {
   log.info(args, 'Fetch Bypass');
 

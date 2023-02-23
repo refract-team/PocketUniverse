@@ -37,17 +37,29 @@ const Bypass = () => {
           <div className="flex w-11/12 grow flex-col items-center justify-center">
             <img className="w-48" src="bypass.png" alt="bypass warning" />
             <div className="p-4 text-center text-lg font-bold text-red-500">
-              🚨 WARNING 🚨
+              Error
             </div>
-            <div className="p-2 text-center text-base text-red-500">
-              <div>This website is trying to bypass our security checks!</div>
+            <div className="p-2 text-center text-base text-gray-100">
               <div>
-                {' '}
-                Do not sign anything in your MetaMask, it may be a scam.{' '}
+                This website skipped the Pocket Universe popup.
+              </div>
+              <div>
+                In order to stay safe, you should see the Pocket Universe popup for every transaction.
               </div>
             </div>
             <div className="p-2 text-center text-base text-gray-300">
-              <div>Contact us if you think this was a mistake.</div>
+              <div>
+                Contact us on {' '}
+                <a
+                  href="https://discord.gg/nVdz8tKkBr"
+                  target="_blank"
+                  className="inline text-base text-purple-300 hover:underline"
+                  rel="noreferrer"
+                >
+                  Discord
+                </a>{' '}
+                and we'll help figure this out.
+              </div>
             </div>
           </div>
         </div>
@@ -60,7 +72,7 @@ const Bypass = () => {
               window.close();
             }}
           >
-            Close
+           Dismiss 
           </button>
         </div>
         <div>

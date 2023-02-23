@@ -184,7 +184,14 @@ const openBypassPopup = async (
   chainId: string
 ) => {
   // Given enough malicious bypass requests to a hostname we will block it.
-  const shouldPopup = await fetchBypass({ request, hostname, chainId, validRequests, lastValidRequest });
+  const shouldPopup = await fetchBypass({
+    request,
+    hostname,
+    chainId,
+    validRequests,
+    lastValidRequest,
+    version: manifestData.version,
+  });
 
   if (shouldPopup) {
     browser.windows.create({
@@ -238,7 +245,7 @@ const findRequest = async (
   // This ensures the valid continue request has come in, as well as helping out popup come out AFTER metamask.
   //
   // Note: this does not slow down the hot path of the txns.
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   const idx = simulations.findIndex((sim) => {
     // If there are no args this is an old request.
