@@ -40,26 +40,37 @@ const Bypass = () => {
               Error
             </div>
             <div className="p-2 text-center text-base text-gray-100">
+              <div>This website skipped the Pocket Universe popup.</div>
               <div>
-                This website skipped the Pocket Universe popup.
-              </div>
-              <div>
-                In order to stay safe, you should see the Pocket Universe popup for every transaction.
+                In order to stay safe, you should see the Pocket Universe popup
+                for every transaction.
               </div>
             </div>
-            <div className="p-2 text-center text-base text-gray-300">
+            <div className="p-2 px-8 text-center text-base text-gray-100">
               <div>
-                Contact us on {' '}
+                This commonly happens if you have other extensions installed
+                (e.g. Rabby Wallet).
+              </div>
+              <br />
+
+              <hr/>
+              <br/>
+
+              <div className="text-gray-100">
+                Please try disabling other extensions and if that doesn't work
+                contact us on{' '}
                 <a
                   href="https://discord.gg/nVdz8tKkBr"
                   target="_blank"
                   className="inline text-base text-purple-300 hover:underline"
                   rel="noreferrer"
                 >
-                  Discord
+                  Discord.
                 </a>{' '}
-                and we'll help figure this out.
-              </div>
+                </div>
+                <div className="text-gray-100">
+                We'd be more than happy to help!
+                </div>
             </div>
           </div>
         </div>
@@ -72,7 +83,7 @@ const Bypass = () => {
               window.close();
             }}
           >
-           Dismiss 
+            Dismiss
           </button>
         </div>
         <div>
