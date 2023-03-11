@@ -1,4 +1,3 @@
-import posthog from 'posthog-js';
 import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { AiFillLock, AiFillCopy } from 'react-icons/ai';
@@ -9,11 +8,6 @@ import React from 'react';
 import { updatePremiumStatus } from '../../lib/premium';
 import mixpanel from 'mixpanel-browser';
 
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
-  api_host: 'https://app.posthog.com',
-  autocapture: false,
-  capture_pageview: false,
-});
 mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
   persistence: 'localStorage',
   api_host: 'https://cloudrun.pocketuniverse.app',
@@ -24,7 +18,6 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledRunSimulations, setEnabledRunSimulations] =
     useState<boolean>(true);
   const switchedEnableRunSimulations = async (enabled: boolean) => {
-    posthog.capture('set run simulations', { enabled });
     mixpanel.track('set run simulations', { enabled });
 
     await setSettings({ disable: !enabled });
@@ -34,7 +27,6 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
   const [enabledHyperdriveMode, setEnabledHyperdriveMode] =
     useState<boolean>(false);
   const switchEnabledHyperdriveMode = async (enabled: boolean) => {
-    posthog.capture('set hyperdrive', { enabled });
     mixpanel.track('set hyperdrive', { enabled });
 
     await setSettings({ hyperdrive: enabled });
@@ -211,7 +203,6 @@ const SettingsComponent = ({ settingsOpen }: { settingsOpen: boolean }) => {
                   className="flex w-72 flex-row justify-center rounded-lg border border-white p-1 pt-1 text-center text-gray-100 hover:bg-gray-800"
                   onClick={async (e) => {
                     e.preventDefault();
-                    posthog.capture('copied referral');
                     mixpanel.track('copied referral');
                     await navigator.clipboard.writeText(referralLink);
                   }}

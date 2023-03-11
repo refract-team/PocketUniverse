@@ -6,7 +6,6 @@ import { AiFillCopy } from 'react-icons/ai';
 import { BeatLoader } from 'react-spinners';
 import { useState, useEffect } from 'react';
 import ReactTooltip from 'react-tooltip';
-import posthog from 'posthog-js';
 import browser from 'webextension-polyfill';
 import mixpanel from 'mixpanel-browser';
 
@@ -28,11 +27,6 @@ Sentry.init({
   dsn: 'https://e130c8dff39e464bab4c609c460068b0@o1317041.ingest.sentry.io/6569982',
 });
 
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
-  api_host: 'https://app.posthog.com',
-  autocapture: false,
-  capture_pageview: false,
-});
 mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
   persistence: 'localStorage',
   api_host: 'https://cloudrun.pocketuniverse.app',
@@ -331,10 +325,8 @@ const ConfirmSimulationButton = ({
         <button
           className="w-28 rounded-full bg-gray-600 py-2 text-base text-white hover:bg-gray-400"
           onClick={() => {
-            posthog.alias(signer);
             mixpanel.alias(signer);
 
-            posthog.capture('simulation rejected', { storedSimulation });
             mixpanel.track('simulation rejected', { storedSimulation });
             log.info({ id, state }, 'Simulation Rejected');
             updateSimulationState(id, StoredSimulationState.Rejected);
@@ -345,10 +337,8 @@ const ConfirmSimulationButton = ({
         <button
           className="w-28 rounded-full bg-gray-100 text-base text-black hover:bg-gray-300"
           onClick={async () => {
-            posthog.alias(signer);
             mixpanel.alias(signer);
 
-            posthog.capture('simulation confirmed', { storedSimulation });
             mixpanel.track('simulation confirmed', { storedSimulation });
             log.info({ id, state }, 'Simulation Continue');
             // Wait for the message to reach the background script first such that we can update the valid requests before it gets sent to MM.
@@ -732,7 +722,6 @@ const TransactionComponent = () => {
         >
           <button
             onClick={() => {
-              posthog.capture('click share');
               mixpanel.track('click share');
             }}
             title="share on twitter"

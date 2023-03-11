@@ -1,12 +1,5 @@
 import React from 'react';
-import posthog from 'posthog-js';
 import mixpanel from 'mixpanel-browser';
-
-posthog.init('phc_P3MaeD52tbh7D1zIZv8zPZCqOZrZ5F1Zn4xNlV5KIRL', {
-  api_host: 'https://app.posthog.com',
-  autocapture: false,
-  capture_pageview: false,
-});
 
 mixpanel.init('8989bf9bf536a55479ad0b467a2c3b2c', {
   persistence: 'localStorage',
@@ -78,7 +71,6 @@ const Bypass = () => {
           <button
             className="w-48 rounded-full bg-gray-100 py-2 text-base text-black hover:bg-gray-300"
             onClick={async () => {
-              posthog.capture('bypass detected');
               mixpanel.track('bypass detected');
               window.close();
             }}
