@@ -26,6 +26,8 @@ const initClient = async () => {
 
 initClient();
 
+const { version }  = chrome.runtime.getManifest();
+
 export const fetchUpdate = async (args: {
   manifestVersion: string;
 }): Promise<{
@@ -109,6 +111,7 @@ export const fetchSimulate = async (args: {
       },
       body: JSON.stringify({
         clientId,
+        version,
         ...args,
       }),
     });
@@ -163,6 +166,7 @@ export const fetchSignature = async (
       },
       body: JSON.stringify({
         clientId,
+        version,
         ...args,
       }),
     });

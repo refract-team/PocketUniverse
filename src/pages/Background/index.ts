@@ -72,7 +72,7 @@ const manifestData = chrome.runtime.getManifest();
 browser.storage.local
   .get(UPDATE_KEY)
   .then(async ({ updates }) => {
-    // Either we've updated the version, or they haven't dismissed this message.
+    // Either we've updated the ersion, or they haven't dismissed this message.
     //
     // Let's retrieve the message.
     //
