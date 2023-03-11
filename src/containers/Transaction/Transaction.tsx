@@ -614,7 +614,40 @@ const StoredSimulationComponent = ({
           </div>
         </div>
       );
-    } else {
+    } else if (
+      storedSimulation.type === StoredType.Signature &&
+      storedSimulation.simulation?.blurBulk
+    ) {
+
+      if (storedSimulation.args?.hostname != "blur.io") {
+        return (
+        <div className="flex w-full grow flex-col items-center justify-center pt-4">
+          <div className="text-center text-lg font-bold text-red-500">
+            🚨 WARNING 🚨
+          </div>
+          <div className="px-6 py-2 text-center text-base text-red-500">
+          This signature is likely a scam. <br/> It is a Blur listing, but not from Blur.io!
+            <div className="px-6 py-2 text-center text-sm text-gray-400">
+            Please let us know if you think this warning is a mistake
+            </div>
+          </div>
+        </div>
+);
+      } else {
+      return (
+        <div className="flex w-full grow flex-col items-center justify-center gap-4 pt-4">
+          <img className="w-48" src="blur.png" alt="blur logo" />
+          <div className="text-center text-xl text-orange-400">
+            Bulk listing or bidding on Blur.
+          </div>
+          <div className="px-6 py-2 text-center text-base">
+            We can't translate this signature because Blur uses hashed messages
+          </div>
+        </div>
+      );
+        }
+    }
+    else {
       // TODO: handle the TO address separately.
       return (
         <div className="flex w-full grow flex-col items-center justify-center pt-4">

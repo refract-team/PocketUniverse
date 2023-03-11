@@ -68,6 +68,13 @@ export type RequestArgs = {
   id: string;
 
   /**
+   * Hostname for this request.
+   *
+   * This never goes to our servers, only used locally in the client.
+   */
+  hostname: string;
+
+  /**
    * Chain ID for this request in hex.
    */
   chainId: string;
@@ -213,10 +220,14 @@ export class RequestManager {
       const chainId = args.chainId;
       const signer = args.signer;
 
+      // TODO(jqphu): This should be called by injected script. This is a leaky abstraction please fix.
+      const hostname = window.location.hostname;
+
       if ('transaction' in args) {
         request = {
           id,
           chainId,
+          hostname,
           signer,
           transaction: args.transaction,
         };
@@ -224,6 +235,7 @@ export class RequestManager {
         request = {
           id,
           chainId,
+          hostname,
           signer,
           hash: args.hash,
         };
@@ -231,6 +243,7 @@ export class RequestManager {
         request = {
           id,
           chainId,
+          hostname,
           signer,
           domain: args.domain,
           message: args.message,
@@ -240,6 +253,7 @@ export class RequestManager {
         request = {
           id,
           chainId,
+          hostname,
           signer,
           signMessage: args.signMessage,
         };

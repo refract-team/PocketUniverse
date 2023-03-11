@@ -147,7 +147,10 @@ export class Simulation {
     public collabLandName?: string,
 
     // Community for collab land signature.
-    public collabLandCommunity?: string
+    public collabLandCommunity?: string,
+
+    // BlurBulk signature
+    public blurBulk?: boolean
   ) {}
 
   public static fromJSON(obj: any): Simulation {
@@ -161,7 +164,8 @@ export class Simulation {
       obj.mustWarnMessage,
       obj.collabLand,
       obj.collabLandName,
-      obj.collabLandCommunity
+      obj.collabLandCommunity,
+      obj.blurBulk
     );
   }
 }

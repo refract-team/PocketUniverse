@@ -330,6 +330,16 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
+          from: 'src/assets/img/blur.png',
+          to: buildPath,
+          force: true,
+        },
+      ],
+    }),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        {
           from: 'src/assets/img/bypass.png',
           to: buildPath,
           force: true,
