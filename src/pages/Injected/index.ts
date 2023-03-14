@@ -19,9 +19,11 @@ log.debug({ msg: 'Injected script loaded.' });
 /// Handling all the request communication.
 const REQUEST_MANAGER = new RequestManager();
 
-let timer: NodeJS.Timer | undefined = undefined;
-
 const addPocketUniverseProxy = (provider: any) => {
+  if(!provider || provider.isPocketUniverse) {
+    return;
+  }
+
   // Heavily taken from RevokeCash to ensure consistency. Thanks Rosco :)!
   //
   // https://github.com/RevokeCash/browser-extension
@@ -363,72 +365,48 @@ const addPocketUniverseProxy = (provider: any) => {
     },
   };
 
-  if (provider && !provider?.isPocketUniverse) {
-    log.debug({ provider }, 'Added proxy');
-    // TODO(jqphu): Brave will not allow us to overwrite request/send/sendAsync as it is readonly.
-    //
-    // The workaround would be to proxy the entire window.ethereum object (but
-    // that could run into its own complications). For now we shall just skip
-    // brave wallet.
-    //
-    // This should still work for metamask and other wallets using the brave browser.
-    try {
-      Object.defineProperty(provider, 'request', {
-        value: new Proxy(provider.request, requestHandler),
-      });
-      Object.defineProperty(provider, 'send', {
-        value: new Proxy(provider.send, sendHandler),
-      });
-      Object.defineProperty(provider, 'sendAsync', {
-        value: new Proxy(provider.sendAsync, sendAsyncHandler),
-      });
-      provider.isPocketUniverse = true;
-      console.log('Pocket Universe is running!');
-    } catch (error) {
-      // If we can't add ourselves to this provider, don't mess with other providers.
-      log.warn({ provider, error }, 'Could not attach to provider');
-    }
-  }
-};
-
-const addProxy = () => {
-  // Protect against double initialization.
-  if (window.ethereum && !window.ethereum?.isPocketUniverse) {
-    log.debug({ provider: window.ethereum }, 'Injecting!');
-
-    addPocketUniverseProxy(window.ethereum);
-
-    if (window.ethereum.providers?.length) {
-      log.debug('New providers!');
-      window.ethereum.providers.forEach(addPocketUniverseProxy);
-    }
+  log.debug({ provider }, 'Added proxy');
+  // TODO(jqphu): Brave will not allow us to overwrite request/send/sendAsync as it is readonly.
+  //
+  // The workaround would be to proxy the entire window.ethereum object (but
+  // that could run into its own complications). For now we shall just skip
+  // brave wallet.
+  //
+  // This should still work for metamask and other wallets using the brave browser.
+  try {
+    Object.defineProperty(provider, 'request', {
+      value: new Proxy(provider.request, requestHandler),
+    });
+    Object.defineProperty(provider, 'send', {
+      value: new Proxy(provider.send, sendHandler),
+    });
+    Object.defineProperty(provider, 'sendAsync', {
+      value: new Proxy(provider.sendAsync, sendAsyncHandler),
+    });
+    provider.isPocketUniverse = true;
+    console.log('Pocket Universe is running!');
+  } catch (error) {
+    // If we can't add ourselves to this provider, don't mess with other providers.
+    log.warn({ provider, error }, 'Could not attach to provider');
   }
 };
 
 if (window.ethereum) {
+  console.log('PocketUniverse: window.ethereum detected, adding proxy.')
+
   log.debug({ provider: window.ethereum }, 'Detected Provider');
-  addProxy();
+  addPocketUniverseProxy(window.ethereum);
 } else {
-  log.debug('Adding event listener');
-  window.addEventListener('ethereum#initialized', addProxy);
+  console.log('PocketUniverse: window.ethereum not detected, defining.')
+
+  let ethCached: any = undefined;
+  Object.defineProperty(window, 'ethereum', {
+    get: () => {
+      return ethCached;
+    },
+    set: (provider: any) => {
+      addPocketUniverseProxy(provider);
+      ethCached = provider;
+    }
+  })
 }
-
-timer = setInterval(addProxy, 100);
-
-// This cleanup timeout serves two purposes.
-//
-// 1. There is a wallet
-//
-// We do not clear the timeout in addProxy since if coinbase wallet and
-// metamask are both present, metamask will augment the providers array. We do
-// not get any events when this happens. Thus, we continually poll to see if
-// there are any new providers and if there are we inject ourselves.
-//
-// 2. There are no wallets at all.
-//
-// Although we don't do a lot of work, we don't want to churn CPU cycles for no
-// reason. Thus after 5 seconds we give up on checking for the wallet.
-setTimeout(() => {
-  window.removeEventListener('ethereum#initialized', addProxy);
-  clearTimeout(timer);
-}, 5000);
