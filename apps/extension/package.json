@@ -1,0 +1,83 @@
+{
+  "name": "pocket-universe",
+  "displayName": "Pocket Universe",
+  "version": "0.1.14",
+  "description": "A transaction checker that helps you avoid crypto scams.",
+  "author": "justinphu",
+  "scripts": {
+    "dev": "plasmo dev --target=chrome-mv3",
+    "build": "plasmo build --target=chrome-mv3",
+    "lint": "eslint ./src --fix",
+    "format": "prettier src --write",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.13",
+    "@heroicons/react": "^2.0.15",
+    "@react-icons/all-files": "^4.1.0",
+    "@sentry/browser": "^7.47.0",
+    "@sentry/react": "^7.47.0",
+    "@trpc/client": "^10.11.1",
+    "@trpc/server": "^10.11.1",
+    "@walletconnect/encoding": "^1.0.2",
+    "@walletconnect/iso-crypto": "^1.8.0",
+    "classnames": "^2.3.2",
+    "clsx": "^1.2.1",
+    "eth-rpc-errors": "^4.0.3",
+    "ethers": "5.6.0",
+    "loglevel": "^1.8.1",
+    "object-hash": "^3.0.0",
+    "plasmo": "0.69.2",
+    "posthog-js": "^1.52.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-tooltip": "^5.8.1",
+    "trpc-chrome": "^1.0.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "@plasmohq/prettier-plugin-sort-imports": "3.6.1",
+    "@plasmohq/rps": "1.8.1",
+    "@plasmohq/storage": "^0.14.0",
+    "@types/chrome": "0.0.206",
+    "@types/node": "18.11.18",
+    "@types/object-hash": "^3.0.2",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.10",
+    "@types/uuid": "^9.0.0",
+    "autoprefixer": "^10.4.13",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "workspace:*",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.4",
+    "prettier-plugin-tailwindcss": "^0.2.2",
+    "tailwindcss": "^3.2.6",
+    "tsconfig": "workspace:*",
+    "typescript": "4.9.4"
+  },
+  "manifest": {
+    "background": {
+      "persistent": true
+    },
+    "permissions": [
+      "scripting",
+      "storage"
+    ],
+    "host_permissions": [
+      "file://*/*",
+      "http://*/*",
+      "https://*/*"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "*.js"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
+    ]
+  }
+}
